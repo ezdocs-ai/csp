@@ -28,7 +28,7 @@ import {UserModel} from './../common/models/user.model';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {Router} from '@angular/router';
 import {Injector, NgZone} from '@angular/core';
-import {environment} from '../../environments/environment';
+
 import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
@@ -38,7 +38,6 @@ import {NotificationService} from '../common/services/notification.service';
 
 // Define a MockAuthService class
 class MockAuthService {
-  signInWithGoogleFirebase = jasmine.createSpy('signInWithGoogleFirebase');
   signInForGoogleIdentityPlatform = jasmine.createSpy(
     'signInForGoogleIdentityPlatform',
   );
@@ -108,119 +107,63 @@ describe('LoginComponent', () => {
     beforeEach(() => {
       consoleErrorSpy = spyOn(console, 'error');
     });
+
     it('should show loader and reset error flags', fakeAsync(() => {
-      authService.signInWithGoogleFirebase.and.returnValue(NEVER); // Use NEVER to prevent completion or error
-      authService.signInForGoogleIdentityPlatform.and.returnValue(NEVER); // Use NEVER
+      authService.signInForGoogleIdentityPlatform.and.returnValue(NEVER);
       component.loader = false;
       component.invalidLogin = true;
       component.errorMessage = 'Old error';
 
       component.loginWithGoogle();
-      // fixture.detectChanges(); // autoDetectChanges is true
 
       expect(component.loader).toBeTrue();
       expect(component.invalidLogin).toBeFalse();
       expect(component.errorMessage).toBe('');
     }));
-    describe('in local environment', () => {
-      beforeEach(() => {
-        (environment as any).isLocal = true;
-      });
 
-      it('should call signInWithGoogleFirebase and navigate on success', fakeAsync(() => {
-        authService.signInWithGoogleFirebase.and.returnValue(of('test-token'));
-        spyOn(router, 'navigate');
+    it('should use Google OIDC and navigate on success', fakeAsync(() => {
+      authService.signInForGoogleIdentityPlatform.and.returnValue(
+        of('test-token'),
+      );
+      spyOn(router, 'navigate');
 
-        component.loginWithGoogle();
-        tick();
+      component.loginWithGoogle();
+      tick();
 
-        expect(authService.signInWithGoogleFirebase).toHaveBeenCalled();
-        expect(component.loader).toBeFalse();
-        expect(router.navigate).toHaveBeenCalledWith(['/']);
-      }));
+      expect(authService.signInForGoogleIdentityPlatform).toHaveBeenCalled();
+      expect(component.loader).toBeFalse();
+      expect(router.navigate).toHaveBeenCalledWith(['/']);
+    }));
 
-      it('should handle error from signInWithGoogleFirebase', fakeAsync(() => {
-        consoleErrorSpy.and.stub();
-        const error = new Error('Access Denied');
-        authService.signInWithGoogleFirebase.and.returnValue(
-          throwError(() => error),
-        );
-        spyOn(component, 'handleLoginError' as any);
+    it('should handle an OIDC login error', fakeAsync(() => {
+      consoleErrorSpy.and.stub();
+      const error = new Error('Access Denied');
+      authService.signInForGoogleIdentityPlatform.and.returnValue(
+        throwError(() => error),
+      );
+      spyOn(component, 'handleLoginError' as any);
 
-        component.loginWithGoogle();
-        tick();
+      component.loginWithGoogle();
+      tick();
 
-        expect(component.loader).toBeFalse();
-        expect((component as any).handleLoginError).toHaveBeenCalledWith(error);
-      }));
+      expect(component.loader).toBeFalse();
+      expect((component as any).handleLoginError).toHaveBeenCalledWith(error);
+    }));
 
-      it('should handle string error from signInWithGoogleFirebase', fakeAsync(() => {
-        consoleErrorSpy.and.stub();
-        const error = 'An unexpected error occurred';
-        authService.signInWithGoogleFirebase.and.returnValue(
-          throwError(() => error),
-        );
-        spyOn(component, 'handleLoginError' as any);
+    it('should handle a string OIDC login error', fakeAsync(() => {
+      consoleErrorSpy.and.stub();
+      const error = 'An unexpected error occurred';
+      authService.signInForGoogleIdentityPlatform.and.returnValue(
+        throwError(() => error),
+      );
+      spyOn(component, 'handleLoginError' as any);
 
-        component.loginWithGoogle();
-        tick();
+      component.loginWithGoogle();
+      tick();
 
-        expect(component.loader).toBeFalse();
-        expect((component as any).handleLoginError).toHaveBeenCalledWith(error);
-      }));
-    });
-
-    describe('in non-local environment', () => {
-      beforeEach(() => {
-        (environment as any).isLocal = false;
-      });
-
-      it('should call signInForGoogleIdentityPlatform and navigate on success', fakeAsync(() => {
-        authService.signInForGoogleIdentityPlatform.and.returnValue(
-          of('test-token'),
-        );
-        spyOn(router, 'navigate');
-
-        component.loginWithGoogle();
-        tick();
-
-        expect(authService.signInForGoogleIdentityPlatform).toHaveBeenCalled();
-        expect(component.loader).toBeFalse();
-        expect(router.navigate).toHaveBeenCalledWith(['/']);
-      }));
-
-      it('should handle error from signInForGoogleIdentityPlatform', fakeAsync(() => {
-        consoleErrorSpy.and.stub();
-        const error = new Error(
-          'An unexpected error occurred during sign-in. Please try again.',
-        );
-        authService.signInForGoogleIdentityPlatform.and.returnValue(
-          throwError(() => error),
-        );
-        spyOn(component, 'handleLoginError' as any);
-
-        component.loginWithGoogle();
-        tick();
-
-        expect(component.loader).toBeFalse();
-        expect((component as any).handleLoginError).toHaveBeenCalledWith(error);
-      }));
-
-      it('should handle string error from signInForGoogleIdentityPlatform', fakeAsync(() => {
-        consoleErrorSpy.and.stub();
-        const error = 'An unexpected error occurred';
-        authService.signInForGoogleIdentityPlatform.and.returnValue(
-          throwError(() => error),
-        );
-        spyOn(component, 'handleLoginError' as any);
-
-        component.loginWithGoogle();
-        tick();
-
-        expect(component.loader).toBeFalse();
-        expect((component as any).handleLoginError).toHaveBeenCalledWith(error);
-      }));
-    });
+      expect(component.loader).toBeFalse();
+      expect((component as any).handleLoginError).toHaveBeenCalledWith(error);
+    }));
   });
 
   describe('handleLoginError', () => {
@@ -239,7 +182,7 @@ describe('LoginComponent', () => {
         'error',
         'cross-in-circle-white',
         undefined,
-        20000,
+        5000,
       );
     });
 

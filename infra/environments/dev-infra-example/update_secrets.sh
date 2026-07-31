@@ -101,8 +101,9 @@ TERRAFORM_OUTPUTS=$(terraform output -json)
 
 # 2. Parse the outputs using jq
 PROJECT_ID=$(echo "$TERRAFORM_OUTPUTS" | jq -r .gcp_project_id.value)
-FRONTEND_SECRETS=$(echo "$TERRAFORM_OUTPUTS" | jq -r .frontend_secrets.value[])
-BACKEND_SECRETS=$(echo "$TERRAFORM_OUTPUTS" | jq -r .backend_secrets.value[])
+FRONTEND_SECRETS=$(echo "$TERRAFORM_OUTPUTS" | jq -r '.frontend_secrets.value[]?')
+BACKEND_SECRETS=$(echo "$TERRAFORM_OUTPUTS" | jq -r '.backend_secrets.value[]?')
+NEXT_SECRETS=$(echo "$TERRAFORM_OUTPUTS" | jq -r '.next_secrets_to_populate.value[]?')
 
 if [ -z "$PROJECT_ID" ] || [ "$PROJECT_ID" == "null" ]; then
   fail "Could not find 'gcp_project_id' in Terraform outputs. Did you run 'terraform apply'?"
@@ -112,7 +113,7 @@ fi
 configure_firebase_site_id "$TFVARS_FILE" "$PROJECT_ID"
 
 # Combine, de-duplicate, and sort the secret lists
-ALL_SECRETS=$(echo "${FRONTEND_SECRETS} ${BACKEND_SECRETS}" | tr ' ' '\n' | sort -u | grep .)
+ALL_SECRETS=$(echo "${FRONTEND_SECRETS} ${BACKEND_SECRETS} ${NEXT_SECRETS}" | tr ' ' '\n' | sort -u | grep .)
 
 if [ -z "$ALL_SECRETS" ]; then
   success "No secrets listed in 'frontend_secrets' or 'backend_secrets' outputs. Nothing to do."

@@ -18,9 +18,9 @@ The backend follows a **Modular, Feature-Driven Architecture**, heavily inspired
 | :---- | :---- |
 | **Frontend** | Angular, TypeScript, Angular Material, Tailwind CSS |
 | **Backend** | Python, FastAPI, Pydantic |
-| **Database** | Google Cloud SQL (PostgreSQL) |
+| **Database** | PostgreSQL (local Docker or externally managed) |
 | **Cloud Provider** | Google Cloud Platform (GCP) |
-| **Deployment** | Cloud Run (for backend), Firebase Hosting (for frontend) |
+| **Deployment** | Cloud Run (backend and frontend) |
 | **AI Models** | Imagen, Veo, Gemini (via Vertex AI SDK) |
 
 ## 🚀 Backend Setup

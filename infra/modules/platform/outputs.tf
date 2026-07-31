@@ -24,7 +24,27 @@ output "frontend_service_url" {
   value       = module.frontend_service.url
 }
 
-output "cloud_sql_connection_name" {
-  description = "The connection name of the Cloud SQL instance to be used by the bootstrap script."
-  value       = module.postgresql.connection_name
+output "next_service_url" {
+  description = "The URL of the deployed Next.js frontend Cloud Run service."
+  value       = google_cloud_run_v2_service.next.uri
+}
+
+output "next_service_name" {
+  description = "Name of the Next.js Cloud Run service (for canary/traffic commands)."
+  value       = google_cloud_run_v2_service.next.name
+}
+
+output "next_service_location" {
+  description = "Location/region of the Next.js Cloud Run service."
+  value       = google_cloud_run_v2_service.next.location
+}
+
+output "next_latest_ready_revision" {
+  description = "Latest READY revision of the Next.js Cloud Run service (use for canary traffic splits)."
+  value       = google_cloud_run_v2_service.next.latest_ready_revision
+}
+
+output "next_secrets_to_populate" {
+  description = "Next.js runtime Secret Manager IDs whose shell Terraform created. Populate values manually; no version/value is created by Terraform."
+  value       = distinct(values(var.next_runtime_secrets))
 }

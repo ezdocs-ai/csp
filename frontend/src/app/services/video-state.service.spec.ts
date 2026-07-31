@@ -15,6 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
+import {of} from 'rxjs';
+import {GenerationOptionsService} from './generation-options.service';
 import {VideoStateService} from './video-state.service';
 
 describe('VideoStateService', () => {
@@ -38,7 +40,42 @@ describe('VideoStateService', () => {
 
   function initService() {
     TestBed.configureTestingModule({
-      providers: [VideoStateService],
+      providers: [
+        VideoStateService,
+        {
+          provide: GenerationOptionsService,
+          useValue: {
+            loadVideoOptions: () =>
+              of({
+                defaultModelKey: 'veo-3.1-generate-001',
+                models: [
+                  {
+                    modelKey: 'veo-3.1-generate-001',
+                    displayName: 'Veo 3.1 Generate',
+                    vendorModelId: 'veo-3.1-generate-001',
+                    providerKey: 'google_veo',
+                    providerType: 'GOOGLE_VEAN',
+                    environment: 'PRODUCTION',
+                    priority: 100,
+                    capabilities: {
+                      textToVideo: true,
+                      imageToVideo: true,
+                      durations: [8],
+                      aspectRatios: ['16:9'],
+                      resolutions: ['720p'],
+                      maxOutputs: 1,
+                    },
+                    defaults: {
+                      durationSeconds: 8,
+                      aspectRatio: '16:9',
+                      resolution: '720p',
+                    },
+                  },
+                ],
+              }),
+          },
+        },
+      ],
     });
     service = TestBed.inject(VideoStateService);
   }
@@ -53,7 +90,7 @@ describe('VideoStateService', () => {
     const state = service.getState();
     expect(state.prompt).toBe('');
     expect(state.aspectRatio).toBe('16:9');
-    expect(state.model).toBe('gemini-omni-flash-preview');
+    expect(state.model).toBe('veo-3.1-generate-001');
     expect(state.numberOfMedia).toBe(1);
   });
 

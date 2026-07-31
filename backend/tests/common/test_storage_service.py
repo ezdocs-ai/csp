@@ -19,7 +19,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from google.api_core import exceptions
 
-from src.common.storage_service import GcsService
+from src.common.storage_service import GcsService, gcs_uri_to_public_url
 
 
 @pytest.fixture(name="gcs_service")
@@ -257,3 +257,55 @@ def test_store_to_gcs_decode_success(gcs_service):
 def test_store_to_gcs_invalid_type(gcs_service):
     res = gcs_service.store_to_gcs("folder", "file.txt", "text/plain", 123)
     assert res == ""
+
+
+def test_gcs_uri_to_public_url_happy_path():
+    res = gcs_uri_to_public_url("gs://bucket/path/to/file.png")
+    assert res == "https://storage.googleapis.com/bucket/path/to/file.png"
+
+
+def test_gcs_uri_to_public_url_special_chars_and_spaces():
+    res = gcs_uri_to_public_url("gs://bucket/my file (1)?.png")
+    assert (
+        res
+        == "https://storage.googleapis.com/bucket/my%20file%20%281%29%3F.png"
+    )
+
+
+def test_gcs_uri_to_public_url_preserves_slashes():
+    res = gcs_uri_to_public_url("gs://bucket/a/b/c/d.png")
+    assert res == "https://storage.googleapis.com/bucket/a/b/c/d.png"
+
+
+def test_gcs_uri_to_public_url_https_passthrough():
+    url = "https://example.com/foo.png"
+    assert gcs_uri_to_public_url(url) == url
+
+
+def test_gcs_uri_to_public_url_http_passthrough():
+    url = "http://example.com/foo.png"
+    assert gcs_uri_to_public_url(url) == url
+
+
+def test_gcs_uri_to_public_url_none():
+    assert gcs_uri_to_public_url(None) is None
+
+
+def test_gcs_uri_to_public_url_empty():
+    assert gcs_uri_to_public_url("") is None
+
+
+def test_gcs_uri_to_public_url_unsupported_scheme():
+    assert gcs_uri_to_public_url("ftp://bucket/file.png") is None
+
+
+def test_gcs_uri_to_public_url_gs_only():
+    assert gcs_uri_to_public_url("gs://") is None
+
+
+def test_gcs_uri_to_public_url_bucket_only_no_object():
+    assert gcs_uri_to_public_url("gs://bucket") is None
+
+
+def test_gcs_uri_to_public_url_empty_object():
+    assert gcs_uri_to_public_url("gs://bucket/") is None

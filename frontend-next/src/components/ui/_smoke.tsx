@@ -1,0 +1,5 @@
+/* Copyright 2025 Google LLC
+ * Licensed under Apache-2.0
+ */
+import { Badge, Button, Card, EmptyState, Field, IconButton, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Topbar } from "./index";
+export function UiSmoke() { return <><Topbar>Topbar</Topbar><Button variant="primary">Primary</Button><Button variant="secondary">Secondary</Button><Button variant="ghost">Ghost</Button><Button variant="danger">Danger</Button><IconButton label="Close">×</IconButton><Card variant="base">Base</Card><Card variant="interactive">Interactive</Card><Card variant="featured">Featured</Card><Card variant="glass">Glass</Card><Field htmlFor="smoke" label="Input"><Input id="smoke" /></Field><Badge>Neutral</Badge><Badge tone="success">Success</Badge><Badge tone="info">Info</Badge><Badge tone="danger">Danger</Badge><Badge tone="warning">Warning</Badge><Table><TableHeader><tr><TableHead>Item</TableHead></tr></TableHeader><TableBody><TableRow><TableCell>Value</TableCell></TableRow></TableBody></Table><EmptyState description="Add first item to continue." title="Nothing here" /></>; }

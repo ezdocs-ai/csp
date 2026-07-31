@@ -165,6 +165,13 @@ class GenerateTextStep(BaseStep[GenerateTextInputs, GenerateTextSettings]):
 # --- Generate Image ---
 class GenerateImageInputs(BaseModel):
     prompt: StepOutputReference | str
+    # Optional Ingredients-to-Image inputs. Accepts a single value or an
+    # ordered list; list order is preserved end-to-end when forwarded to the
+    # provider. Mixed arrays (media-item ids and ReferenceMediaOrAsset) are
+    # allowed and normalized by the executor. Whether multi-image input is
+    # supported at all, and the maximum count, are model/provider-driven:
+    # see GenerationModelEnum.is_gemini_image_model / max_total_inputs.
+    input_images: WorkflowInputItem | None = None
 
 
 class GenerateImageSettings(BaseModel):

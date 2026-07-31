@@ -116,7 +116,7 @@ The backend follows a **Modular, Feature-Driven Architecture**, heavily inspired
 | :----------------- | :------------------------------------------------------- |
 | **Frontend**       | Angular, TypeScript, Angular Material, Tailwind CSS      |
 | **Backend**        | Python, FastAPI, Pydantic                                |
-| **Database**       | Google Cloud SQL (PostgreSQL)                            |
+| **Database**       | PostgreSQL (local Docker or externally managed)          |
 | **Cloud Provider** | Google Cloud Platform (GCP)                              |
 | **Deployment**     | Cloud Run (for backend), Firebase Hosting (for frontend) |
 | **AI Models**      | Imagen, Veo, Gemini (via Vertex AI SDK)                  |
@@ -136,7 +136,7 @@ Regarding the dependencies of the APIs and Services we’ll use (the Google APIs
 - `cloudfunctions.googleapis.com` (Cloud Functions)
 - `compute.googleapis.com` (Compute Engine)
 - `firebase.googleapis.com` (Firebase)
-- `sqladmin.googleapis.com` (Cloud SQL)
+
 - `iamcredentials.googleapis.com` (IAM Service API)
 - `iap.googleapis.com` (Cloud Identity-Aware Proxy)
 - `identitytoolkit.googleapis.com` (Identity Platform)

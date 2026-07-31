@@ -51,12 +51,13 @@ DB_PASS="studio_pass"
 DB_NAME="creative_studio"
 DB_HOST="postgres"
 DB_PORT="5432"
-USE_CLOUD_SQL_AUTH_PROXY=false
+DATABASE_URL=""
+DIRECT_DATABASE_URL=""
 ADMIN_USER_EMAIL="your-user-email"
 ```
 
 > 💡 **Best Practice Tip: Local PostgreSQL Container**
-> For local development and testing, we include a lightweight PostgreSQL Docker container to bypass the need for an actual Cloud SQL instance. This delivers key advantages:
+> Local development and testing use the PostgreSQL Docker container, while deployed environments can provide `DATABASE_URL` and `DIRECT_DATABASE_URL`. This delivers key advantages:
 >
 > - **Zero Costs**: Avoids billing accrual on cloud data lookups during validation work cycles.
 > - **Safe Experimentation**: Clear volume bindings locally without risking production states or accidental cloud data drops.

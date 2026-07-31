@@ -1,0 +1,140 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Frontend Next Quality
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+    paths:
+      - "frontend-next/**"
+      - ".github/workflows/frontend-next.yml"
+  push:
+    branches: [main]
+    paths:
+      - "frontend-next/**"
+      - ".github/workflows/frontend-next.yml"
+
+jobs:
+  quality:
+    name: Lint, Typecheck, Test & Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend-next
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.2.19"
+
+      - name: Restore caches
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            frontend-next/.next/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('frontend-next/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Generate API types
+        run: bun scripts/gen-api.ts
+
+      - name: Verify generated API types
+        run: |
+          # intent-to-add so untracked generated files surface as diffs and fail the gate
+          git add -N openapi.json src/lib/api/types.ts
+          git diff --exit-code -- openapi.json src/lib/api/types.ts
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Typecheck
+        run: bunx tsc --noEmit
+
+      - name: Test
+        run: bun run test
+
+      - name: Build
+        run: bun run build
+
+  e2e:
+    name: Playwright E2E (cutover smoke)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend-next
+    env:
+      # Repo variable: staging URL to probe directly. Unset -> local dev server (see playwright.config.ts).
+      E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.2.19"
+
+      - name: Restore caches
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-bun-playwright-${{ hashFiles('frontend-next/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-playwright-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium
+
+      # CI supplies a pre-generated storage state securely. The JSON lives in the
+      # E2E_STORAGE_STATE_JSON secret and is written to a job-local path; production
+      # auth is never faked. NOTE: session TTL is 15 min, so this state must be fresh
+      # per run (or the staging session lifetime extended) for authenticated tests to pass.
+      - name: Write pre-generated storage state
+        env:
+          E2E_STORAGE_STATE_JSON: ${{ secrets.E2E_STORAGE_STATE_JSON }}
+        run: |
+          if [ -n "$E2E_STORAGE_STATE_JSON" ]; then
+            mkdir -p .e2e-auth
+            printf '%s' "$E2E_STORAGE_STATE_JSON" > .e2e-auth/storage-state.json
+            echo "E2E_STORAGE_STATE=$PWD/.e2e-auth/storage-state.json" >> "$GITHUB_ENV"
+            echo "Authenticated smoke enabled."
+          else
+            echo "No E2E_STORAGE_STATE_JSON secret; authenticated tests will skip, unauthenticated smoke runs."
+          fi
+
+      - name: Run cutover smoke
+        run: bun run test:e2e -- tests/e2e/smoke.spec.ts
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend-next/playwright-report
+          retention-days: 14

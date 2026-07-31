@@ -30,7 +30,10 @@ import {
 } from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ReferenceImage} from '../../models/search.model';
-import {GenerationModelConfig} from '../../config/model-config';
+import {
+  GenerationModelConfig,
+  GenerationMode,
+} from '../../config/model-config';
 import {MatIconModule} from '@angular/material/icon';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -62,13 +65,22 @@ export class FlowPromptBoxComponent implements OnInit, OnDestroy {
   @Input() prompt = '';
   @Input() aspectRatio = '16:9';
   @Input() outputs = 4;
+  @Input() maxOutputs = 4;
   @Input() aspectRatioOptions: {
     value: string;
     viewValue: string;
     disabled: boolean;
     icon?: string;
   }[] = [];
-  @Input() modes: {value: string; icon: string; label: string}[] = [];
+  private modesSignal = signal<{value: string; icon: string; label: string}[]>(
+    [],
+  );
+  @Input() set modes(val: {value: string; icon: string; label: string}[]) {
+    this.modesSignal.set(val || []);
+  }
+  get modes(): {value: string; icon: string; label: string}[] {
+    return this.modesSignal();
+  }
 
   // --- setter inputs ---
   private _generationModels: GenerationModelConfig[] = [];
@@ -159,6 +171,7 @@ export class FlowPromptBoxComponent implements OnInit, OnDestroy {
   @ViewChild('settingsMenu') settingsMenu!: ElementRef;
 
   private resolutionTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private modeResetTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private eRef: ElementRef) {}
 
@@ -218,6 +231,21 @@ export class FlowPromptBoxComponent implements OnInit, OnDestroy {
       (this.getSelectedModelObject()?.capabilities?.supportedDurations ?? [])
         .length > 0,
   );
+  // Modes the selected model actually supports. Fail open (show all modes)
+  // when the selected model is unknown or declares no supportedModes, so the
+  // image/home page (MODEL_CONFIGS) and any model without capabilities are
+  // not regressed.
+  availableModes = computed(() => {
+    const all = this.modesSignal();
+    const supported = this.getSelectedModelObject()?.capabilities
+      ?.supportedModes;
+    if (!supported || supported.length === 0) {
+      return all;
+    }
+    return all.filter(m =>
+      supported.includes(m.value as GenerationMode),
+    );
+  });
 
   // --- Lifecycle Hooks ---
   ngOnInit(): void {
@@ -227,6 +255,9 @@ export class FlowPromptBoxComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.resolutionTimeoutId) {
       clearTimeout(this.resolutionTimeoutId);
+    }
+    if (this.modeResetTimeoutId) {
+      clearTimeout(this.modeResetTimeoutId);
     }
   }
 
@@ -285,7 +316,8 @@ export class FlowPromptBoxComponent implements OnInit, OnDestroy {
     this.resolutionChanged.emit(resolution);
     this.isSettingsDropdownOpen.set(null);
 
-    if (resolution !== '1K') {
+    // Only Veo-family models force the longest duration at resolutions > 1K.
+    if (this.durationVariesByResolution(model) && resolution !== '1K') {
       const longest = this.getSelectedModelDurations(model).at(-1);
       if (longest) this.selectDuration(longest);
     }
@@ -336,14 +368,28 @@ export class FlowPromptBoxComponent implements OnInit, OnDestroy {
 
   getSelectedModelDurations(model?: any): number[] {
     const activeModel = model || this.getSelectedModelObject();
-    // only 'text to video' mode supports shorter durations
-    // resolutions above 1K support only longest duration
-    if (!this.isTextToVideo() || this.selectedResolution() !== '1K') {
-      const longest = activeModel?.capabilities?.supportedDurations?.at(-1);
+    const supportedDurations =
+      activeModel?.capabilities?.supportedDurations ?? [];
+    // Non-text-to-video modes always collapse to the longest duration.
+    // The resolution-based collapse is Veo-family specific: Seedance offers
+    // the same duration set at every resolution.
+    // ponytail: maxReferenceImages>0 proxies referenceImages (Veo family) until
+    // ai_models.capabilities carries a real per-resolution duration matrix.
+    if (
+      !this.isTextToVideo() ||
+      (this.durationVariesByResolution(activeModel) &&
+        this.selectedResolution() !== '1K')
+    ) {
+      const longest = supportedDurations.at(-1);
       return longest ? [longest] : [];
     }
 
-    return activeModel?.capabilities?.supportedDurations ?? [];
+    return supportedDurations;
+  }
+
+  private durationVariesByResolution(model?: any): boolean {
+    const activeModel = model || this.getSelectedModelObject();
+    return (activeModel?.capabilities?.maxReferenceImages ?? 0) > 0;
   }
 
   private updateSupportedResolutions(model?: any, modeChanged = false) {
@@ -383,6 +429,23 @@ export class FlowPromptBoxComponent implements OnInit, OnDestroy {
       if (this.resolutionTimeoutId) clearTimeout(this.resolutionTimeoutId);
       this.resolutionTimeoutId = setTimeout(() =>
         this.resolutionChanged.emit(fallbackResolution),
+      );
+    }
+
+    // Reset the mode if the selected model no longer supports it (e.g.
+    // switching from a Veo model to Seedance while in Extend/Concatenate/
+    // Ingredients). Fail open: models without declared supportedModes keep
+    // the current mode.
+    const supportedModes = activeModel?.capabilities?.supportedModes;
+    if (
+      supportedModes &&
+      supportedModes.length > 0 &&
+      !supportedModes.includes(this.selectedMode() as GenerationMode)
+    ) {
+      this.selectedMode.set('Text to Video');
+      if (this.modeResetTimeoutId) clearTimeout(this.modeResetTimeoutId);
+      this.modeResetTimeoutId = setTimeout(() =>
+        this.modeChanged.emit('Text to Video'),
       );
     }
   }

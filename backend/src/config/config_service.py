@@ -49,6 +49,7 @@ class ConfigService(BaseSettings):
 
     # --- Google Identity ---
     GOOGLE_TOKEN_AUDIENCE: str = ""
+    GOOGLE_CLIENT_ID: str = ""
     ALLOWED_ORGS_STR: str = Field(
         default="", alias="IDENTITY_PLATFORM_ALLOWED_ORGS"
     )
@@ -62,16 +63,20 @@ class ConfigService(BaseSettings):
     GEMINI_AUDIO_ANALYSIS_MODEL_ID: str = "gemini-2.5-pro"
 
     # --- Database Configuration ---
-    INSTANCE_CONNECTION_NAME: str = ""
+    DATABASE_URL: str = ""
+    DIRECT_DATABASE_URL: str = ""
     DB_USER: str = "postgres"
     DB_PASS: str = "password"
     DB_NAME: str = "creative_studio"
-    USE_CLOUD_SQL_AUTH_PROXY: bool = False
     DB_HOST: str = "localhost"
     DB_PORT: str = "5432"
 
     # --- Veo ---
     VEO_MODEL_ID: str = "veo-3.1-generate-001"
+
+    # --- Ark (BytePlus ModelArk) ---
+    ARK_API_KEY: str = ""
+    ARK_API_BASE_URL: str = "https://ark.byteplusapi.com/api/v3"
 
     # --- VTO ---
     VTO_MODEL_ID: str = "virtual-try-on-001"

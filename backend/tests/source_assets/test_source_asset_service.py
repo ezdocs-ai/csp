@@ -14,6 +14,7 @@
 """Tests for Source Asset Service."""
 
 
+import asyncio
 import io
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -22,6 +23,8 @@ from fastapi import HTTPException
 from PIL import Image as PILImage
 
 from src.common.base_dto import AspectRatioEnum, MimeTypeEnum
+from src.common.dto.pagination_response_dto import PaginationResponseDto
+from src.source_assets.dto.source_asset_search_dto import SourceAssetSearchDto
 from src.source_assets.schema.source_asset_model import (
     AssetScopeEnum,
     AssetTypeEnum,
@@ -176,6 +179,49 @@ async def test_upload_asset_duplicate(service, mock_dependencies, sample_user):
     mock_dependencies[
         "gcs_service"
     ].store_to_gcs.assert_not_called()  # Did not upload
+
+
+@pytest.mark.anyio
+async def test_list_assets_returns_metadata_when_signing_fails(
+    service, mock_dependencies
+):
+    asset = SourceAssetModel(
+        id=9,
+        workspace_id=1,
+        user_id=1,
+        gcs_uri="gs://bucket/asset.png",
+        original_filename="asset.png",
+        file_hash="hash",
+        mime_type=MimeTypeEnum.IMAGE_PNG,
+    )
+    mock_dependencies["repo"].query.return_value = PaginationResponseDto(
+        count=1,
+        page=1,
+        page_size=10,
+        total_pages=1,
+        data=[asset],
+    )
+
+    async def slow_signing(*_args, **_kwargs):
+        await asyncio.sleep(0.05)
+
+    service._create_asset_response = AsyncMock(side_effect=slow_signing)
+
+    with patch(
+        "src.source_assets.source_asset_service._SOURCE_ASSET_SIGNING_TIMEOUT_SECONDS",
+        0.001,
+    ):
+        result = await service.list_assets_for_user(SourceAssetSearchDto())
+
+    assert result.count == 1
+    assert result.page == 1
+    assert result.page_size == 10
+    assert result.total_pages == 1
+    assert len(result.data) == 1
+    assert result.data[0].id == asset.id
+    assert result.data[0].presigned_url == ""
+    assert result.data[0].presigned_original_url == ""
+    assert result.data[0].presigned_thumbnail_url == ""
 
 
 @pytest.mark.anyio

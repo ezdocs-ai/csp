@@ -21,8 +21,12 @@ from httpx import AsyncClient as RestClient
 
 from src.common.schema.genai_model_setup import GenAIModelSetup
 from src.common.schema.media_item_model import AssetRoleEnum
+from src.common.base_dto import GenerationModelEnum
 from src.config.config_service import config_service
-from src.workflows.schema.workflow_model import ReferenceMediaOrAsset
+from src.workflows.schema.workflow_model import (
+    ReferenceMediaOrAsset,
+    StepOutputReference,
+)
 from src.workflows_executor.dto.workflows_executor_dto import (
     EditImageRequest,
     GenerateAudioRequest,
@@ -89,7 +93,65 @@ class WorkflowsExecutorService:
                     )
                 elif item.sourceAssetId:
                     asset_ids.append(item.sourceAssetId)
+            else:
+                # Fail clearly instead of silently dropping unsupported
+                # values. An unresolved StepOutputReference here means a
+                # previous step's output was not resolved before reaching the
+                # executor (cross-step references are resolved upstream in the
+                # workflow orchestrator). Any other type is a contract bug.
+                if isinstance(item, StepOutputReference):
+                    detail = (
+                        "Unresolved step output reference "
+                        f"({item.step}.{item.output}) reached image inputs; "
+                        "cross-step references must be resolved before the "
+                        "executor."
+                    )
+                else:
+                    detail = (
+                        "Unsupported image input type "
+                        f"'{type(item).__name__}'; expected media-item id or "
+                        "source asset."
+                    )
+                raise HTTPException(status_code=422, detail=detail)
         return media_items, asset_ids
+
+    @staticmethod
+    def _validate_image_input_capability(
+        model_key: str,
+        total_inputs: int,
+    ) -> None:
+        """Rejects unsupported model/count combinations early.
+
+        Only model eligibility (is_gemini_image_model) and total input count
+        (max_total_inputs) are checked here. Aspect-ratio, resolution, and
+        other per-request validation stay with the downstream image provider
+        endpoint, which is the source of truth; this gate only avoids a wasted
+        round-trip on clearly unsupported model/count combinations.
+        """
+        try:
+            model = GenerationModelEnum(model_key)
+        except ValueError as e:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unknown image model '{model_key}'.",
+            ) from e
+        if not model.is_gemini_image_model:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"Model '{model_key}' does not support image "
+                    f"ingredients/reference inputs."
+                ),
+            )
+        max_inputs = model.max_total_inputs
+        if total_inputs > max_inputs:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"Model '{model_key}' supports at most {max_inputs} "
+                    f"image inputs; received {total_inputs}."
+                ),
+            )
 
     async def _poll_job_status(
         self, media_id: int, authorization: str | None = None
@@ -297,6 +359,19 @@ class WorkflowsExecutorService:
     ):
         logger.info("Generate image execution")
 
+        # Resolve optional Ingredients-to-Image inputs (ordered list-capable).
+        # Capability and maximum are model/provider-driven, not hardcoded.
+        media_items, asset_ids = self._normalize_asset_inputs(
+            request.inputs.input_images,
+        )
+        total_inputs = len(media_items) + len(asset_ids)
+
+        if total_inputs > 0:
+            self._validate_image_input_capability(
+                request.config.model,
+                total_inputs,
+            )
+
         url = self.backend_url + "/api/images/generate-images"
 
         body = {
@@ -308,6 +383,10 @@ class WorkflowsExecutorService:
             "number_of_media": 1,
             "resolution": request.config.resolution,
         }
+        if media_items:
+            body["source_media_items"] = media_items
+        if asset_ids:
+            body["source_asset_ids"] = asset_ids
 
         headers = {"Authorization": authorization} if authorization else {}
 

@@ -54,6 +54,8 @@ from src.users.user_model import UserModel, UserRoleEnum
 
 logger = logging.getLogger(__name__)
 
+_SOURCE_ASSET_SIGNING_TIMEOUT_SECONDS = 5.0
+
 
 class SourceAssetService:
     """Provides business logic for managing user-uploaded assets."""
@@ -538,9 +540,34 @@ class SourceAssetService:
         assets = assets_query_result.data or []
 
         response_tasks = [
-            self._create_asset_response(asset) for asset in assets
+            asyncio.wait_for(
+                self._create_asset_response(asset),
+                timeout=_SOURCE_ASSET_SIGNING_TIMEOUT_SECONDS,
+            )
+            for asset in assets
         ]
-        enriched_assets = await asyncio.gather(*response_tasks)
+        response_results = await asyncio.gather(
+            *response_tasks,
+            return_exceptions=True,
+        )
+        enriched_assets: list[SourceAssetResponseDto] = []
+        for asset, result in zip(assets, response_results):
+            if isinstance(result, BaseException):
+                logger.warning(
+                    "Could not sign source asset %s; returning metadata without preview URLs: %s",
+                    asset.id,
+                    result,
+                )
+                enriched_assets.append(
+                    SourceAssetResponseDto(
+                        **asset.model_dump(),
+                        presigned_url="",
+                        presigned_original_url="",
+                        presigned_thumbnail_url="",
+                    )
+                )
+                continue
+            enriched_assets.append(result)
 
         return PaginationResponseDto[SourceAssetResponseDto](
             count=assets_query_result.count,

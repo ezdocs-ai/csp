@@ -1,0 +1,69 @@
+<!-- Copyright 2025 Google LLC. Licensed under Apache-2.0. -->
+<h1 mat-dialog-title>{{ model ? 'Edit' : 'Create' }} AI Model</h1>
+<div mat-dialog-content>
+  <form [formGroup]="form" class="grid gap-3 pt-2">
+    <mat-form-field appearance="outline"
+      ><mat-label>Key</mat-label
+      ><input matInput formControlName="key" /></mat-form-field
+    ><mat-form-field appearance="outline"
+      ><mat-label>Provider ID</mat-label
+      ><input
+        matInput
+        type="number"
+        formControlName="providerId" /></mat-form-field
+    ><mat-form-field appearance="outline"
+      ><mat-label>Vendor model ID</mat-label
+      ><input matInput formControlName="vendorModelId" /></mat-form-field
+    ><mat-form-field appearance="outline"
+      ><mat-label>Display name</mat-label
+      ><input matInput formControlName="displayName"
+    /></mat-form-field>
+    <mat-form-field appearance="outline"
+      ><mat-label>Media type</mat-label
+      ><mat-select formControlName="mediaType"
+        ><mat-option *ngFor="let type of mediaTypes" [value]="type">{{
+          type
+        }}</mat-option></mat-select
+      ></mat-form-field
+    ><mat-form-field appearance="outline"
+      ><mat-label>Environment</mat-label
+      ><mat-select formControlName="environment"
+        ><mat-option
+          *ngFor="let environment of environments"
+          [value]="environment"
+          >{{ environment }}</mat-option
+        ></mat-select
+      ></mat-form-field
+    ><mat-form-field appearance="outline"
+      ><mat-label>Priority</mat-label
+      ><input matInput type="number" formControlName="priority"
+    /></mat-form-field>
+    <mat-form-field appearance="outline"
+      ><mat-label>Capabilities JSON</mat-label
+      ><textarea
+        matInput
+        rows="6"
+        formControlName="capabilities"
+      ></textarea></mat-form-field
+    ><mat-form-field appearance="outline"
+      ><mat-label>Defaults JSON</mat-label
+      ><textarea
+        matInput
+        rows="4"
+        formControlName="defaults"
+      ></textarea></mat-form-field
+    ><mat-form-field appearance="outline"
+      ><mat-label>Cost metadata JSON</mat-label
+      ><textarea
+        matInput
+        rows="4"
+        formControlName="costMetadata"
+      ></textarea></mat-form-field
+    ><mat-error *ngIf="jsonError">{{ jsonError }}</mat-error
+    ><mat-slide-toggle formControlName="enabled">Enabled</mat-slide-toggle>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button
+  ><button mat-raised-button color="primary" (click)="save()">Save</button>
+</div>

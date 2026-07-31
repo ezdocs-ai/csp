@@ -28,6 +28,12 @@ variable "environment" {
   description = "The name of the environment, e.g., 'development'."
 }
 
+variable "genmedia_bucket_name" {
+  type        = string
+  description = "Existing GenMedia GCS bucket to manage. Empty creates the default environment bucket."
+  default     = ""
+}
+
 # --- Service Names ---
 variable "backend_service_name" {
   type        = string
@@ -37,6 +43,94 @@ variable "backend_service_name" {
 variable "frontend_service_name" {
   type        = string
   description = "The full name of the frontend Cloud Run service for this environment."
+}
+
+variable "next_service_name" {
+  type        = string
+  description = "The full name of the Next.js frontend Cloud Run service for this environment."
+}
+
+variable "next_custom_audiences" {
+  type        = list(string)
+  description = "List of custom audiences for the Next.js frontend service."
+  default     = []
+}
+
+variable "next_env_vars" {
+  type        = map(string)
+  description = "Build-time public values embedded in the Next.js browser bundle."
+  default     = {}
+}
+
+variable "next_runtime_secrets" {
+  type        = map(string)
+  description = "Next.js runtime ENV_VAR_NAME = Secret Manager secret name mappings."
+  default     = {}
+}
+
+variable "next_cpu" {
+  type        = string
+  description = "CPU limit for Next.js frontend Cloud Run instances."
+  default     = "1000m"
+}
+
+variable "next_memory" {
+  type        = string
+  description = "Memory limit for Next.js frontend Cloud Run instances."
+  default     = "512Mi"
+}
+
+variable "next_scaling_min_instances" {
+  type        = number
+  description = "Minimum Next.js frontend Cloud Run instances."
+  default     = 0
+}
+
+variable "next_scaling_max_instances" {
+  type        = number
+  description = "Maximum Next.js frontend Cloud Run instances."
+  default     = 10
+}
+
+variable "next_timeout_seconds" {
+  type        = number
+  description = "Request timeout (seconds) for the Next.js Cloud Run service."
+  default     = 300
+}
+
+variable "next_concurrency" {
+  type        = number
+  description = "Max concurrent requests per Next.js Cloud Run instance."
+  default     = 100
+}
+
+variable "next_startup_cpu_boost" {
+  type        = bool
+  description = "Enable Cloud Run startup CPU boost for the Next.js service."
+  default     = true
+}
+
+variable "next_manage_traffic" {
+  type        = bool
+  description = "Whether Terraform manages Next.js traffic. Default true = safe 100% to LATEST. Set false for `gcloud run deploy --no-traffic` workflows."
+  default     = true
+}
+
+variable "next_traffic_splits" {
+  description = "Custom Next.js traffic allocations for canary. Empty (default) => 100% LATEST when next_manage_traffic=true."
+  type = list(object({
+    type     = string
+    revision = string
+    percent  = number
+    tag      = string
+  }))
+  default = []
+}
+
+variable "be_cors_extra_origins" {
+  type        = list(string)
+  description = "Additional explicit origins merged into the backend CORS_ORIGINS."
+  default     = []
 }
 
 variable "firebase_site_id" {
@@ -49,6 +143,11 @@ variable "firebase_site_id" {
 variable "github_conn_name" {
   type        = string
   description = "The name of the Cloud Build GitHub connection."
+}
+
+variable "github_repository_link_name" {
+  type        = string
+  description = "The Cloud Build repository link resource name."
 }
 
 variable "github_repo_owner" {
@@ -98,13 +197,13 @@ variable "fe_build_substitutions" {
 variable "frontend_secrets" {
   type        = list(string)
   description = "A list of secret names required by the frontend build."
-  default = []
+  default     = []
 }
 
 variable "backend_secrets" {
   type        = list(string)
   description = "A list of secret names required by the backend build."
-  default = []
+  default     = []
 }
 
 variable "backend_runtime_secrets" {

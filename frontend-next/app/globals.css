@@ -1,0 +1,198 @@
+/**
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import "tailwindcss";
+@import "../src/styles/tokens.css";
+@import "@xyflow/react/dist/style.css";
+
+@theme inline {
+  --color-brand: var(--tri-brand-primary);
+  --color-brand-strong: var(--tri-brand-primary-strong);
+  --color-brand-luminous: var(--tri-brand-luminous);
+  --color-brand-violet: var(--tri-brand-violet);
+  --color-brand-coral: var(--tri-brand-coral);
+  --color-page: var(--tri-bg-page);
+  --color-surface: var(--tri-bg-surface);
+  --color-surface-raised: var(--tri-bg-surface-raised);
+  --color-surface-alt: var(--tri-bg-surface-alt);
+  --color-surface-tint: var(--tri-bg-surface-tint);
+  --color-foreground: var(--tri-text-primary);
+  --color-foreground-secondary: var(--tri-text-secondary);
+  --color-foreground-tertiary: var(--tri-text-tertiary);
+  --color-border: var(--tri-border-default);
+  --color-border-subtle: var(--tri-border-subtle);
+  --color-success: var(--tri-state-success);
+  --color-warning: var(--tri-state-warning);
+  --color-error: var(--tri-state-error);
+  --color-info: var(--tri-state-info);
+  --font-sans: var(--tri-font-body);
+  --font-display: var(--tri-font-display);
+  --font-editorial: var(--tri-font-editorial);
+  --font-mono: var(--tri-font-code);
+  --spacing-gutter: var(--tri-layout-gutter);
+  --spacing-section: var(--tri-space-section);
+  --radius-xs: var(--tri-radius-xs);
+  --radius-sm: var(--tri-radius-sm);
+  --radius-md: var(--tri-radius-md);
+  --radius-lg: var(--tri-radius-lg);
+  --radius-xl: var(--tri-radius-xl);
+  --radius-2xl: var(--tri-radius-2xl);
+  --shadow-xs: var(--tri-shadow-xs);
+  --shadow-sm: var(--tri-shadow-sm);
+  --shadow-md: var(--tri-shadow-md);
+  --shadow-lg: var(--tri-shadow-lg);
+}
+
+* {
+  border-color: var(--tri-border-subtle);
+}
+
+html {
+  background: var(--tri-bg-page);
+  color: var(--tri-text-primary);
+  transition: background-color var(--tri-duration-base) var(--tri-ease-standard), color var(--tri-duration-base) var(--tri-ease-standard);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--tri-bg-page);
+  color: var(--tri-text-primary);
+  font-family: var(--tri-font-body);
+  font-size: var(--tri-text-base-size);
+  line-height: var(--tri-text-base-line-height);
+  letter-spacing: var(--tri-text-base-tracking);
+}
+
+:focus-visible {
+  outline: var(--tri-border-focus-width) solid var(--tri-a11y-focus-ring);
+  outline-offset: 2px;
+  box-shadow: var(--tri-shadow-focus);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Custom welcome gooey animation styling */
+@keyframes moveInCircle {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(180deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes moveVertical {
+  0% { transform: translateY(-50%); }
+  50% { transform: translateY(50%); }
+  100% { transform: translateY(-50%); }
+}
+@keyframes moveHorizontal {
+  0% { transform: translateX(-50%) translateY(-10%); }
+  50% { transform: translateX(50%) translateY(10%); }
+  100% { transform: translateX(-50%) translateY(-10%); }
+}
+
+.welcome-gradient-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  overflow: hidden;
+  background: linear-gradient(40deg, #2e3031, #2e3031);
+  top: 0;
+  left: 0;
+  z-index: 1;
+  --color1: 238, 77, 93;
+  --color2: 45, 124, 239;
+  --color3: 238, 77, 93;
+  --color4: 29, 141, 248;
+  --color5: 238, 77, 93;
+  --circle-size: 80%;
+  --blending: hard-light;
+}
+.welcome-gradient-bg svg {
+  display: none;
+}
+.welcome-gradients-container {
+  filter: url(#welcome-goo) blur(40px);
+  width: 100%;
+  height: 100%;
+}
+.welcome-g1 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--color1), 0.8) 0, rgba(var(--color1), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  top: calc(50% - var(--circle-size) / 2);
+  left: calc(50% - var(--circle-size) / 2);
+  transform-origin: center center;
+  animation: moveVertical 30s ease infinite;
+  opacity: 1;
+}
+.welcome-g2 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--color2), 0.8) 0, rgba(var(--color2), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  top: calc(50% - var(--circle-size) / 2);
+  left: calc(50% - var(--circle-size) / 2);
+  transform-origin: calc(50% - 200px);
+  animation: moveInCircle 20s reverse infinite;
+  opacity: 1;
+}
+.welcome-g3 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--color3), 0.8) 0, rgba(var(--color3), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  top: calc(50% - var(--circle-size) / 2 + 100px);
+  left: calc(50% - var(--circle-size) / 2 - 200px);
+  transform-origin: calc(50% + 200px);
+  animation: moveInCircle 40s linear infinite;
+  opacity: 1;
+}
+.welcome-g4 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--color4), 0.8) 0, rgba(var(--color4), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: var(--circle-size);
+  height: var(--circle-size);
+  top: calc(50% - var(--circle-size) / 2);
+  left: calc(50% - var(--circle-size) / 2);
+  transform-origin: calc(50% - 100px);
+  animation: moveHorizontal 40s ease infinite;
+  opacity: 0.7;
+}
+.welcome-g5 {
+  position: absolute;
+  background: radial-gradient(circle at center, rgba(var(--color5), 0.8) 0, rgba(var(--color5), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
+  width: calc(var(--circle-size) * 2);
+  height: calc(var(--circle-size) * 2);
+  top: calc(50% - var(--circle-size));
+  left: calc(50% - var(--circle-size));
+  transform-origin: calc(50% - 400px) calc(50% + 100px);
+  animation: moveInCircle 20s ease infinite;
+  opacity: 1;
+}

@@ -264,8 +264,8 @@
   <!-- ============================================= -->
   @if (isModeMenuOpen()) {
     <div #modeMenu class="absolute left-0 bottom-full z-20 mb-2 w-64 rounded-xl bg-neutral-800 p-2 text-white shadow-lg">
-      @if (modes.length > 0) {
-        @for (m of modes; track m.value) {
+      @if (availableModes().length > 0) {
+        @for (m of availableModes(); track m.value) {
           <button (click)="selectMode(m.value)"
             class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left font-medium transition-colors"
             [class.bg-neutral-700]="mode === m.value" [class.hover:bg-neutral-700]="mode !== m.value">
@@ -449,31 +449,15 @@
             <div
               class="absolute right-0 top-full z-30 mt-1 w-full rounded-lg bg-neutral-700 p-1 shadow-lg"
             >
-              <button
-                (click)="selectOutputs(1)"
-                class="block w-full px-3 py-1.5 text-left text-sm rounded hover:bg-neutral-600"
-              >
-                x1
-              </button>
-              @if (getSelectedModelObject()?.value !== 'gemini-omni-flash-preview') {
-                <button
-                  (click)="selectOutputs(2)"
-                  class="block w-full px-3 py-1.5 text-left text-sm rounded hover:bg-neutral-600"
-                >
-                  x2
-                </button>
-                <button
-                  (click)="selectOutputs(3)"
-                  class="block w-full px-3 py-1.5 text-left text-sm rounded hover:bg-neutral-600"
-                >
-                  x3
-                </button>
-                <button
-                  (click)="selectOutputs(4)"
-                  class="block w-full px-3 py-1.5 text-left text-sm rounded hover:bg-neutral-600"
-                >
-                  x4
-                </button>
+              @for (count of [1, 2, 3, 4]; track count) {
+                @if (count <= maxOutputs) {
+                  <button
+                    (click)="selectOutputs(count)"
+                    class="block w-full px-3 py-1.5 text-left text-sm rounded hover:bg-neutral-600"
+                  >
+                    x{{ count }}
+                  </button>
+                }
               }
             </div>
           }

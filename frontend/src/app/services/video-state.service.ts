@@ -22,7 +22,7 @@ import {
   ReferenceVideo,
   ReferenceAudio,
 } from '../common/models/search.model';
-import {MODEL_CONFIGS} from '../common/config/model-config';
+import {GenerationOptionsService} from './generation-options.service';
 
 const STORAGE_KEY = 'video_state';
 
@@ -56,12 +56,14 @@ export class VideoStateService {
   private state: BehaviorSubject<VideoState>;
   state$: Observable<VideoState>;
 
-  constructor() {
+  constructor(
+    private readonly generationOptionsService: GenerationOptionsService,
+  ) {
     this.initialState = {
       prompt: '',
       aspectRatio: '16:9',
       resolution: '1K',
-      model: 'gemini-omni-flash-preview',
+      model: '',
       style: null,
       colorAndTone: null,
       lighting: null,
@@ -86,18 +88,9 @@ export class VideoStateService {
         if (saved) {
           const parsed = JSON.parse(saved);
           if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-            let loadedModel = parsed.model ?? this.initialState.model;
-            let loadedNumMedia =
+            const loadedModel = parsed.model ?? this.initialState.model;
+            const loadedNumMedia =
               parsed.numberOfMedia ?? this.initialState.numberOfMedia;
-
-            const isValidVideoModel = MODEL_CONFIGS.some(
-              m => m.type === 'VIDEO' && m.value === loadedModel,
-            );
-
-            if (!isValidVideoModel) {
-              loadedModel = this.initialState.model;
-              loadedNumMedia = this.initialState.numberOfMedia;
-            }
 
             savedState = {
               ...this.initialState,
@@ -120,6 +113,27 @@ export class VideoStateService {
       this.state = new BehaviorSubject<VideoState>({...this.initialState});
     }
     this.state$ = this.state.asObservable();
+    this.loadModelOptions();
+  }
+
+  private loadModelOptions(): void {
+    this.generationOptionsService.loadVideoOptions().subscribe({
+      next: options => {
+        const current = this.state.value;
+        const validModel = options.models.some(
+          model => model.modelKey === current.model,
+        );
+        if (!validModel) {
+          this.state.next({
+            ...current,
+            model: options.defaultModelKey || '',
+            numberOfMedia: this.initialState.numberOfMedia,
+          });
+        }
+      },
+      error: error =>
+        console.error('Failed to load video generation options', error),
+    });
   }
 
   updateState(newState: Partial<VideoState>) {

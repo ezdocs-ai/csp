@@ -367,6 +367,7 @@
           [modes]="modes"
           [aspectRatioOptions]="aspectRatioOptions"
           [generationModels]="generationModels"
+          [maxOutputs]="selectedModelSignal()?.capabilities?.maxOutputs || 1"
           [isLoading]="isLoading"
           [selectedGenerationModel]="selectedGenerationModel"
           [image1Preview]="image1Preview"

@@ -58,6 +58,10 @@ import {SharedModule} from '../common/shared.module';
 import {MediaGalleryManagementComponent} from './media-gallery-management/media-gallery-management.component';
 import {TagsManagementComponent} from './tags-management/tags-management.component';
 import {AdminHomeComponent} from './admin-home/admin-home.component';
+import {AiProvidersManagementComponent} from './ai-providers-management/ai-providers-management.component';
+import {AiProviderFormDialogComponent} from './ai-providers-management/ai-provider-form-dialog.component';
+import {AiModelsManagementComponent} from './ai-models-management/ai-models-management.component';
+import {AiModelFormDialogComponent} from './ai-models-management/ai-model-form-dialog.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +76,10 @@ import {AdminHomeComponent} from './admin-home/admin-home.component';
     MediaGalleryManagementComponent,
     TagsManagementComponent,
     AdminHomeComponent,
+    AiProvidersManagementComponent,
+    AiProviderFormDialogComponent,
+    AiModelsManagementComponent,
+    AiModelFormDialogComponent,
   ],
   imports: [
     CommonModule,

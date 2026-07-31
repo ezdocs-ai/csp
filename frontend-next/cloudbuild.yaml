@@ -1,0 +1,150 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+################################################################################
+# Next.js (frontend-next) Cloud Build pipeline.
+#
+# Two modes, switched by the _PROMOTE substitution:
+#   _PROMOTE=false (default): verify -> build -> push SHA (+optional latest)
+#                             -> deploy a tagged, NO-TRAFFIC revision (canary).
+#                             Promotion does NOT happen automatically.
+#   _PROMOTE=true:             route 100% traffic to the explicitly supplied
+#                             _PROMOTE_TAG. Every other step self-skips.
+#
+# NEXT_PUBLIC_* are passed as --build-arg so Next.js inlines them into the
+# client bundle at build (runtime Cloud Run env is too late for the browser).
+# Runtime environment variables and secrets are managed directly on the Cloud
+# Run service. Deployments update only the image and preserve that configuration.
+################################################################################
+
+steps:
+  # 1. Verify: install, require and regenerate API types, lint, test, and build
+  #    with NEXT_PUBLIC_* exported so the client bundle is
+  #    validated end-to-end before any image is built.
+  - name: oven/bun:1.2.19-alpine
+    id: Verify
+    entrypoint: /bin/sh
+    dir: frontend-next
+    args:
+      - -c
+      - |
+        set -e
+        if [ "${_PROMOTE}" = "true" ]; then echo "promote-only run: skip verify"; exit 0; fi
+        # Required build-time vars; abort loudly rather than shipping an empty bundle.
+        GCID="${_NEXT_PUBLIC_GOOGLE_CLIENT_ID}"
+        APP_URL="${_NEXT_PUBLIC_APP_URL}"
+        API_BASE="${_NEXT_PUBLIC_API_BASE_URL}"
+        if [ -z "$GCID" ] || [ -z "$APP_URL" ] || [ -z "$API_BASE" ]; then
+          echo "ERROR: _NEXT_PUBLIC_GOOGLE_CLIENT_ID / _NEXT_PUBLIC_APP_URL / _NEXT_PUBLIC_API_BASE_URL are required"; exit 1
+        fi
+        bun install --frozen-lockfile
+        if [ ! -f openapi.json ]; then echo "ERROR: openapi.json is required for API type generation"; exit 1; fi
+        bun scripts/gen-api.ts
+        bun run lint
+        bun run test
+        export NEXT_PUBLIC_GOOGLE_CLIENT_ID="$GCID"
+        export NEXT_PUBLIC_APP_URL="$APP_URL"
+        export NEXT_PUBLIC_API_BASE_URL="$API_BASE"
+        bun run build
+
+  # 2. Build the immutable SHA image (+ optional :latest alias) with the
+  #    NEXT_PUBLIC_* build-args consumed by the Dockerfile ARG/ENV block.
+  - name: gcr.io/cloud-builders/docker
+    id: Build
+    entrypoint: /bin/sh
+    dir: frontend-next
+    env:
+      - DOCKER_BUILDKIT=1
+    args:
+      - -c
+      - |
+        if [ "${_PROMOTE}" = "true" ]; then echo "promote-only run: skip build"; exit 0; fi
+        docker build \
+          -f Dockerfile \
+          -t ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO_NAME}/${_SERVICE_NAME}:$SHORT_SHA \
+          -t ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO_NAME}/${_SERVICE_NAME}:latest \
+          --build-arg=NEXT_PUBLIC_GOOGLE_CLIENT_ID=${_NEXT_PUBLIC_GOOGLE_CLIENT_ID} \
+          --build-arg=NEXT_PUBLIC_APP_URL=${_NEXT_PUBLIC_APP_URL} \
+          --build-arg=NEXT_PUBLIC_API_BASE_URL=${_NEXT_PUBLIC_API_BASE_URL} \
+          .
+
+  # 3. Push the immutable SHA tag (always).
+  - name: gcr.io/cloud-builders/docker
+    id: PushSha
+    entrypoint: /bin/sh
+    args:
+      - -c
+      - |
+        if [ "${_PROMOTE}" = "true" ]; then exit 0; fi
+        docker push ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO_NAME}/${_SERVICE_NAME}:$SHORT_SHA
+
+  # 4. Push :latest (optional, gated by _PUSH_LATEST).
+  - name: gcr.io/cloud-builders/docker
+    id: PushLatest
+    entrypoint: /bin/sh
+    args:
+      - -c
+      - |
+        if [ "${_PROMOTE}" = "true" ]; then exit 0; fi
+        if [ "${_PUSH_LATEST}" = "true" ]; then
+          docker push ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO_NAME}/${_SERVICE_NAME}:latest
+        fi
+
+  # 5. Deploy the SHA image as a tagged revision that receives NO traffic
+  #    (canary / manual promote). Runtime environment variables and secrets are
+  #    configured separately on the Cloud Run service.
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    id: Deploy
+    entrypoint: /bin/sh
+    args:
+      - -c
+      - |
+        if [ "${_PROMOTE}" = "true" ]; then echo "promote-only run: skip deploy"; exit 0; fi
+        gcloud run deploy ${_SERVICE_NAME} \
+          --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO_NAME}/${_SERVICE_NAME}:$SHORT_SHA \
+          --region=${_REGION} \
+          --no-traffic \
+          --tag=rev-$SHORT_SHA \
+          --quiet
+
+  # 6. Promote: route 100% traffic to the tagged revision. Never automatic.
+  #    Invoke as a separate build with _PROMOTE=true.
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    id: Promote
+    entrypoint: /bin/sh
+    args:
+      - -c
+      - |
+        if [ "${_PROMOTE}" != "true" ]; then echo "no promotion: set _PROMOTE=true and _PROMOTE_TAG=<tested-tag>"; exit 0; fi
+        if [ -z "${_PROMOTE_TAG}" ]; then echo "ERROR: _PROMOTE_TAG is required for promotion"; exit 1; fi
+        gcloud run services update-traffic ${_SERVICE_NAME} \
+          --to-tags=${_PROMOTE_TAG}=100 \
+          --region=${_REGION} \
+          --quiet
+
+substitutions:
+  _REGION: us-central1
+  _REPO_NAME: cs-next-development-repo
+  _SERVICE_NAME: creative-studio-next
+
+  _PUSH_LATEST: "true"
+  _PROMOTE: "false"
+  _PROMOTE_TAG: ""
+  # Build-time NEXT_PUBLIC_* (must be supplied by the trigger / submit call):
+  _NEXT_PUBLIC_GOOGLE_CLIENT_ID: ""
+  _NEXT_PUBLIC_APP_URL: ""
+  _NEXT_PUBLIC_API_BASE_URL: ""
+
+options:
+  logging: CLOUD_LOGGING_ONLY

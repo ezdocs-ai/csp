@@ -40,16 +40,8 @@ async def run_pending_migrations():
 
     conn = None
     try:
-        # We need a raw connection to execute the lock command and keep it open
-        # while the subprocess runs.
-        # Using the existing get_connection helper which returns an asyncpg
-        # connection wrapped in SQLAlchemy's AsyncConnection if using
-        # create_async_engine, BUT get_connection returns the raw asyncpg
-        # connection from the Connector?
-        # Let's check src/database.py again.
-        # get_connection returns `conn` from `connector.connect_async`,
-        # which IS an asyncpg connection.
-
+        # Keep a direct connection open while the migration subprocess runs so
+        # the session-level advisory lock remains held.
         conn = await get_connection()
 
         # Acquire advisory lock

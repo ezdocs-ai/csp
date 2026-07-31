@@ -19,9 +19,7 @@ import logging
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from firebase_admin import auth
-
-# --- Google Auth for Identity Platform ---
+from google.auth.exceptions import GoogleAuthError
 from google.auth.transport import requests as google_auth_requests
 from google.oauth2 import id_token
 
@@ -48,45 +46,34 @@ async def get_current_user(
     """Dependency that handles the entire authentication and user
     provisioning flow.
 
-    1. Verifies the Firebase ID token.
-    2. Extracts user information (id, email).
-    3. Checks if a user document exists in Firestore.
-    4. If the user is new, creates their document ("Just-In-Time Provisioning").
-    5. Returns a Pydantic model with the user's data.
+    1. Verifies the Google OIDC ID token.
+    2. Extracts the verified user identity.
+    3. Creates or retrieves the user's database profile.
+    4. Returns the user model.
     """
+    email = None
     try:
-        decoded_token = {}
-        if config_service.ENVIRONMENT == "local":
-            # --- Local: Use Firebase Auth ---
-            # Verifies the token using the standard Firebase Admin SDK method.
-            logger.info("Verifying token using Firebase Admin SDK...")
-            decoded_token = await asyncio.to_thread(auth.verify_id_token, token)
-        else:
-            # --- Development/Production: Use Google Identity Platform
-            # (OIDC) ---
-            # Verifies the Google-issued OIDC ID token. The audience must be the
-            # OAuth 2.0 client ID of the Identity Platform-protected resource.
-            google_token_audience = config_service.GOOGLE_TOKEN_AUDIENCE
-            decoded_token = await asyncio.to_thread(
-                id_token.verify_oauth2_token,
-                token,
-                google_auth_requests.Request(),
-                audience=google_token_audience,
-            )
+        audience = (
+            config_service.GOOGLE_CLIENT_ID
+            if config_service.ENVIRONMENT == "local"
+            else config_service.GOOGLE_TOKEN_AUDIENCE
+        )
+        decoded_token = await asyncio.to_thread(
+            id_token.verify_oauth2_token,
+            token,
+            google_auth_requests.Request(),
+            audience=audience,
+        )
 
         email = decoded_token.get("email")
         name = decoded_token.get("name")
         picture = decoded_token.get("picture", "")
         token_info_hd = decoded_token.get("hd")
 
-        # Restrict by particular organizations if it's a closed environment
-        if not email:
+        if not email or decoded_token.get("email_verified") is not True:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=(
-                    "Forbidden: User identity could not be confirmed from "
-                    "token."
-                ),
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User identity could not be confirmed from token.",
             )
 
         # If ALLOWED_ORGS is configured, check the user's organization.
@@ -127,24 +114,12 @@ async def get_current_user(
 
         return user_doc
 
-    except auth.ExpiredIdTokenError as exc:
-        logger.error(
-            "[get_current_user - auth.ExpiredIdTokenError] for %s", email
-        )
+    except (GoogleAuthError, ValueError) as exc:
+        logger.warning("Invalid Google OIDC token for %s: %s", email, exc)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication token has expired.",
+            detail="Invalid authentication token.",
         ) from exc
-    except auth.InvalidIdTokenError as e:
-        logger.error(
-            "[get_current_user - auth.InvalidIdTokenError] for %s: %s",
-            email,
-            e,
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid authentication token: {e}",
-        ) from e
     except HTTPException as e:
         logger.error("[get_current_user - Exception]: %s", e)
         raise e

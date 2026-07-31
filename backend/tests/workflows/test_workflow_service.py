@@ -19,6 +19,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 import yaml
 
+from src.config.config_service import config_service
 from src.users.user_model import UserModel
 from src.workflows.schema.workflow_model import (
     GenerateTextInputs,
@@ -61,6 +62,12 @@ def fixture_workflow_service(mock_workflow_repo, mock_run_repo):
         workflow_run_repository=mock_run_repo,
         source_asset_service=MagicMock(),
     )
+
+
+@pytest.fixture(name="production_workflows_environment")
+def fixture_production_workflows_environment(monkeypatch):
+    """Exercises the real GCP control-plane branches in existing unit tests."""
+    monkeypatch.setattr(config_service, "ENVIRONMENT", "production")
 
 
 @pytest.fixture(name="sample_user")
@@ -114,8 +121,6 @@ class TestWorkflowServiceConfig:
     def test_generate_workflow_yaml(
         self, workflow_service, sample_workflow_model
     ):
-        from src.config.config_service import config_service
-
         config_service.WORKFLOWS_LOCATION = "us-central1"
 
         yaml_output = workflow_service._generate_workflow_yaml(
@@ -141,7 +146,31 @@ class TestWorkflowServiceConfig:
         assert "url" in step_1["args"]
         assert "body" in step_1["args"]
 
+    def test_local_gcp_crud_skips_cloud_client(
+        self, workflow_service, monkeypatch
+    ):
+        monkeypatch.setattr(config_service, "ENVIRONMENT", "local")
 
+        # Private helpers are the narrow cloud boundary under test.
+        # pylint: disable=protected-access
+        with patch(
+            "src.workflows.workflow_service.workflows_v1.WorkflowsClient"
+        ) as mock_client_class:
+            assert (
+                workflow_service._create_gcp_workflow("main: {}", "id-123")
+                is None
+            )
+            assert (
+                workflow_service._update_gcp_workflow("main: {}", "id-123")
+                is None
+            )
+            assert workflow_service._delete_gcp_workflow("id-123") is None
+
+        mock_client_class.assert_not_called()
+        # pylint: enable=protected-access
+
+
+@pytest.mark.usefixtures("production_workflows_environment")
 class TestCreateWorkflow:
     """Tests for create_workflow method."""
 
@@ -498,6 +527,7 @@ class TestListExecutions:
         assert result["next_page_token"] == "next_token"
 
 
+@pytest.mark.usefixtures("production_workflows_environment")
 class TestUpdateAndUpdateMethods:
     """Tests for update and delete methods."""
 

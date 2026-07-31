@@ -53,6 +53,9 @@ from src.source_assets.repository.source_asset_repository import (
 from src.users.user_model import UserModel
 from src.videos.dto.concatenate_videos_dto import ConcatenateVideosDto
 from src.videos.dto.create_veo_dto import CreateVeoDto
+from src.ai_providers.adapters.ark_adapter import ArkAdapter
+from src.ai_providers.constants import ProviderTypeEnum
+from src.ai_providers.contract import ModelConfig, VideoGenerationRequest
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +64,16 @@ VIDEO_RESOLUTION_MAP = {
     "2K": "1080p",
     "4K": "4k",
 }
+ARK_SEEDANCE_MODELS = frozenset(
+    {
+        GenerationModelEnum.ARK_SEEDANCE_1_0_PRO,
+        GenerationModelEnum.ARK_SEEDANCE_1_0_PRO_FAST,
+        GenerationModelEnum.ARK_SEEDANCE_1_5_PRO,
+        GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0,
+        GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0_FAST,
+        GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0_MINI,
+    }
+)
 
 
 # --- STANDALONE WORKER FUNCTION ---
@@ -749,6 +762,140 @@ def _process_video_in_background(
                             raw_data_dict = {
                                 "interactions": interaction_details
                             }
+
+                        elif (
+                            request_dto.generation_model in ARK_SEEDANCE_MODELS
+                        ):
+                            worker_logger.info(
+                                "Running Ark Seedance video generation..."
+                            )
+                            api_resolution = VIDEO_RESOLUTION_MAP.get(
+                                request_dto.resolution, "720p"
+                            )
+                            # Ark downloads the frames itself, so it needs
+                            # fetchable https URLs. The bucket is private, so
+                            # sign them rather than building public URLs.
+                            signer = IamSignerCredentials()
+
+                            def _sign_frame(
+                                image: types.Image,
+                                label: str,
+                            ) -> str:
+                                """Signs a frame URI, failing loudly.
+
+                                generate_presigned_url falls back to returning
+                                the raw gs:// URI when signing fails, which Ark
+                                can only report as an opaque "resource download
+                                failed". Catch it here instead.
+                                """
+                                url = signer.generate_presigned_url(
+                                    image.gcs_uri
+                                )
+                                if not url.startswith("https://"):
+                                    raise ValueError(
+                                        f"Could not sign {label} "
+                                        f"{image.gcs_uri}; Ark cannot download "
+                                        "unsigned GCS URIs. Check "
+                                        "SIGNING_SA_EMAIL and the "
+                                        "serviceAccountTokenCreator role."
+                                    )
+                                return url
+
+                            start_image_uri = (
+                                _sign_frame(start_image_for_api, "start frame")
+                                if start_image_for_api
+                                else None
+                            )
+                            end_image_uri = (
+                                _sign_frame(end_image_for_api, "end frame")
+                                if end_image_for_api
+                                else None
+                            )
+                            if reference_images_for_api:
+                                # Ark supports first/last frame only, not
+                                # ingredients-to-video. The DTO should already
+                                # reject this; guard against silent drops.
+                                worker_logger.warning(
+                                    "Ark Seedance models do not support "
+                                    "reference images; ignoring %d reference(s).",
+                                    len(reference_images_for_api),
+                                )
+                            ark_request = VideoGenerationRequest(
+                                prompt=rewritten_prompt,
+                                duration_seconds=request_dto.duration_seconds,
+                                aspect_ratio=request_dto.aspect_ratio.value,
+                                resolution=api_resolution,
+                                input_image_uri=start_image_uri,
+                                last_frame_image_uri=end_image_uri,
+                            )
+                            adapter = ArkAdapter()
+                            model_config = ModelConfig(
+                                key=request_dto.generation_model.value,
+                                provider_key="ark",
+                                provider_type=ProviderTypeEnum.ARK,
+                                vendor_model_id=request_dto.generation_model.value,
+                                capabilities=adapter.capabilities(None),
+                            )
+                            job = await adapter.submit(
+                                ark_request, model_config
+                            )
+                            while True:
+                                status = await adapter.status(
+                                    job.provider_job_id
+                                )
+                                if status.status in (
+                                    JobStatusEnum.COMPLETED,
+                                    JobStatusEnum.FAILED,
+                                    JobStatusEnum.STOPPED,
+                                ):
+                                    break
+                                await asyncio.sleep(10)
+                            if status.status != JobStatusEnum.COMPLETED:
+                                raise Exception(
+                                    status.error_message
+                                    or "Ark video generation failed"
+                                )
+                            outputs = await adapter.collect(job)
+                            for output in outputs:
+                                output_path = output.uri.replace(
+                                    f"gs://{cfg.GENMEDIA_BUCKET}/", ""
+                                )
+                                local_output_path = f"thumbnails/{output_path}"
+                                downloaded_video_path = await asyncio.to_thread(
+                                    gcs_service.download_from_gcs,
+                                    gcs_uri_path=output_path,
+                                    destination_file_path=local_output_path,
+                                )
+                                thumbnail_path = await asyncio.to_thread(
+                                    generate_thumbnail,
+                                    downloaded_video_path or "",
+                                )
+                                if thumbnail_path:
+                                    temp_dir = os.path.dirname(thumbnail_path)
+                                    try:
+                                        thumbnail_gcs_uri = (
+                                            await asyncio.to_thread(
+                                                gcs_service.upload_file_to_gcs,
+                                                local_path=thumbnail_path,
+                                                destination_blob_name=thumbnail_path.replace(
+                                                    "thumbnails/",
+                                                    "",
+                                                ),
+                                                mime_type="image/png",
+                                            )
+                                            or ""
+                                        )
+                                        permanent_thumbnail_gcs_uris.append(
+                                            thumbnail_gcs_uri,
+                                        )
+                                    except Exception as e:
+                                        print(
+                                            f"Failed to upload {thumbnail_path}. Error: {e}",
+                                        )
+                                    finally:
+                                        if os.path.exists(temp_dir):
+                                            shutil.rmtree(temp_dir)
+                            final_gcs_uris = [o.uri for o in outputs]
 
                         else:
                             # Map DTO resolution ("1K", "2K", "4K") to GenAI SDK supported resolutions ("720p", "1080p", "4k")

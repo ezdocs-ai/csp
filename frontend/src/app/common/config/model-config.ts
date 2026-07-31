@@ -22,6 +22,8 @@ export type GenerationMode =
   | 'Text to Video'
   | 'Frames to Video'
   | 'Ingredients to Video'
+  | 'Extend Video'
+  | 'Concatenate Video'
   | 'Text to Audio'
   | 'Multimodal to text';
 

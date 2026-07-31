@@ -16,7 +16,7 @@
 from typing import Annotated, Literal
 
 from fastapi import Query
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, ValidationInfo, field_validator, model_validator
 
 from src.common.base_dto import (
     AspectRatioEnum,
@@ -106,8 +106,8 @@ class CreateVeoDto(BaseDto):
     duration_seconds: int = Field(
         default=8,
         ge=1,
-        le=8,
-        description="Duration in seconds for the videos to generate (between 1 and 8 secs).",
+        le=10,
+        description="Duration in seconds for the videos to generate (between 1 and 10 secs, model-dependent).",
     )
     start_image_asset_id: AssetReferenceDto | None = Field(
         default=None,
@@ -230,7 +230,21 @@ class CreateVeoDto(BaseDto):
                 )
 
         # Validate model-specific resolution limits
-        if model in (
+        ark_models = {
+            GenerationModelEnum.ARK_SEEDANCE_1_0_PRO,
+            GenerationModelEnum.ARK_SEEDANCE_1_0_PRO_FAST,
+            GenerationModelEnum.ARK_SEEDANCE_1_5_PRO,
+            GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0,
+            GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0_FAST,
+            GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0_MINI,
+        }
+        if model in ark_models:
+            # Ark speaks the same user-facing aliases as Veo (1K/2K/4K);
+            # the provider adapter maps them to provider literals at submit
+            # time. The per-model matrix lives in ai_models.capabilities
+            # (DB-driven, enforced client-side).
+            allowed_resolutions = {"1K", "2K", "4K"}
+        elif model in (
             GenerationModelEnum.GEMINI_OMNI,
             GenerationModelEnum.GEMINI_OMNI_FLASH_PREVIEW,
         ):
@@ -250,16 +264,37 @@ class CreateVeoDto(BaseDto):
 
     @field_validator("aspect_ratio")
     def validate_video_aspect_ratio(
-        cls, value: AspectRatioEnum
+        cls, value: AspectRatioEnum, info: ValidationInfo
     ) -> AspectRatioEnum:
         """Ensures that only supported aspect ratios for video are used."""
-        valid_video_ratios = [
-            AspectRatioEnum.RATIO_16_9,
-            AspectRatioEnum.RATIO_9_16,
-        ]
+        model = info.data.get("generation_model")
+        ark_models = {
+            GenerationModelEnum.ARK_SEEDANCE_1_0_PRO,
+            GenerationModelEnum.ARK_SEEDANCE_1_0_PRO_FAST,
+            GenerationModelEnum.ARK_SEEDANCE_1_5_PRO,
+            GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0,
+            GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0_FAST,
+            GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0_MINI,
+        }
+        if model in ark_models:
+            # Full per-model aspect ratio matrix lives in ai_models.capabilities
+            # (DB-driven, enforced client-side); this is just a format guard.
+            valid_video_ratios = [
+                AspectRatioEnum.RATIO_16_9,
+                AspectRatioEnum.RATIO_9_16,
+                AspectRatioEnum.RATIO_4_3,
+                AspectRatioEnum.RATIO_1_1,
+                AspectRatioEnum.RATIO_3_4,
+                AspectRatioEnum.RATIO_21_9,
+            ]
+        else:
+            valid_video_ratios = [
+                AspectRatioEnum.RATIO_16_9,
+                AspectRatioEnum.RATIO_9_16,
+            ]
         if value not in valid_video_ratios:
             raise ValueError(
-                "Invalid aspect ratio for video. Only '16:9' and '9:16' are supported.",
+                f"Invalid aspect ratio for video. Supported: {[r.value for r in valid_video_ratios]}",
             )
         return value
 
@@ -280,6 +315,12 @@ class CreateVeoDto(BaseDto):
             GenerationModelEnum.VEO_3_QUALITY,
             GenerationModelEnum.VEO_3_FAST_PREVIEW,
             GenerationModelEnum.VEO_3_QUALITY_PREVIEW,
+            GenerationModelEnum.ARK_SEEDANCE_1_0_PRO,
+            GenerationModelEnum.ARK_SEEDANCE_1_0_PRO_FAST,
+            GenerationModelEnum.ARK_SEEDANCE_1_5_PRO,
+            GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0,
+            GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0_FAST,
+            GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0_MINI,
         ]
         if value not in valid_video_ratios:
             raise ValueError("Invalid generation model for video.")

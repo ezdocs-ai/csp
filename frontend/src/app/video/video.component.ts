@@ -22,6 +22,7 @@ import {
   Inject,
   OnInit,
   PLATFORM_ID,
+  computed,
   signal,
 } from '@angular/core';
 import {MatChipInputEvent} from '@angular/material/chips';
@@ -39,10 +40,11 @@ import {
   ImageSelectorComponent,
   MediaItemSelection,
 } from '../common/components/image-selector/image-selector.component';
+import {GenerationModelConfig} from '../common/config/model-config';
 import {
-  GenerationModelConfig,
-  MODEL_CONFIGS,
-} from '../common/config/model-config';
+  VideoModelOption,
+  VideoResolution,
+} from '../common/models/generation-options.model';
 import {JobStatus, MediaItem} from '../common/models/media-item.model';
 import {
   ReferenceImage,
@@ -63,6 +65,7 @@ import {
   ConcatenationInput,
   SearchService,
 } from '../services/search/search.service';
+import {GenerationOptionsService} from '../services/generation-options.service';
 import {VideoStateService} from '../services/video-state.service';
 import {WorkspaceStateService} from '../services/workspace/workspace-state.service';
 import {GalleryService} from '../gallery/gallery.service';
@@ -135,7 +138,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
 
   searchRequest: VeoRequest = {
     prompt: '',
-    generationModel: 'gemini-omni-flash-preview',
+    generationModel: '',
     aspectRatio: '16:9',
     numberOfMedia: 4,
     style: null,
@@ -157,6 +160,22 @@ export class VideoComponent implements OnInit, AfterViewInit {
   // --- Dropdown Options ---
   generationModels: GenerationModelConfig[] = [];
   selectedGenerationModel = '';
+  readonly videoModelsSignal = signal<VideoModelOption[]>([]);
+  readonly selectedModelKeySignal = signal<string | null>(null);
+  readonly selectedModelSignal = computed(() =>
+    this.videoModelsSignal().find(
+      model => model.modelKey === this.selectedModelKeySignal(),
+    ),
+  );
+  readonly availableAspectRatiosSignal = computed(
+    () => this.selectedModelSignal()?.capabilities.aspectRatios ?? [],
+  );
+  readonly availableResolutionsSignal = computed(
+    () => this.selectedModelSignal()?.capabilities.resolutions ?? [],
+  );
+  readonly availableDurationsSignal = computed(
+    () => this.selectedModelSignal()?.capabilities.durations ?? [],
+  );
   aspectRatioOptions: {value: string; viewValue: string; disabled: boolean}[] =
     [
       {value: '16:9', viewValue: '16:9 \n Horizontal', disabled: false},
@@ -221,18 +240,13 @@ export class VideoComponent implements OnInit, AfterViewInit {
     private http: HttpClient,
     private workspaceStateService: WorkspaceStateService,
     private sourceAssetService: SourceAssetService,
+    private generationOptionsService: GenerationOptionsService,
     private videoStateService: VideoStateService,
 
     @Inject(GalleryService)
     private galleryService: GalleryService,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {
-    this.generationModels = MODEL_CONFIGS.filter(m => m.type === 'VIDEO');
-    this.searchRequest.generationModel = 'gemini-omni-flash-preview';
-    this.selectedGenerationModel =
-      this.generationModels.find(m => m.value === 'gemini-omni-flash-preview')
-        ?.viewValue || this.generationModels[0].viewValue;
-
     this.isBrowser = isPlatformBrowser(this.platformId);
     this.activeVideoJob$ = this.service.activeVideoJob$.pipe(
       map(job =>
@@ -286,7 +300,45 @@ export class VideoComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.restoreState();
+    this.generationOptionsService.loadVideoOptions().subscribe({
+      next: options => {
+        this.videoModelsSignal.set(options.models);
+        this.generationModels = options.models.map(model => ({
+          value: model.modelKey,
+          viewValue: model.displayName,
+          type: 'VIDEO' as const,
+          capabilities: {
+            supportedModes: [
+              ...(model.capabilities.textToVideo ? ['Text to Video'] : []),
+              ...(model.capabilities.imageToVideo
+                ? ['Frames to Video']
+                : []),
+              ...(model.capabilities.referenceImages
+                ? [
+                    'Ingredients to Video',
+                    'Extend Video',
+                    'Concatenate Video',
+                  ]
+                : []),
+            ] as GenerationModelConfig['capabilities']['supportedModes'],
+            maxReferenceImages: model.capabilities.referenceImages ? 3 : 0,
+            supportedAspectRatios: model.capabilities.aspectRatios,
+            supportedResolutions: model.capabilities.resolutions,
+            supportedDurations: model.capabilities.durations,
+          },
+        }));
+        const persistedKey = this.videoStateService.getState().model;
+        const selectedKey = options.models.some(
+          model => model.modelKey === persistedKey,
+        )
+          ? persistedKey
+          : options.defaultModelKey;
+        this.selectRuntimeModel(selectedKey);
+        this.restoreState();
+      },
+      error: error =>
+        console.error('Failed to load video generation options', error),
+    });
     if (this.pendingRemixState) {
       this.applyRemixState(this.pendingRemixState);
     }
@@ -300,7 +352,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
       prompt: this.searchRequest.prompt,
       aspectRatio: this.searchRequest.aspectRatio,
       resolution: this.searchRequest.resolution,
-      model: this.searchRequest.generationModel,
+      model: this.selectedModelKeySignal() || '',
       style: this.searchRequest.style,
       colorAndTone: this.searchRequest.colorAndTone,
       lighting: this.searchRequest.lighting,
@@ -324,12 +376,11 @@ export class VideoComponent implements OnInit, AfterViewInit {
     this.searchRequest.prompt = state.prompt;
     this.searchRequest.aspectRatio = state.aspectRatio;
     this.searchRequest.resolution = state.resolution || '1K';
-    this.searchRequest.generationModel = state.model;
+    this.selectRuntimeModel(state.model);
     this.searchRequest.style = state.style;
     this.searchRequest.colorAndTone = state.colorAndTone;
     this.searchRequest.lighting = state.lighting;
-    this.searchRequest.numberOfMedia =
-      state.model === 'gemini-omni-flash-preview' ? 1 : state.numberOfMedia;
+    this.searchRequest.numberOfMedia = state.numberOfMedia;
     this.selectedOutputs.set(this.searchRequest.numberOfMedia || 2);
     this.searchRequest.durationSeconds = state.durationSeconds;
     this.searchRequest.composition = state.composition;
@@ -348,12 +399,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
       : [];
 
     // Update selected options for UI
-    const modelOption = this.generationModels.find(
-      m => m.value === state.model,
-    );
-    if (modelOption) {
-      this.selectedGenerationModel = modelOption.viewValue;
-    }
+
     const ratioOption = this.aspectRatioOptions.find(
       r => r.value === state.aspectRatio,
     );
@@ -381,35 +427,48 @@ export class VideoComponent implements OnInit, AfterViewInit {
   }
 
   selectModel(model: {value: string; viewValue: string}): void {
-    this.searchRequest.generationModel = model.value;
-    this.selectedGenerationModel = model.viewValue;
-
+    this.selectRuntimeModel(model.value);
     this.clearOtherImage(1);
-
-    // Active video models (Veo 3.1 & Omni) support audio.
-    this.isAudioGenerationDisabled = false;
-    this.searchRequest.generateAudio = true;
-
-    // These models only support 16:9 and 9:16 aspect ratios.
-    const supportedRatios = ['16:9', '9:16'];
-    if (!supportedRatios.includes(this.searchRequest.aspectRatio)) {
-      this.searchRequest.aspectRatio = '16:9';
-      const landscapeOption = this.aspectRatioOptions.find(
-        opt => opt.value === '16:9',
-      )!;
-      this.selectedAspectRatio = landscapeOption.viewValue;
-    }
-
-    if (model.value === 'gemini-omni-flash-preview') {
-      this.searchRequest.numberOfMedia = 1;
-      this.selectedOutputs.set(1);
-    }
-
-    this.aspectRatioOptions.forEach(opt => {
-      opt.disabled = !supportedRatios.includes(opt.value);
-    });
-
     this.saveState();
+  }
+
+  private selectRuntimeModel(modelKey: string): void {
+    const model = this.videoModelsSignal().find(
+      option => option.modelKey === modelKey,
+    );
+    if (!model) return;
+
+    this.selectedModelKeySignal.set(model.modelKey);
+    this.searchRequest.generationModel = model.vendorModelId;
+    this.selectedGenerationModel = model.displayName;
+    this.aspectRatioOptions = model.capabilities.aspectRatios.map(value => ({
+      value,
+      viewValue: value,
+      disabled: false,
+    }));
+    this.selectedAspectRatio = this.searchRequest.aspectRatio;
+    if (
+      !model.capabilities.aspectRatios.includes(this.searchRequest.aspectRatio)
+    ) {
+      this.searchRequest.aspectRatio = model.defaults.aspectRatio;
+    }
+    if (
+      !model.capabilities.durations.includes(this.searchRequest.durationSeconds)
+    ) {
+      this.searchRequest.durationSeconds = model.defaults.durationSeconds;
+    }
+    if (
+      !model.capabilities.resolutions.includes(
+        (this.searchRequest.resolution || '') as VideoResolution,
+      )
+    ) {
+      this.searchRequest.resolution = model.defaults.resolution;
+    }
+    this.searchRequest.numberOfMedia = Math.min(
+      this.searchRequest.numberOfMedia || 1,
+      model.capabilities.maxOutputs,
+    );
+    this.selectedOutputs.set(this.searchRequest.numberOfMedia);
   }
 
   selectAspectRatio(ratio: string | {value: string; viewValue: string}): void {
@@ -428,7 +487,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
     this.saveState();
   }
 
-  onResolutionChanged(resolution: '1K' | '2K' | '4K') {
+  onResolutionChanged(resolution: VideoResolution) {
     this.searchRequest.resolution = resolution;
     this.saveState();
   }
@@ -638,6 +697,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
 
     const hasSourceAssets = this.startImageAssetId || this.endImageAssetId;
     const hasSourceMediaItems = this.sourceMediaItems.some(i => !!i);
+    // ponytail: Legacy Veo 3.0 source-input migration. Replace vendor checks when contract adds input capabilities.
     const isVeo3 = [
       'veo-3.0-fast-generate-001',
       'veo-3.0-generate-001',
@@ -708,6 +768,9 @@ export class VideoComponent implements OnInit, AfterViewInit {
 
     const payload: VeoRequest = {
       ...this.searchRequest,
+      generationModel:
+        this.selectedModelSignal()?.vendorModelId ||
+        this.searchRequest.generationModel,
       startImageAssetId:
         this.currentMode === 'Frames to Video' &&
         !this._input1IsVideo &&
@@ -817,7 +880,7 @@ export class VideoComponent implements OnInit, AfterViewInit {
   resetAllFilters() {
     this.searchRequest = {
       prompt: '',
-      generationModel: 'veo-3.0-generate-001',
+      generationModel: this.selectedModelSignal()?.vendorModelId || '',
       aspectRatio: '16:9',
       numberOfMedia: 4,
       style: null,
@@ -1616,10 +1679,10 @@ export class VideoComponent implements OnInit, AfterViewInit {
   }
 
   openImageSelectorForReference(): void {
-    const config = MODEL_CONFIGS.find(
-      cfg => cfg.value === this.searchRequest.generationModel,
-    );
-    const maxReferenceImages = config?.capabilities.maxReferenceImages ?? 3;
+    const maxReferenceImages = this.selectedModelSignal()?.capabilities
+      .imageToVideo
+      ? 3
+      : 0;
     const remainingSlots = maxReferenceImages - this.referenceImages.length;
 
     if (remainingSlots <= 0) return;

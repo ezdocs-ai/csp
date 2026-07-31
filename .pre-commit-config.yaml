@@ -19,7 +19,7 @@ repos:
   - id: addlicense
     args: [ "-c", "Google LLC", "-l", "apache" ]
     types: [file]
-    files: \.(py|ts|scss|html|css|js|sh)$
+    files: \.(py|ts|tsx|scss|html|css|js|sh)$
 
 - repo: local
   hooks:

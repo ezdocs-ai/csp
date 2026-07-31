@@ -26,6 +26,8 @@ services:
 
     env_file:
       - ./backend/.env
+    environment:
+      GOOGLE_CLIENT_ID: 146267550765-k5cvf01l0amk1o19qgkefv007purubff.apps.googleusercontent.com
 
     # Override the Dockerfile's CMD to enable --reload.
     # Using 1 worker is better for a dev/reload environment.
@@ -72,6 +74,60 @@ services:
       # Mount the proxy config explicitly
       - ./frontend/proxy.conf.json:/app/proxy.conf.json
 
+  frontend-next:
+    build:
+      context: ./frontend-next
+      dockerfile: Dockerfile.dev
+    container_name: creative-studio-frontend-next
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: ./frontend-next/.env
+        required: false
+    environment:
+      BACKEND_URL: http://backend:8080
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:9000
+      WATCHPACK_POLLING: "true"
+    depends_on:
+      - backend
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend-next
+          target: /app
+          ignore:
+            - .env*
+            - .next/
+            - node_modules/
+        - action: rebuild
+          path: ./frontend-next/package.json
+        - action: rebuild
+          path: ./frontend-next/bun.lock
+        - action: rebuild
+          path: ./frontend-next/Dockerfile.dev
+        - action: rebuild
+          path: ./frontend-next/next.config.ts
+
+  frontend-next-prod:
+    profiles: ["prod"]
+    build:
+      context: ./frontend-next
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID:-}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-}
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-}
+    container_name: creative-studio-frontend-next-prod
+    ports:
+      - "8080:8080"
+    env_file:
+      - path: ./frontend-next/.env.production
+        required: false
+    environment:
+      BACKEND_URL: http://backend:8080
+    depends_on:
+      - backend
+
 # Define the named volume at the top level
   postgres:
     image: postgres:15-alpine
@@ -91,14 +147,14 @@ services:
       retries: 5
     restart: unless-stopped
 
-  adminer:
-    image: adminer
-    container_name: creative-studio-adminer
-    ports:
-      - "8081:8080"
-    depends_on:
-      - postgres
-    restart: unless-stopped
+  # adminer:
+  #   image: adminer
+  #   container_name: creative-studio-adminer
+  #   ports:
+  #     - "8081:8080"
+  #   depends_on:
+  #     - postgres
+  #   restart: unless-stopped
 
   pre-commit:
     build:

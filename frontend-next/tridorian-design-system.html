@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Tridorian — Agent Design System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Readex+Pro:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --tri-bg-page: #F4F8F6;
+      --tri-bg-surface: #FFFFFF;
+      --tri-bg-raised: #FFFFFF;
+      --tri-bg-alt: #EAF1EE;
+      --tri-bg-tint: #E9FAF2;
+      --tri-bg-inverse: #02231C;
+      --tri-text-primary: #08251E;
+      --tri-text-secondary: #29473E;
+      --tri-text-tertiary: #657D75;
+      --tri-text-inverse: #F8FFFC;
+      --tri-brand: #087349;
+      --tri-brand-strong: #065F46;
+      --tri-brand-luminous: #26D07C;
+      --tri-on-primary: #FFFFFF;
+      --tri-violet: #615DF4;
+      --tri-coral: #F45D51;
+      --tri-border: #CBD8D3;
+      --tri-border-subtle: #DFE8E4;
+      --tri-focus: #159A62;
+      --tri-shadow-sm: 0 4px 14px rgba(2,35,28,0.07);
+      --tri-shadow-md: 0 12px 32px rgba(2,35,28,0.10);
+      --tri-shadow-lg: 0 24px 64px rgba(2,35,28,0.14);
+      --tri-shadow-colored: 0 18px 44px rgba(21,154,98,0.22);
+      --tri-gradient-brand: linear-gradient(135deg, #26D07C 0%, #65E6A6 42%, #7D72F6 100%);
+      --tri-gradient-forest: linear-gradient(145deg, #02231C 0%, #0A3027 52%, #123F32 100%);
+      --tri-gradient-ambient: radial-gradient(circle at 84% 8%, rgba(38,208,124,.24), transparent 34%), radial-gradient(circle at 12% 90%, rgba(97,93,244,.14), transparent 38%);
+      --tri-font-display: 'Space Grotesk', system-ui, sans-serif;
+      --tri-font-body: 'Inter', system-ui, sans-serif;
+      --tri-font-editorial: 'Readex Pro', 'Inter', system-ui, sans-serif;
+      --tri-font-code: 'JetBrains Mono', ui-monospace, monospace;
+      --tri-radius-sm: 8px;
+      --tri-radius-md: 12px;
+      --tri-radius-lg: 18px;
+      --tri-radius-xl: 28px;
+      --tri-radius-2xl: 40px;
+      --tri-ease: cubic-bezier(.2,0,0,1);
+    }
+    html[data-theme="dark"] {
+      --tri-bg-page: #011A15;
+      --tri-bg-surface: #082A22;
+      --tri-bg-raised: #0D342A;
+      --tri-bg-alt: #123E32;
+      --tri-bg-tint: rgba(38,208,124,0.09);
+      --tri-bg-inverse: #F4F8F6;
+      --tri-text-primary: #F4FBF8;
+      --tri-text-secondary: #D2E1DC;
+      --tri-text-tertiary: #91AAA1;
+      --tri-text-inverse: #08251E;
+      --tri-brand: #26D07C;
+      --tri-brand-strong: #7DE3B0;
+      --tri-brand-luminous: #44E493;
+      --tri-on-primary: #02231C;
+      --tri-violet: #8B86FF;
+      --tri-coral: #FF7B70;
+      --tri-border: rgba(255,255,255,0.12);
+      --tri-border-subtle: rgba(255,255,255,0.07);
+      --tri-focus: #7DE3B0;
+      --tri-shadow-sm: 0 6px 18px rgba(0,0,0,0.26);
+      --tri-shadow-md: 0 16px 42px rgba(0,0,0,0.34);
+      --tri-shadow-lg: 0 28px 80px rgba(0,0,0,0.46);
+      --tri-shadow-colored: 0 0 48px rgba(38,208,124,0.17);
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; min-height: 100vh; background: var(--tri-bg-page); color: var(--tri-text-primary); font-family: var(--tri-font-body); line-height: 1.6; transition: background-color 190ms var(--tri-ease), color 190ms var(--tri-ease); }
+    button, input { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    :focus-visible { outline: 3px solid var(--tri-focus); outline-offset: 3px; }
+    ::selection { background: rgba(38,208,124,.28); }
+    .shell { min-height: 100vh; display: grid; grid-template-columns: 260px minmax(0,1fr); }
+    .sidebar { position: sticky; top: 0; height: 100vh; padding: 24px 18px; background: var(--tri-gradient-forest); color: #F4FBF8; border-right: 1px solid rgba(255,255,255,.07); display: flex; flex-direction: column; overflow: hidden; }
+    .sidebar::after { content:""; position: absolute; width: 320px; height: 320px; right: -190px; bottom: -110px; border: 1px solid rgba(38,208,124,.25); border-radius: 84px 999px 84px 84px; transform: rotate(20deg); }
+    .brand { position: relative; z-index: 1; display:flex; gap: 12px; align-items:center; padding: 8px 10px 24px; font-family: var(--tri-font-display); font-weight: 600; letter-spacing: -.02em; }
+    .mark { width: 30px; height: 30px; display:grid; place-items:center; border-radius: 9px; background: rgba(38,208,124,.13); border: 1px solid rgba(38,208,124,.28); }
+    .mark svg { width: 20px; }
+    .version { margin-left:auto; color: #8FB7A8; font: 500 10px var(--tri-font-code); }
+    .nav-label { padding: 20px 12px 8px; color: #74998B; font: 600 10px var(--tri-font-body); text-transform: uppercase; letter-spacing: .14em; }
+    .nav { position: relative; z-index:1; display:grid; gap:4px; }
+    .nav a { color:#CDE0D9; text-decoration:none; display:flex; align-items:center; gap:11px; min-height:42px; padding: 0 12px; border-radius:10px; font-size:13px; font-weight:500; transition: background 140ms var(--tri-ease), color 140ms var(--tri-ease), transform 140ms var(--tri-ease); }
+    .nav a:hover, .nav a.active { color:#7DE3B0; background: rgba(38,208,124,.12); transform: translateX(2px); }
+    .nav-icon { width:17px; height:17px; opacity:.8; }
+    .sidebar-card { position:relative; z-index:1; margin-top:auto; padding:16px; border-radius:16px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); backdrop-filter: blur(12px); }
+    .sidebar-card strong { font-family:var(--tri-font-display); font-size:14px; }
+    .sidebar-card p { margin:6px 0 14px; color:#9FB9AF; font-size:12px; line-height:1.5; }
+    .main { min-width:0; }
+    .topbar { position:sticky; top:0; z-index:20; height:68px; display:flex; align-items:center; justify-content:space-between; padding:0 clamp(20px,4vw,48px); background: color-mix(in srgb, var(--tri-bg-page) 82%, transparent); border-bottom:1px solid var(--tri-border-subtle); backdrop-filter: blur(18px); }
+    .crumb { font-size:13px; color:var(--tri-text-tertiary); }
+    .crumb b { color:var(--tri-text-primary); }
+    .top-actions { display:flex; gap:9px; align-items:center; }
+    .icon-btn { width:40px; height:40px; display:grid; place-items:center; border:1px solid var(--tri-border-subtle); color:var(--tri-text-secondary); background:var(--tri-bg-surface); border-radius:12px; cursor:pointer; transition:transform 140ms var(--tri-ease), box-shadow 140ms var(--tri-ease), border-color 140ms var(--tri-ease); }
+    .icon-btn:hover { transform:translateY(-1px); border-color:var(--tri-brand); box-shadow:var(--tri-shadow-sm); }
+    .content { max-width:1440px; margin:0 auto; padding:clamp(28px,5vw,64px); }
+    .hero { position:relative; overflow:hidden; padding: clamp(30px,5vw,64px); border-radius:var(--tri-radius-2xl); background:var(--tri-gradient-forest); color:#F4FBF8; box-shadow:var(--tri-shadow-lg); isolation:isolate; }
+    .hero::before { content:""; position:absolute; inset:0; background:var(--tri-gradient-ambient); z-index:-1; }
+    .hero::after { content:""; position:absolute; width:min(46vw,580px); aspect-ratio:1; right:-14%; top:-42%; border:1px solid rgba(38,208,124,.28); border-radius:104px 999px 104px 104px; transform:rotate(18deg); z-index:-1; }
+    .eyebrow { display:flex; align-items:center; gap:9px; color:#7DE3B0; font:600 11px var(--tri-font-body); text-transform:uppercase; letter-spacing:.14em; }
+    .eyebrow::before { content:""; width:7px; height:7px; border-radius:50%; background:#26D07C; box-shadow:0 0 18px rgba(38,208,124,.75); }
+    .hero-grid { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr); gap:clamp(28px,5vw,72px); align-items:end; }
+    h1,h2,h3 { font-family:var(--tri-font-display); margin:0; text-wrap:balance; }
+    h1 { max-width:12ch; margin-top:18px; font-size:clamp(45px,6.2vw,92px); line-height:.94; letter-spacing:-.062em; font-weight:500; }
+    .hero-copy { max-width:60ch; margin:24px 0 0; color:#B9D0C8; font-family:var(--tri-font-editorial); font-size:clamp(15px,1.4vw,18px); line-height:1.7; }
+    .hero-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:28px; }
+    .btn { min-height:44px; padding:0 18px; border-radius:12px; border:1px solid transparent; display:inline-flex; align-items:center; justify-content:center; gap:9px; cursor:pointer; font-weight:600; font-size:13px; text-decoration:none; transition:transform 140ms var(--tri-ease), background 140ms var(--tri-ease), border-color 140ms var(--tri-ease), box-shadow 140ms var(--tri-ease); }
+    .btn:hover { transform:translateY(-2px); } .btn:active { transform:scale(.985); }
+    .btn-primary { background:#26D07C; color:#02231C; box-shadow:0 16px 38px rgba(38,208,124,.20); }
+    .btn-primary:hover { background:#65E6A6; box-shadow:0 20px 44px rgba(38,208,124,.28); }
+    .btn-secondary { color:#E8F5F0; background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.12); }
+    .btn-secondary:hover { background:rgba(255,255,255,.11); border-color:rgba(255,255,255,.2); }
+    .hero-panel { padding:20px; border-radius:22px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.10); backdrop-filter:blur(16px); }
+    .panel-kicker { color:#8EB0A4; font:500 10px var(--tri-font-code); text-transform:uppercase; letter-spacing:.11em; }
+    .score { display:flex; align-items:baseline; gap:8px; margin:8px 0 16px; } .score strong { font:500 48px/1 var(--tri-font-display); letter-spacing:-.05em; } .score span { color:#7DE3B0; font-size:12px; }
+    .mini-bars { height:84px; display:flex; gap:7px; align-items:end; padding-top:10px; }
+    .mini-bars i { flex:1; min-width:7px; border-radius:8px 8px 3px 3px; background:linear-gradient(to top, rgba(38,208,124,.24), #26D07C); opacity:.9; }
+    .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-top:16px; }
+    .stat { padding:11px; border-radius:12px; background:rgba(1,14,11,.18); } .stat b { display:block; font:600 15px var(--tri-font-display); } .stat small { color:#8EB0A4; font-size:10px; }
+    .section { padding-top:clamp(56px,8vw,96px); }
+    .section-head { display:flex; justify-content:space-between; gap:28px; align-items:end; margin-bottom:24px; }
+    .section h2 { font-size:clamp(28px,4vw,52px); line-height:1.05; letter-spacing:-.045em; }
+    .section-intro { max-width:55ch; color:var(--tri-text-tertiary); font-size:14px; }
+    .bento { display:grid; grid-template-columns:repeat(12,1fr); gap:18px; }
+    .card { position:relative; overflow:hidden; background:var(--tri-bg-surface); border:1px solid var(--tri-border-subtle); border-radius:var(--tri-radius-lg); padding:24px; box-shadow:0 1px 0 rgba(255,255,255,.6) inset; transition:transform 160ms var(--tri-ease), border-color 160ms var(--tri-ease), box-shadow 160ms var(--tri-ease); }
+    .card:hover { transform:translateY(-2px); border-color:color-mix(in srgb,var(--tri-brand) 40%,var(--tri-border)); box-shadow:var(--tri-shadow-md); }
+    .span-7 { grid-column:span 7; } .span-5 { grid-column:span 5; } .span-4 { grid-column:span 4; } .span-8 { grid-column:span 8; }
+    .card h3 { font-size:20px; letter-spacing:-.025em; } .card p { margin:7px 0 0; color:var(--tri-text-tertiary); font-size:13px; }
+    .dashboard { margin-top:22px; border-radius:16px; border:1px solid var(--tri-border-subtle); background:var(--tri-bg-alt); padding:10px; display:grid; grid-template-columns:64px 1fr; min-height:280px; }
+    .dash-rail { background:var(--tri-bg-inverse); border-radius:12px; padding:14px 10px; display:grid; align-content:start; justify-items:center; gap:12px; }
+    .dash-dot { width:28px; height:28px; border-radius:9px; background:rgba(255,255,255,.08); } .dash-dot.active { background:rgba(38,208,124,.18); border:1px solid rgba(38,208,124,.35); }
+    .dash-main { padding:16px; min-width:0; }
+    .dash-title { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--tri-text-secondary); }
+    .dash-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-top:13px; }
+    .metric { border-radius:11px; padding:12px; background:var(--tri-bg-surface); border:1px solid var(--tri-border-subtle); } .metric small { color:var(--tri-text-tertiary); font-size:9px; } .metric strong { display:block; margin-top:4px; font:600 19px var(--tri-font-display); }
+    .chart { height:112px; margin-top:10px; display:flex; align-items:end; gap:7px; padding:16px; border-radius:12px; background:var(--tri-bg-surface); border:1px solid var(--tri-border-subtle); }
+    .chart i { flex:1; border-radius:5px 5px 2px 2px; background:var(--tri-brand); opacity:.78; } .chart i:nth-child(3n) { background:var(--tri-violet); opacity:.56; }
+    .palette { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:22px; }
+    .swatch { min-height:92px; border-radius:14px; padding:13px; display:flex; flex-direction:column; justify-content:space-between; border:1px solid rgba(0,0,0,.05); }
+    .swatch b { font:600 12px var(--tri-font-display); } .swatch code { font:500 10px var(--tri-font-code); opacity:.7; }
+    .type-specimen { margin-top:20px; padding:26px; border-radius:16px; background:var(--tri-bg-alt); }
+    .type-big { font:500 clamp(38px,5vw,66px)/.98 var(--tri-font-display); letter-spacing:-.06em; }
+    .type-body { max-width:48ch; margin:18px 0 0; color:var(--tri-text-secondary); font-family:var(--tri-font-editorial); font-size:15px; }
+    .component-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:22px; }
+    .ui-btn { min-height:42px; padding:0 16px; border-radius:12px; border:1px solid var(--tri-border); background:var(--tri-bg-surface); color:var(--tri-text-primary); font-weight:600; font-size:13px; cursor:pointer; }
+    .ui-btn.primary { background:var(--tri-brand); color:var(--tri-on-primary); border-color:transparent; box-shadow:var(--tri-shadow-colored); }
+    .ui-btn.ghost { background:transparent; border-color:transparent; color:var(--tri-text-secondary); }
+    .badge { display:inline-flex; align-items:center; gap:6px; min-height:24px; padding:0 9px; border-radius:999px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; background:var(--tri-bg-tint); color:var(--tri-brand-strong); }
+    .badge.violet { background:color-mix(in srgb,var(--tri-violet) 13%,transparent); color:var(--tri-violet); }
+    .field { display:grid; gap:6px; min-width:220px; } .field label { font-size:11px; font-weight:600; color:var(--tri-text-secondary); } .field input { height:42px; border-radius:12px; border:1px solid var(--tri-border); background:var(--tri-bg-surface); color:var(--tri-text-primary); padding:0 13px; }
+    .code-card { background:#061D18; color:#C9DDD5; border-color:rgba(255,255,255,.08); }
+    .code-top { display:flex; justify-content:space-between; align-items:center; gap:16px; } .code-top p { color:#7E9B90; }
+    pre { margin:20px 0 0; max-height:390px; overflow:auto; padding:18px; border-radius:14px; background:#02130F; border:1px solid rgba(255,255,255,.06); color:#BEE8D7; font:400 11px/1.65 var(--tri-font-code); white-space:pre-wrap; }
+    .copy-state { min-width:64px; }
+    .footer { display:flex; justify-content:space-between; gap:20px; padding:64px 0 12px; color:var(--tri-text-tertiary); font-size:12px; }
+    @media (max-width: 1040px) { .shell { grid-template-columns:82px minmax(0,1fr); } .sidebar { padding-inline:12px; } .brand span:not(.mark), .version, .nav-label, .nav a span, .sidebar-card { display:none; } .brand { justify-content:center; padding-inline:0; } .nav a { justify-content:center; padding:0; } .hero-grid { grid-template-columns:1fr; } .hero-panel { max-width:480px; } }
+    @media (max-width: 760px) { .shell { display:block; } .sidebar { display:none; } .topbar { height:60px; } .content { padding:22px 16px 44px; } .hero { border-radius:28px; padding:30px 22px; } .hero::after { width:390px; right:-58%; top:-28%; } .section-head { display:block; } .section-intro { margin-top:10px; } .bento { grid-template-columns:1fr; } .span-7,.span-5,.span-4,.span-8 { grid-column:auto; } .dashboard { grid-template-columns:1fr; } .dash-rail { display:none; } .dash-cards { grid-template-columns:1fr; } .palette { grid-template-columns:1fr 1fr; } .footer { display:block; } }
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition-duration:.01ms!important; animation-duration:.01ms!important; animation-iteration-count:1!important; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#44E493" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6.5 12 3l7 3.5v8L12 18l-7-3.5z"/><path d="M12 3v8M5 6.5l7 4.5 7-4.5M5 14.5l7-3.5 7 3.5"/></svg></span>
+        <span>tridorian</span><span class="version">v3.0</span>
+      </div>
+      <div class="nav-label">Foundation</div>
+      <nav class="nav" aria-label="Design system sections">
+        <a class="active" href="#overview"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h6v6H4zM14 4h6v10h-6zM4 14h6v6H4zM14 18h6v2h-6z"/></svg><span>Overview</span></a>
+        <a href="#system"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M7 4v16M17 4v16M4 17h16"/></svg><span>System</span></a>
+        <a href="#components"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 8 4.5-8 4.5-8-4.5zM4 12l8 4.5 8-4.5M4 16.5l8 4.5 8-4.5"/></svg><span>Components</span></a>
+        <a href="#contract"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3M15 3h6v6M10 14 21 3"/></svg><span>Agent contract</span></a>
+      </nav>
+      <div class="sidebar-card"><strong>Built for agents</strong><p>Semantic tokens, explicit component recipes, responsive rules, and anti-patterns.</p><a class="btn btn-primary" href="#contract">View JSON</a></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar"><div class="crumb">Design system / <b>Tridorian</b></div><div class="top-actions"><button class="icon-btn" id="themeToggle" aria-label="Toggle color theme" title="Toggle theme"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.4A7 7 0 0 1 12 3Z"/></svg></button></div></header>
+      <div class="content">
+        <section class="hero" id="overview">
+          <div class="hero-grid">
+            <div><div class="eyebrow">Agent-ready design language</div><h1>Quietly bold. Built to think.</h1><p class="hero-copy">A sleek, intelligent web-app system that turns Tridorian’s deep-green identity into a clear product language—premium without feeling cold, expressive without becoming noisy.</p><div class="hero-actions"><a class="btn btn-primary" href="#contract">Open agent contract <span>↗</span></a><a class="btn btn-secondary" href="#system">Explore system</a></div></div>
+            <div class="hero-panel"><div class="panel-kicker">System confidence</div><div class="score"><strong>96</strong><span>+8.4%</span></div><div class="mini-bars" aria-label="Decorative performance bars"><i style="height:36%"></i><i style="height:54%"></i><i style="height:46%"></i><i style="height:72%"></i><i style="height:61%"></i><i style="height:84%"></i><i style="height:76%"></i><i style="height:92%"></i></div><div class="stats"><div class="stat"><b>4.5:1</b><small>Contrast</small></div><div class="stat"><b>12 col</b><small>Grid</small></div><div class="stat"><b>190ms</b><small>Motion</small></div></div></div>
+          </div>
+        </section>
+
+        <section class="section" id="system">
+          <div class="section-head"><div><div class="eyebrow">Visual system</div><h2>A composed product rhythm.</h2></div><p class="section-intro">Dark forest anchors the experience. Clean neutral surfaces carry information. Luminous green marks action and progress, while violet adds an intelligent, automated accent.</p></div>
+          <div class="bento">
+            <article class="card span-7"><h3>Application shell</h3><p>Asymmetric bento structure, dark navigation, calm workspace, and minimal elevation.</p><div class="dashboard"><div class="dash-rail"><div class="dash-dot active"></div><div class="dash-dot"></div><div class="dash-dot"></div><div class="dash-dot"></div></div><div class="dash-main"><div class="dash-title"><b>Workspace overview</b><span>Last 30 days</span></div><div class="dash-cards"><div class="metric"><small>Documents</small><strong>2,840</strong></div><div class="metric"><small>Accuracy</small><strong>98.4%</strong></div><div class="metric"><small>Automations</small><strong>146</strong></div></div><div class="chart"><i style="height:31%"></i><i style="height:48%"></i><i style="height:42%"></i><i style="height:60%"></i><i style="height:55%"></i><i style="height:76%"></i><i style="height:69%"></i><i style="height:88%"></i><i style="height:78%"></i><i style="height:96%"></i></div></div></div></article>
+            <article class="card span-5"><h3>Core palette</h3><p>Brand-rich, but restrained enough for real product work.</p><div class="palette"><div class="swatch" style="background:#02231C;color:#F4FBF8"><b>Deep forest</b><code>#02231C</code></div><div class="swatch" style="background:#26D07C;color:#02231C"><b>Luminous green</b><code>#26D07C</code></div><div class="swatch" style="background:#615DF4;color:#fff"><b>Intelligence violet</b><code>#615DF4</code></div><div class="swatch" style="background:#F45D51;color:#fff"><b>Signal coral</b><code>#F45D51</code></div></div></article>
+            <article class="card span-5"><h3>Typography</h3><p>Space Grotesk creates character; Inter keeps product UI crisp; Readex Pro softens editorial moments.</p><div class="type-specimen"><div class="type-big">Signal,<br>not noise.</div><p class="type-body">Useful interfaces feel inevitable. The hierarchy is direct, the rhythm is generous, and every accent has a job.</p></div></article>
+            <article class="card span-7"><h3>Interaction language</h3><p>Short transitions, visible focus, subtle hover lift, and no continuous decorative motion.</p><div class="component-row"><button class="ui-btn primary">Primary action</button><button class="ui-btn">Secondary</button><button class="ui-btn ghost">Ghost</button><span class="badge">Active</span><span class="badge violet">AI assisted</span><div class="field"><label for="sampleInput">Workspace name</label><input id="sampleInput" value="Tridorian Studio" /></div></div></article>
+          </div>
+        </section>
+
+        <section class="section" id="components">
+          <div class="section-head"><div><div class="eyebrow">Component direction</div><h2>Fewer styles. Better decisions.</h2></div><p class="section-intro">The system intentionally limits visual choices so generated interfaces remain coherent across dashboards, AI workspaces, admin tools, and marketing surfaces.</p></div>
+          <div class="bento"><article class="card span-4"><h3>Cards</h3><p>Use borders and tonal contrast first. Elevate only interactive or floating surfaces.</p></article><article class="card span-4"><h3>Controls</h3><p>44px minimum targets, 12px control radius, sentence-case labels, and direct action verbs.</p></article><article class="card span-4"><h3>Status</h3><p>Green means progress, violet means intelligence, coral means urgent or destructive.</p></article></div>
+        </section>
+
+        <section class="section" id="contract">
+          <article class="card code-card"><div class="code-top"><div><div class="eyebrow">Machine-readable source</div><h3>Tridorian agent contract</h3><p>Embed this JSON in your system prompt, repository instructions, or UI-generation agent.</p></div><button class="btn btn-primary copy-state" id="copyJson">Copy JSON</button></div><pre id="jsonPreview"></pre></article>
+        </section>
+        <footer class="footer"><span>Tridorian v3.0.0</span><span>Semantic · Responsive · Accessible · Agent-ready</span></footer>
+      </div>
+    </main>
+  </div>
+  <script id="tridorian-theme" type="application/json">{"theme": "Tridorian", "version": "3.0.0", "schemaVersion": "1.0", "purpose": "A machine-readable visual system for AI agents building modern Tridorian web applications.", "brand": {"personality": ["confident", "intelligent", "optimistic", "precise", "quietly bold"], "visualSignature": ["deep forest canvases", "luminous Tridorian green", "soft orbital gradients", "asymmetric bento composition", "crisp typography", "restrained motion"], "keywords": ["sleek", "modern", "technical", "premium", "human", "spacious"], "avoid": ["generic SaaS blue as the dominant color", "heavy glassmorphism", "neon cyberpunk styling", "excessive pill-shaped containers", "pure black backgrounds", "large areas of saturated accent color", "gratuitous gradients on every component"]}, "agentContract": {"priorityOrder": ["accessibility and legibility", "clear information hierarchy", "brand consistency", "responsive behavior", "visual polish"], "requiredBehavior": ["Use semantic tokens rather than raw hexadecimal values inside components.", "Default to the light scheme unless the product context explicitly calls for dark mode.", "Use dark forest surfaces for navigation, hero regions, focused workspaces, and premium moments.", "Reserve the luminous green for primary actions, active states, progress, and small moments of emphasis.", "Use periwinkle for intelligence, automation, beta, and informational states; use coral only for destructive or urgent states.", "Prefer asymmetric 12-column bento layouts on desktop and a single-column flow on mobile.", "Keep one dominant focal point per viewport and no more than two accent colors in a single component group.", "Apply focus rings only with :focus-visible.", "Honor prefers-reduced-motion and never make essential meaning dependent on animation.", "Use sentence case for UI labels and concise, direct microcopy."], "compositionRules": {"pageRhythm": "alternate calm whitespace with compact, information-rich modules", "cardHierarchy": "one elevated hero card, supporting cards mostly flat or subtly bordered", "density": "comfortable by default; compact only for tables, consoles, and admin tools", "accentRatio": "approximately 70% neutral surfaces, 20% deep forest, 10% accent", "gradientLimit": "maximum one ambient gradient field per major section", "radiusRule": "use medium radius for controls, large radius for cards, and full radius only for badges, avatars, and toggles", "shadowRule": "prefer borders and tonal separation; use shadows only for floating, interactive, or layered elements"}, "antiPatterns": ["Do not put every section inside a bordered card.", "Do not use green text on white for long paragraphs.", "Do not use display typography below 18px.", "Do not center-align dense product screens.", "Do not combine blur, gradient, glow, and shadow on the same element.", "Do not animate layout continuously or use looping decorative motion."]}, "base": {"typography": {"fontFamily": {"display": "'Space Grotesk', system-ui, sans-serif", "body": "'Inter', system-ui, sans-serif", "editorial": "'Readex Pro', 'Inter', system-ui, sans-serif", "code": "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace"}, "weights": {"regular": 400, "medium": 500, "semibold": 600, "bold": 700}, "display": {"hero": {"fontSize": "clamp(3.25rem, 8vw, 7.5rem)", "lineHeight": "0.92", "letterSpacing": "-0.065em", "fontWeight": 500}, "h1": {"fontSize": "clamp(2.5rem, 5vw + 0.5rem, 4.75rem)", "lineHeight": "0.98", "letterSpacing": "-0.052em", "fontWeight": 500}, "h2": {"fontSize": "clamp(2rem, 3.5vw + 0.4rem, 3.5rem)", "lineHeight": "1.05", "letterSpacing": "-0.04em", "fontWeight": 500}, "h3": {"fontSize": "clamp(1.5rem, 2vw + 0.5rem, 2.25rem)", "lineHeight": "1.12", "letterSpacing": "-0.026em", "fontWeight": 600}, "h4": {"fontSize": "1.25rem", "lineHeight": "1.25", "letterSpacing": "-0.016em", "fontWeight": 600}}, "body": {"large": {"fontSize": "1.125rem", "lineHeight": "1.72", "letterSpacing": "-0.006em"}, "base": {"fontSize": "1rem", "lineHeight": "1.62", "letterSpacing": "-0.004em"}, "small": {"fontSize": "0.875rem", "lineHeight": "1.52", "letterSpacing": "0"}, "caption": {"fontSize": "0.75rem", "lineHeight": "1.45", "letterSpacing": "0.01em"}}, "labels": {"eyebrow": {"fontSize": "0.75rem", "lineHeight": "1", "letterSpacing": "0.14em", "fontWeight": 600, "textTransform": "uppercase"}, "button": {"fontSize": "0.875rem", "lineHeight": "1", "letterSpacing": "-0.005em", "fontWeight": 600}, "overline": {"fontSize": "0.6875rem", "lineHeight": "1", "letterSpacing": "0.12em", "fontWeight": 700, "textTransform": "uppercase"}}, "measure": {"reading": "68ch", "compact": "48ch", "display": "15ch"}}, "spacing": {"0": "0px", "1": "4px", "2": "8px", "3": "12px", "4": "16px", "5": "20px", "6": "24px", "8": "32px", "10": "40px", "12": "48px", "16": "64px", "20": "80px", "24": "96px", "30": "120px", "section": "clamp(72px, 10vw, 144px)"}, "shape": {"radius": {"xs": "4px", "sm": "8px", "md": "12px", "lg": "18px", "xl": "28px", "2xl": "40px", "full": "9999px"}, "borderWidth": {"hairline": "1px", "strong": "2px", "focus": "3px"}, "controlHeight": {"sm": "36px", "md": "44px", "lg": "52px"}}, "layout": {"maxWidth": {"content": "1200px", "wide": "1440px", "reading": "760px"}, "gutter": "clamp(20px, 4vw, 56px)", "grid": {"columns": 12, "gap": "clamp(16px, 2vw, 28px)"}, "breakpoints": {"sm": "640px", "md": "768px", "lg": "1024px", "xl": "1280px", "2xl": "1536px"}}, "motion": {"duration": {"instant": "80ms", "fast": "140ms", "base": "190ms", "slow": "320ms", "ambient": "700ms"}, "easing": {"standard": "cubic-bezier(0.2, 0, 0, 1)", "enter": "cubic-bezier(0.16, 1, 0.3, 1)", "exit": "cubic-bezier(0.4, 0, 1, 1)", "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)"}, "interaction": {"hoverLift": "translateY(-2px)", "pressScale": "scale(0.985)", "pageTransition": "opacity 190ms, transform 240ms"}, "reducedMotion": "Remove transforms and non-essential transitions when prefers-reduced-motion is enabled."}, "effects": {"blur": {"sm": "8px", "md": "18px", "lg": "32px"}, "opacity": {"disabled": 0.46, "muted": 0.72, "overlay": 0.64}, "gradients": {"brandAura": "linear-gradient(135deg, #26D07C 0%, #65E6A6 42%, #7D72F6 100%)", "forestDepth": "linear-gradient(145deg, #02231C 0%, #0A3027 52%, #123F32 100%)", "softMint": "linear-gradient(135deg, rgba(38,208,124,0.16), rgba(97,93,244,0.08))", "ambientGlow": "radial-gradient(circle at 80% 10%, rgba(38,208,124,0.22), transparent 34%), radial-gradient(circle at 20% 90%, rgba(97,93,244,0.14), transparent 36%)"}}}, "schemes": {"light": {"colors": {"brand": {"primary": "#087349", "primaryStrong": "#065F46", "onPrimary": "#FFFFFF", "luminous": "#26D07C", "mint": "#A8ECCB", "violet": "#615DF4", "coral": "#F45D51"}, "background": {"page": "#F4F8F6", "surface": "#FFFFFF", "surfaceRaised": "#FFFFFF", "surfaceAlt": "#EAF1EE", "surfaceTint": "#E9FAF2", "inverse": "#02231C", "scrim": "rgba(2,35,28,0.64)"}, "text": {"primary": "#08251E", "secondary": "#29473E", "tertiary": "#657D75", "disabled": "#AAB9B4", "inverse": "#F8FFFC", "accent": "#087349"}, "border": {"subtle": "#DFE8E4", "default": "#CBD8D3", "strong": "#8FA79E", "inverse": "rgba(255,255,255,0.16)"}, "state": {"success": "#087F54", "warning": "#B86A00", "error": "#C83D35", "info": "#4B48D8"}, "accessibility": {"focusRing": "#159A62", "focusOffset": "#F4F8F6"}, "dataViz": ["#159A62", "#615DF4", "#F45D51", "#E2A400", "#1283A8", "#7B4CC2", "#4D7A67", "#A4514B"]}, "shadows": {"xs": "0 1px 2px rgba(2,35,28,0.05)", "sm": "0 4px 14px rgba(2,35,28,0.07)", "md": "0 12px 32px rgba(2,35,28,0.10)", "lg": "0 24px 64px rgba(2,35,28,0.14)", "float": "0 28px 80px rgba(2,35,28,0.18)", "colored": "0 18px 44px rgba(21,154,98,0.22)", "focus": "0 0 0 3px rgba(21,154,98,0.24)"}}, "dark": {"colors": {"brand": {"primary": "#26D07C", "primaryStrong": "#7DE3B0", "onPrimary": "#02231C", "luminous": "#44E493", "mint": "#A8ECCB", "violet": "#8B86FF", "coral": "#FF7B70"}, "background": {"page": "#011A15", "surface": "#082A22", "surfaceRaised": "#0D342A", "surfaceAlt": "#123E32", "surfaceTint": "rgba(38,208,124,0.09)", "inverse": "#F4F8F6", "scrim": "rgba(0,8,6,0.76)"}, "text": {"primary": "#F4FBF8", "secondary": "#D2E1DC", "tertiary": "#91AAA1", "disabled": "#516C63", "inverse": "#08251E", "accent": "#7DE3B0"}, "border": {"subtle": "rgba(255,255,255,0.07)", "default": "rgba(255,255,255,0.12)", "strong": "rgba(255,255,255,0.24)", "inverse": "#CBD8D3"}, "state": {"success": "#44E493", "warning": "#F5C451", "error": "#FF7B70", "info": "#9A96FF"}, "accessibility": {"focusRing": "#7DE3B0", "focusOffset": "#011A15"}, "dataViz": ["#44E493", "#9A96FF", "#FF7B70", "#F5C451", "#4CC7E8", "#C084FC", "#82B69E", "#E98B83"]}, "shadows": {"xs": "0 1px 2px rgba(0,0,0,0.30)", "sm": "0 6px 18px rgba(0,0,0,0.26)", "md": "0 16px 42px rgba(0,0,0,0.34)", "lg": "0 28px 80px rgba(0,0,0,0.46)", "float": "0 38px 100px rgba(0,0,0,0.56)", "colored": "0 0 48px rgba(38,208,124,0.17)", "focus": "0 0 0 3px rgba(125,227,176,0.28)"}}}, "components": {"button": {"base": {"height": "44px", "paddingInline": "18px", "radius": "12px", "font": "labels.button", "transition": "motion.duration.fast motion.easing.standard"}, "primary": {"background": "brand.primary", "foreground": "brand.onPrimary", "hover": "brand.primaryStrong", "shadow": "colored"}, "secondary": {"background": "background.surfaceAlt", "foreground": "text.primary", "border": "border.default", "hover": "background.surfaceTint"}, "ghost": {"background": "transparent", "foreground": "text.secondary", "hover": "background.surfaceAlt"}, "danger": {"background": "state.error", "foreground": "#FFFFFF"}, "iconOnly": {"size": "44px", "radius": "12px"}}, "card": {"base": {"background": "background.surface", "border": "border.subtle", "radius": "18px", "padding": "24px"}, "interactive": {"hoverTransform": "translateY(-2px)", "hoverBorder": "brand.primary", "hoverShadow": "md"}, "featured": {"radius": "28px", "padding": "clamp(24px, 4vw, 48px)", "background": "effects.gradients.forestDepth", "foreground": "text.inverse"}, "glass": {"usage": "floating utility panels only", "background": "rgba(255,255,255,0.72)", "backdropBlur": "18px", "border": "rgba(255,255,255,0.48)"}}, "input": {"base": {"height": "44px", "radius": "12px", "paddingInline": "14px", "background": "background.surface", "border": "border.default"}, "hover": {"border": "border.strong"}, "focus": {"border": "brand.primary", "ring": "accessibility.focusRing", "ringWidth": "3px"}, "invalid": {"border": "state.error", "message": "state.error"}}, "navigation": {"sidebar": {"width": "264px", "background": "background.inverse", "foreground": "text.inverse", "itemRadius": "10px", "activeBackground": "rgba(38,208,124,0.14)", "activeForeground": "brand.luminous"}, "topbar": {"height": "68px", "background": "rgba(244,248,246,0.82)", "backdropBlur": "18px", "borderBottom": "border.subtle"}, "mobile": {"pattern": "bottom navigation for 3–5 primary destinations; drawer for secondary destinations"}}, "badge": {"height": "24px", "paddingInline": "9px", "radius": "full", "font": "labels.overline", "tones": {"neutral": "background.surfaceAlt", "success": "brand.primary", "info": "brand.violet", "danger": "brand.coral", "warning": "state.warning"}}, "table": {"header": {"height": "44px", "background": "background.surfaceAlt", "font": "labels.overline", "foreground": "text.tertiary"}, "row": {"minHeight": "52px", "divider": "border.subtle", "hover": "background.surfaceTint"}, "rules": ["right-align numeric values", "use tabular numerals", "keep actions in the last column", "use sticky headers for long datasets"]}, "dialog": {"width": {"sm": "420px", "md": "560px", "lg": "760px"}, "radius": "28px", "padding": "28px", "shadow": "float", "scrim": "background.scrim"}, "toast": {"width": "min(420px, calc(100vw - 32px))", "radius": "14px", "padding": "14px 16px", "shadow": "lg", "duration": "5s", "placement": "top-right desktop, bottom-center mobile"}, "tooltip": {"background": "background.inverse", "foreground": "text.inverse", "radius": "8px", "padding": "6px 9px", "fontSize": "12px", "delay": "450ms"}}, "patterns": {"dashboard": {"shell": "dark sidebar + light workspace", "header": "compact, sticky, lightly translucent", "cards": "mixed spans in a 12-column bento grid", "charts": "flat fills, minimal gridlines, direct labels when possible"}, "aiWorkspace": {"shell": "dark focused canvas", "promptArea": "large calm surface with subtle mint edge glow", "agentStatus": "luminous green for active, violet for thinking/automation", "streaming": "animate only the newest content with a short fade/slide"}, "settings": {"layout": "narrow reading column with anchored section navigation", "dividers": "use whitespace first, subtle borders second"}, "auth": {"layout": "split composition: focused form + branded atmospheric panel", "mobile": "form first; hide non-essential decorative panel"}, "marketing": {"hero": "oversized display type with one gradient or orbital motif", "proof": "logos and metrics kept monochrome until hover", "cta": "one primary action and one understated secondary action"}, "emptyState": {"illustration": "simple geometric linework, no stock illustration", "copy": "one sentence explaining the state, one sentence explaining the next action", "actions": "maximum two"}}, "accessibility": {"minimumContrast": {"normalText": "4.5:1", "largeText": "3:1", "uiComponents": "3:1"}, "focus": {"selector": ":focus-visible", "width": "3px", "offset": "2px", "style": "solid"}, "touchTarget": "44px minimum", "keyboard": "All interactive controls must be reachable and operable by keyboard in logical DOM order.", "colorIndependence": "Pair status color with text, icon, shape, or pattern.", "motion": "Respect prefers-reduced-motion and avoid parallax on core workflows."}, "implementation": {"fontLoading": "Import Space Grotesk, Inter, Readex Pro, and JetBrains Mono at the application root. Use font-display: swap.", "themeSwitch": "Set data-theme='light' or data-theme='dark' on the html element and map semantic values to CSS custom properties.", "transition": "Apply 190ms transitions to background-color, color, border-color, and box-shadow during theme changes; disable under prefers-reduced-motion.", "tokenPolicy": "Components consume semantic aliases only. Raw palette values are allowed only in token definitions, illustrations, and data visualization arrays.", "responsivePolicy": "Start with a single-column mobile layout. Introduce split layouts at 768px and full bento composition at 1024px.", "iconPolicy": "Use one outline icon family with 1.75–2px strokes, rounded joins, and optical sizes of 16, 20, and 24px.", "cssVariablePrefix": "--tri-"}}</script>
+  <script>
+    const root = document.documentElement;
+    const toggle = document.getElementById('themeToggle');
+    let stored = null;
+    try { stored = localStorage.getItem('tri-theme'); } catch {}
+    const preferred = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    root.dataset.theme = stored || preferred;
+    toggle.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      try { localStorage.setItem('tri-theme', root.dataset.theme); } catch {}
+    });
+    const raw = document.getElementById('tridorian-theme').textContent;
+    const formatted = JSON.stringify(JSON.parse(raw), null, 2);
+    document.getElementById('jsonPreview').textContent = formatted.slice(0, 7600) + '\n\n… Full JSON is embedded in this HTML and provided as a separate file.';
+    document.getElementById('copyJson').addEventListener('click', async (e) => {
+      try { await navigator.clipboard.writeText(formatted); e.currentTarget.textContent = 'Copied'; setTimeout(() => e.currentTarget.textContent = 'Copy JSON', 1300); }
+      catch { e.currentTarget.textContent = 'Select below'; }
+    });
+  </script>
+</body>
+</html>

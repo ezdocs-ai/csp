@@ -32,6 +32,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from src.admin.admin_controller import router as admin_router
+from src.admin.ai_providers_admin_controller import (
+    router as ai_providers_admin_router,
+)
 from src.audios.audio_controller import router as audio_router
 from src.brand_guidelines.brand_guideline_controller import (
     router as brand_guideline_router,
@@ -94,15 +97,6 @@ async def lifespan(app: FastAPI):
     """
     # --- Startup ---
     logger.info("Starting up application...")
-
-    # Initialize Firebase Admin SDK (Auth only)
-    try:
-        from src.auth.firebase_client_service import firebase_client
-
-        # Trigger initialization
-        _ = firebase_client
-    except Exception as e:
-        logger.error(f"Failed to initialize Firebase: {e}")
 
     # Run Database Migrations
     try:
@@ -167,6 +161,7 @@ configure_cors(app)
 
 app.include_router(imagen_router)
 app.include_router(admin_router)
+app.include_router(ai_providers_admin_router)
 app.include_router(audio_router)
 app.include_router(video_router)
 app.include_router(gallery_router)

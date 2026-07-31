@@ -1,0 +1,621 @@
+{
+  "theme": "Tridorian",
+  "version": "3.0.0",
+  "schemaVersion": "1.0",
+  "purpose": "A machine-readable visual system for AI agents building modern Tridorian web applications.",
+  "brand": {
+    "personality": [
+      "confident",
+      "intelligent",
+      "optimistic",
+      "precise",
+      "quietly bold"
+    ],
+    "visualSignature": [
+      "deep forest canvases",
+      "luminous Tridorian green",
+      "soft orbital gradients",
+      "asymmetric bento composition",
+      "crisp typography",
+      "restrained motion"
+    ],
+    "keywords": [
+      "sleek",
+      "modern",
+      "technical",
+      "premium",
+      "human",
+      "spacious"
+    ],
+    "avoid": [
+      "generic SaaS blue as the dominant color",
+      "heavy glassmorphism",
+      "neon cyberpunk styling",
+      "excessive pill-shaped containers",
+      "pure black backgrounds",
+      "large areas of saturated accent color",
+      "gratuitous gradients on every component"
+    ]
+  },
+  "agentContract": {
+    "priorityOrder": [
+      "accessibility and legibility",
+      "clear information hierarchy",
+      "brand consistency",
+      "responsive behavior",
+      "visual polish"
+    ],
+    "requiredBehavior": [
+      "Use semantic tokens rather than raw hexadecimal values inside components.",
+      "Default to the light scheme unless the product context explicitly calls for dark mode.",
+      "Use dark forest surfaces for navigation, hero regions, focused workspaces, and premium moments.",
+      "Reserve the luminous green for primary actions, active states, progress, and small moments of emphasis.",
+      "Use periwinkle for intelligence, automation, beta, and informational states; use coral only for destructive or urgent states.",
+      "Prefer asymmetric 12-column bento layouts on desktop and a single-column flow on mobile.",
+      "Keep one dominant focal point per viewport and no more than two accent colors in a single component group.",
+      "Apply focus rings only with :focus-visible.",
+      "Honor prefers-reduced-motion and never make essential meaning dependent on animation.",
+      "Use sentence case for UI labels and concise, direct microcopy."
+    ],
+    "compositionRules": {
+      "pageRhythm": "alternate calm whitespace with compact, information-rich modules",
+      "cardHierarchy": "one elevated hero card, supporting cards mostly flat or subtly bordered",
+      "density": "comfortable by default; compact only for tables, consoles, and admin tools",
+      "accentRatio": "approximately 70% neutral surfaces, 20% deep forest, 10% accent",
+      "gradientLimit": "maximum one ambient gradient field per major section",
+      "radiusRule": "use medium radius for controls, large radius for cards, and full radius only for badges, avatars, and toggles",
+      "shadowRule": "prefer borders and tonal separation; use shadows only for floating, interactive, or layered elements"
+    },
+    "antiPatterns": [
+      "Do not put every section inside a bordered card.",
+      "Do not use green text on white for long paragraphs.",
+      "Do not use display typography below 18px.",
+      "Do not center-align dense product screens.",
+      "Do not combine blur, gradient, glow, and shadow on the same element.",
+      "Do not animate layout continuously or use looping decorative motion."
+    ]
+  },
+  "base": {
+    "typography": {
+      "fontFamily": {
+        "display": "'Space Grotesk', system-ui, sans-serif",
+        "body": "'Inter', system-ui, sans-serif",
+        "editorial": "'Readex Pro', 'Inter', system-ui, sans-serif",
+        "code": "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace"
+      },
+      "weights": {
+        "regular": 400,
+        "medium": 500,
+        "semibold": 600,
+        "bold": 700
+      },
+      "display": {
+        "hero": {
+          "fontSize": "clamp(3.25rem, 8vw, 7.5rem)",
+          "lineHeight": "0.92",
+          "letterSpacing": "-0.065em",
+          "fontWeight": 500
+        },
+        "h1": {
+          "fontSize": "clamp(2.5rem, 5vw + 0.5rem, 4.75rem)",
+          "lineHeight": "0.98",
+          "letterSpacing": "-0.052em",
+          "fontWeight": 500
+        },
+        "h2": {
+          "fontSize": "clamp(2rem, 3.5vw + 0.4rem, 3.5rem)",
+          "lineHeight": "1.05",
+          "letterSpacing": "-0.04em",
+          "fontWeight": 500
+        },
+        "h3": {
+          "fontSize": "clamp(1.5rem, 2vw + 0.5rem, 2.25rem)",
+          "lineHeight": "1.12",
+          "letterSpacing": "-0.026em",
+          "fontWeight": 600
+        },
+        "h4": {
+          "fontSize": "1.25rem",
+          "lineHeight": "1.25",
+          "letterSpacing": "-0.016em",
+          "fontWeight": 600
+        }
+      },
+      "body": {
+        "large": {
+          "fontSize": "1.125rem",
+          "lineHeight": "1.72",
+          "letterSpacing": "-0.006em"
+        },
+        "base": {
+          "fontSize": "1rem",
+          "lineHeight": "1.62",
+          "letterSpacing": "-0.004em"
+        },
+        "small": {
+          "fontSize": "0.875rem",
+          "lineHeight": "1.52",
+          "letterSpacing": "0"
+        },
+        "caption": {
+          "fontSize": "0.75rem",
+          "lineHeight": "1.45",
+          "letterSpacing": "0.01em"
+        }
+      },
+      "labels": {
+        "eyebrow": {
+          "fontSize": "0.75rem",
+          "lineHeight": "1",
+          "letterSpacing": "0.14em",
+          "fontWeight": 600,
+          "textTransform": "uppercase"
+        },
+        "button": {
+          "fontSize": "0.875rem",
+          "lineHeight": "1",
+          "letterSpacing": "-0.005em",
+          "fontWeight": 600
+        },
+        "overline": {
+          "fontSize": "0.6875rem",
+          "lineHeight": "1",
+          "letterSpacing": "0.12em",
+          "fontWeight": 700,
+          "textTransform": "uppercase"
+        }
+      },
+      "measure": {
+        "reading": "68ch",
+        "compact": "48ch",
+        "display": "15ch"
+      }
+    },
+    "spacing": {
+      "0": "0px",
+      "1": "4px",
+      "2": "8px",
+      "3": "12px",
+      "4": "16px",
+      "5": "20px",
+      "6": "24px",
+      "8": "32px",
+      "10": "40px",
+      "12": "48px",
+      "16": "64px",
+      "20": "80px",
+      "24": "96px",
+      "30": "120px",
+      "section": "clamp(72px, 10vw, 144px)"
+    },
+    "shape": {
+      "radius": {
+        "xs": "4px",
+        "sm": "8px",
+        "md": "12px",
+        "lg": "18px",
+        "xl": "28px",
+        "2xl": "40px",
+        "full": "9999px"
+      },
+      "borderWidth": {
+        "hairline": "1px",
+        "strong": "2px",
+        "focus": "3px"
+      },
+      "controlHeight": {
+        "sm": "36px",
+        "md": "44px",
+        "lg": "52px"
+      }
+    },
+    "layout": {
+      "maxWidth": {
+        "content": "1200px",
+        "wide": "1440px",
+        "reading": "760px"
+      },
+      "gutter": "clamp(20px, 4vw, 56px)",
+      "grid": {
+        "columns": 12,
+        "gap": "clamp(16px, 2vw, 28px)"
+      },
+      "breakpoints": {
+        "sm": "640px",
+        "md": "768px",
+        "lg": "1024px",
+        "xl": "1280px",
+        "2xl": "1536px"
+      }
+    },
+    "motion": {
+      "duration": {
+        "instant": "80ms",
+        "fast": "140ms",
+        "base": "190ms",
+        "slow": "320ms",
+        "ambient": "700ms"
+      },
+      "easing": {
+        "standard": "cubic-bezier(0.2, 0, 0, 1)",
+        "enter": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "exit": "cubic-bezier(0.4, 0, 1, 1)",
+        "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)"
+      },
+      "interaction": {
+        "hoverLift": "translateY(-2px)",
+        "pressScale": "scale(0.985)",
+        "pageTransition": "opacity 190ms, transform 240ms"
+      },
+      "reducedMotion": "Remove transforms and non-essential transitions when prefers-reduced-motion is enabled."
+    },
+    "effects": {
+      "blur": {
+        "sm": "8px",
+        "md": "18px",
+        "lg": "32px"
+      },
+      "opacity": {
+        "disabled": 0.46,
+        "muted": 0.72,
+        "overlay": 0.64
+      },
+      "gradients": {
+        "brandAura": "linear-gradient(135deg, #26D07C 0%, #65E6A6 42%, #7D72F6 100%)",
+        "forestDepth": "linear-gradient(145deg, #02231C 0%, #0A3027 52%, #123F32 100%)",
+        "softMint": "linear-gradient(135deg, rgba(38,208,124,0.16), rgba(97,93,244,0.08))",
+        "ambientGlow": "radial-gradient(circle at 80% 10%, rgba(38,208,124,0.22), transparent 34%), radial-gradient(circle at 20% 90%, rgba(97,93,244,0.14), transparent 36%)"
+      }
+    }
+  },
+  "schemes": {
+    "light": {
+      "colors": {
+        "brand": {
+          "primary": "#087349",
+          "primaryStrong": "#065F46",
+          "onPrimary": "#FFFFFF",
+          "luminous": "#26D07C",
+          "mint": "#A8ECCB",
+          "violet": "#615DF4",
+          "coral": "#F45D51"
+        },
+        "background": {
+          "page": "#F4F8F6",
+          "surface": "#FFFFFF",
+          "surfaceRaised": "#FFFFFF",
+          "surfaceAlt": "#EAF1EE",
+          "surfaceTint": "#E9FAF2",
+          "inverse": "#02231C",
+          "scrim": "rgba(2,35,28,0.64)"
+        },
+        "text": {
+          "primary": "#08251E",
+          "secondary": "#29473E",
+          "tertiary": "#657D75",
+          "disabled": "#AAB9B4",
+          "inverse": "#F8FFFC",
+          "accent": "#087349"
+        },
+        "border": {
+          "subtle": "#DFE8E4",
+          "default": "#CBD8D3",
+          "strong": "#8FA79E",
+          "inverse": "rgba(255,255,255,0.16)"
+        },
+        "state": {
+          "success": "#087F54",
+          "warning": "#B86A00",
+          "error": "#C83D35",
+          "info": "#4B48D8"
+        },
+        "accessibility": {
+          "focusRing": "#159A62",
+          "focusOffset": "#F4F8F6"
+        },
+        "dataViz": [
+          "#159A62",
+          "#615DF4",
+          "#F45D51",
+          "#E2A400",
+          "#1283A8",
+          "#7B4CC2",
+          "#4D7A67",
+          "#A4514B"
+        ]
+      },
+      "shadows": {
+        "xs": "0 1px 2px rgba(2,35,28,0.05)",
+        "sm": "0 4px 14px rgba(2,35,28,0.07)",
+        "md": "0 12px 32px rgba(2,35,28,0.10)",
+        "lg": "0 24px 64px rgba(2,35,28,0.14)",
+        "float": "0 28px 80px rgba(2,35,28,0.18)",
+        "colored": "0 18px 44px rgba(21,154,98,0.22)",
+        "focus": "0 0 0 3px rgba(21,154,98,0.24)"
+      }
+    },
+    "dark": {
+      "colors": {
+        "brand": {
+          "primary": "#26D07C",
+          "primaryStrong": "#7DE3B0",
+          "onPrimary": "#02231C",
+          "luminous": "#44E493",
+          "mint": "#A8ECCB",
+          "violet": "#8B86FF",
+          "coral": "#FF7B70"
+        },
+        "background": {
+          "page": "#011A15",
+          "surface": "#082A22",
+          "surfaceRaised": "#0D342A",
+          "surfaceAlt": "#123E32",
+          "surfaceTint": "rgba(38,208,124,0.09)",
+          "inverse": "#F4F8F6",
+          "scrim": "rgba(0,8,6,0.76)"
+        },
+        "text": {
+          "primary": "#F4FBF8",
+          "secondary": "#D2E1DC",
+          "tertiary": "#91AAA1",
+          "disabled": "#516C63",
+          "inverse": "#08251E",
+          "accent": "#7DE3B0"
+        },
+        "border": {
+          "subtle": "rgba(255,255,255,0.07)",
+          "default": "rgba(255,255,255,0.12)",
+          "strong": "rgba(255,255,255,0.24)",
+          "inverse": "#CBD8D3"
+        },
+        "state": {
+          "success": "#44E493",
+          "warning": "#F5C451",
+          "error": "#FF7B70",
+          "info": "#9A96FF"
+        },
+        "accessibility": {
+          "focusRing": "#7DE3B0",
+          "focusOffset": "#011A15"
+        },
+        "dataViz": [
+          "#44E493",
+          "#9A96FF",
+          "#FF7B70",
+          "#F5C451",
+          "#4CC7E8",
+          "#C084FC",
+          "#82B69E",
+          "#E98B83"
+        ]
+      },
+      "shadows": {
+        "xs": "0 1px 2px rgba(0,0,0,0.30)",
+        "sm": "0 6px 18px rgba(0,0,0,0.26)",
+        "md": "0 16px 42px rgba(0,0,0,0.34)",
+        "lg": "0 28px 80px rgba(0,0,0,0.46)",
+        "float": "0 38px 100px rgba(0,0,0,0.56)",
+        "colored": "0 0 48px rgba(38,208,124,0.17)",
+        "focus": "0 0 0 3px rgba(125,227,176,0.28)"
+      }
+    }
+  },
+  "components": {
+    "button": {
+      "base": {
+        "height": "44px",
+        "paddingInline": "18px",
+        "radius": "12px",
+        "font": "labels.button",
+        "transition": "motion.duration.fast motion.easing.standard"
+      },
+      "primary": {
+        "background": "brand.primary",
+        "foreground": "brand.onPrimary",
+        "hover": "brand.primaryStrong",
+        "shadow": "colored"
+      },
+      "secondary": {
+        "background": "background.surfaceAlt",
+        "foreground": "text.primary",
+        "border": "border.default",
+        "hover": "background.surfaceTint"
+      },
+      "ghost": {
+        "background": "transparent",
+        "foreground": "text.secondary",
+        "hover": "background.surfaceAlt"
+      },
+      "danger": {
+        "background": "state.error",
+        "foreground": "#FFFFFF"
+      },
+      "iconOnly": {
+        "size": "44px",
+        "radius": "12px"
+      }
+    },
+    "card": {
+      "base": {
+        "background": "background.surface",
+        "border": "border.subtle",
+        "radius": "18px",
+        "padding": "24px"
+      },
+      "interactive": {
+        "hoverTransform": "translateY(-2px)",
+        "hoverBorder": "brand.primary",
+        "hoverShadow": "md"
+      },
+      "featured": {
+        "radius": "28px",
+        "padding": "clamp(24px, 4vw, 48px)",
+        "background": "effects.gradients.forestDepth",
+        "foreground": "text.inverse"
+      },
+      "glass": {
+        "usage": "floating utility panels only",
+        "background": "rgba(255,255,255,0.72)",
+        "backdropBlur": "18px",
+        "border": "rgba(255,255,255,0.48)"
+      }
+    },
+    "input": {
+      "base": {
+        "height": "44px",
+        "radius": "12px",
+        "paddingInline": "14px",
+        "background": "background.surface",
+        "border": "border.default"
+      },
+      "hover": {
+        "border": "border.strong"
+      },
+      "focus": {
+        "border": "brand.primary",
+        "ring": "accessibility.focusRing",
+        "ringWidth": "3px"
+      },
+      "invalid": {
+        "border": "state.error",
+        "message": "state.error"
+      }
+    },
+    "navigation": {
+      "sidebar": {
+        "width": "264px",
+        "background": "background.inverse",
+        "foreground": "text.inverse",
+        "itemRadius": "10px",
+        "activeBackground": "rgba(38,208,124,0.14)",
+        "activeForeground": "brand.luminous"
+      },
+      "topbar": {
+        "height": "68px",
+        "background": "rgba(244,248,246,0.82)",
+        "backdropBlur": "18px",
+        "borderBottom": "border.subtle"
+      },
+      "mobile": {
+        "pattern": "bottom navigation for 3–5 primary destinations; drawer for secondary destinations"
+      }
+    },
+    "badge": {
+      "height": "24px",
+      "paddingInline": "9px",
+      "radius": "full",
+      "font": "labels.overline",
+      "tones": {
+        "neutral": "background.surfaceAlt",
+        "success": "brand.primary",
+        "info": "brand.violet",
+        "danger": "brand.coral",
+        "warning": "state.warning"
+      }
+    },
+    "table": {
+      "header": {
+        "height": "44px",
+        "background": "background.surfaceAlt",
+        "font": "labels.overline",
+        "foreground": "text.tertiary"
+      },
+      "row": {
+        "minHeight": "52px",
+        "divider": "border.subtle",
+        "hover": "background.surfaceTint"
+      },
+      "rules": [
+        "right-align numeric values",
+        "use tabular numerals",
+        "keep actions in the last column",
+        "use sticky headers for long datasets"
+      ]
+    },
+    "dialog": {
+      "width": {
+        "sm": "420px",
+        "md": "560px",
+        "lg": "760px"
+      },
+      "radius": "28px",
+      "padding": "28px",
+      "shadow": "float",
+      "scrim": "background.scrim"
+    },
+    "toast": {
+      "width": "min(420px, calc(100vw - 32px))",
+      "radius": "14px",
+      "padding": "14px 16px",
+      "shadow": "lg",
+      "duration": "5s",
+      "placement": "top-right desktop, bottom-center mobile"
+    },
+    "tooltip": {
+      "background": "background.inverse",
+      "foreground": "text.inverse",
+      "radius": "8px",
+      "padding": "6px 9px",
+      "fontSize": "12px",
+      "delay": "450ms"
+    }
+  },
+  "patterns": {
+    "dashboard": {
+      "shell": "dark sidebar + light workspace",
+      "header": "compact, sticky, lightly translucent",
+      "cards": "mixed spans in a 12-column bento grid",
+      "charts": "flat fills, minimal gridlines, direct labels when possible"
+    },
+    "aiWorkspace": {
+      "shell": "dark focused canvas",
+      "promptArea": "large calm surface with subtle mint edge glow",
+      "agentStatus": "luminous green for active, violet for thinking/automation",
+      "streaming": "animate only the newest content with a short fade/slide"
+    },
+    "settings": {
+      "layout": "narrow reading column with anchored section navigation",
+      "dividers": "use whitespace first, subtle borders second"
+    },
+    "auth": {
+      "layout": "split composition: focused form + branded atmospheric panel",
+      "mobile": "form first; hide non-essential decorative panel"
+    },
+    "marketing": {
+      "hero": "oversized display type with one gradient or orbital motif",
+      "proof": "logos and metrics kept monochrome until hover",
+      "cta": "one primary action and one understated secondary action"
+    },
+    "emptyState": {
+      "illustration": "simple geometric linework, no stock illustration",
+      "copy": "one sentence explaining the state, one sentence explaining the next action",
+      "actions": "maximum two"
+    }
+  },
+  "accessibility": {
+    "minimumContrast": {
+      "normalText": "4.5:1",
+      "largeText": "3:1",
+      "uiComponents": "3:1"
+    },
+    "focus": {
+      "selector": ":focus-visible",
+      "width": "3px",
+      "offset": "2px",
+      "style": "solid"
+    },
+    "touchTarget": "44px minimum",
+    "keyboard": "All interactive controls must be reachable and operable by keyboard in logical DOM order.",
+    "colorIndependence": "Pair status color with text, icon, shape, or pattern.",
+    "motion": "Respect prefers-reduced-motion and avoid parallax on core workflows."
+  },
+  "implementation": {
+    "fontLoading": "Import Space Grotesk, Inter, Readex Pro, and JetBrains Mono at the application root. Use font-display: swap.",
+    "themeSwitch": "Set data-theme='light' or data-theme='dark' on the html element and map semantic values to CSS custom properties.",
+    "transition": "Apply 190ms transitions to background-color, color, border-color, and box-shadow during theme changes; disable under prefers-reduced-motion.",
+    "tokenPolicy": "Components consume semantic aliases only. Raw palette values are allowed only in token definitions, illustrations, and data visualization arrays.",
+    "responsivePolicy": "Start with a single-column mobile layout. Introduce split layouts at 768px and full bento composition at 1024px.",
+    "iconPolicy": "Use one outline icon family with 1.75–2px strokes, rounded joins, and optical sizes of 16, 20, and 24px.",
+    "cssVariablePrefix": "--tri-"
+  }
+}

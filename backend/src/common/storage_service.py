@@ -18,6 +18,7 @@ import base64
 import logging
 import os
 import pathlib
+from urllib.parse import quote
 
 from google.api_core import exceptions
 from google.cloud import storage
@@ -266,3 +267,31 @@ class GcsService:
                 "Failed to download '%s' from GCS: %s", destination_blob_name, e
             )
             return None
+
+
+def gcs_uri_to_public_url(gcs_uri: str | None) -> str | None:
+    """Converts a gs:// URI into a public https://storage.googleapis.com/ URL.
+
+    Args:
+        gcs_uri: A GCS URI (e.g., "gs://bucket/path/to/blob"), an existing
+            http(s):// URL (returned unchanged), or None/empty.
+
+    Returns:
+        The public URL, or None if the input is empty or malformed.
+
+    """
+    if not gcs_uri:
+        return None
+    if gcs_uri.startswith(("http://", "https://")):
+        return gcs_uri
+    if not gcs_uri.startswith("gs://"):
+        logger.warning("Unsupported URI scheme for public URL: %s", gcs_uri)
+        return None
+    path = gcs_uri[len("gs://") :]
+    parts = path.split("/", 1)
+    if len(parts) != 2 or not parts[0] or not parts[1]:
+        logger.warning(
+            "Malformed gs:// URI (missing bucket or object): %s", gcs_uri
+        )
+        return None
+    return f"https://storage.googleapis.com/{quote(path, safe='/')}"

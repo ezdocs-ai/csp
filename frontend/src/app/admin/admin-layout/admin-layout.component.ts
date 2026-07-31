@@ -15,10 +15,13 @@
  */
 
 import {Component} from '@angular/core';
+import {FeatureFlagsService} from '../../common/services/feature-flags.service';
 
 @Component({
   selector: 'app-admin-layout',
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.scss',
 })
-export class AdminLayoutComponent {}
+export class AdminLayoutComponent {
+  constructor(public readonly featureFlags: FeatureFlagsService) {}
+}

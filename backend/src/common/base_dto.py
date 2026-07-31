@@ -68,6 +68,12 @@ class GenerationModelEnum(str, Enum):
     VEO_3_QUALITY = "veo-3.0-generate-001"
     VEO_3_FAST_PREVIEW = "veo-3.0-fast-generate-preview"
     VEO_3_QUALITY_PREVIEW = "veo-3.0-generate-preview"
+    ARK_SEEDANCE_1_0_PRO = "seedance-1-0-pro-250528"
+    ARK_SEEDANCE_1_0_PRO_FAST = "seedance-1-0-pro-fast-251015"
+    ARK_SEEDANCE_1_5_PRO = "seedance-1-5-pro-251215"
+    ARK_DREAMINA_SEEDANCE_2_0 = "dreamina-seedance-2-0-260128"
+    ARK_DREAMINA_SEEDANCE_2_0_FAST = "dreamina-seedance-2-0-fast-260128"
+    ARK_DREAMINA_SEEDANCE_2_0_MINI = "dreamina-seedance-2-0-mini-260615"
     # Audio-Specific Models
     LYRIA_002 = "lyria-002"
     CHIRP_3 = "chirp_3"

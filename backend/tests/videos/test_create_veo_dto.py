@@ -169,3 +169,73 @@ def test_validate_resolution_by_model():
         generation_model=GenerationModelEnum.VEO_3_1_GENERATE_001,
         resolution="4K",
     )
+
+    # Ark Seedance - user-facing aliases are accepted (provider literals
+    # are mapped at submit time via VIDEO_RESOLUTION_MAP).
+    CreateVeoDto(
+        prompt="Test",
+        workspace_id=1,
+        generation_model=GenerationModelEnum.ARK_SEEDANCE_1_0_PRO,
+        resolution="1K",
+    )
+    CreateVeoDto(
+        prompt="Test",
+        workspace_id=1,
+        generation_model=GenerationModelEnum.ARK_SEEDANCE_1_0_PRO,
+        resolution="4K",
+    )
+
+
+def test_validate_duration_and_aspect_ratio_for_ark_models():
+    # Ark Seedance supports up to 10s and non-Veo aspect ratios.
+    dto = CreateVeoDto(
+        prompt="Test",
+        workspace_id=1,
+        generation_model=GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0,
+        aspect_ratio="4:3",
+        resolution="1K",
+        duration_seconds=10,
+    )
+    assert dto.duration_seconds == 10
+    assert dto.aspect_ratio == "4:3"
+
+    # Non-Ark models still reject aspect ratios outside 16:9/9:16.
+    with pytest.raises(ValidationError) as exc_info:
+        CreateVeoDto(
+            prompt="Test",
+            workspace_id=1,
+            generation_model=GenerationModelEnum.VEO_3_QUALITY,
+            aspect_ratio="4:3",
+        )
+    assert "Invalid aspect ratio for video" in str(exc_info.value)
+
+
+def test_ark_model_accepts_frames_rejects_references():
+    # Ark Seedance accepts start/end frames (image-to-video).
+    dto = CreateVeoDto(
+        prompt="Test",
+        workspace_id=1,
+        generation_model=GenerationModelEnum.ARK_SEEDANCE_1_0_PRO,
+        resolution="1K",
+        start_image_asset_id={"id": 1, "type": "source_asset"},
+        end_image_asset_id={"id": 2, "type": "source_asset"},
+    )
+    assert dto.start_image_asset_id.id == 1
+    assert dto.end_image_asset_id.id == 2
+
+    # Ark still rejects reference images (ingredients-to-video unsupported).
+    with pytest.raises(ValidationError) as exc_info:
+        CreateVeoDto(
+            prompt="Test",
+            workspace_id=1,
+            generation_model=GenerationModelEnum.ARK_SEEDANCE_1_0_PRO,
+            resolution="1K",
+            reference_images=[
+                ReferenceImageDto(
+                    asset_id=3,
+                    reference_type=ReferenceImageTypeEnum.ASSET,
+                ),
+            ],
+            source_media_items=[],  # Force validator to run
+        )
+    assert "Reference images/media are only supported by" in str(exc_info.value)

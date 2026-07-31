@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from src.ai_providers.capability_service import CapabilityService
 from src.common.base_dto import (
     AspectRatioEnum,
     CompositionEnum,
@@ -22,6 +23,9 @@ from src.common.base_dto import (
 )
 from src.generation_options.dto.generation_options_dto import (
     GenerationOptionsResponse,
+)
+from src.generation_options.dto.video_generation_options_dto import (
+    VideoGenerationOptionsResponse,
 )
 from src.images.dto.create_imagen_dto import ColorAndToneEnum, LightingEnum
 
@@ -45,3 +49,11 @@ async def get_image_generation_options():
         composition=[member.value for member in CompositionEnum],
         numbers_of_images=[1, 2, 3, 4],
     )
+
+
+@router.get("/video-generation", response_model=VideoGenerationOptionsResponse)
+async def get_video_generation_options(
+    service: CapabilityService = Depends(),
+):
+    """Provides enabled public video generation capabilities."""
+    return await service.get_video_options()

@@ -36,20 +36,21 @@ def fixture_mock_user_service():
 
 
 class TestGetCurrentUser:
-    """Tests for get_current_user dependency."""
+    """Tests for Google OIDC authentication and user provisioning."""
 
     @pytest.mark.anyio
-    @patch("src.auth.auth_guard.auth.verify_id_token")
+    @patch("src.auth.auth_guard.id_token.verify_oauth2_token")
     async def test_get_current_user_local_success(
-        self, mock_verify, mock_user_service
+        self, mock_verify, mock_user_service, monkeypatch
     ):
-        # Setup: Local environment
-        config_service.ENVIRONMENT = "local"
-        config_service.ALLOWED_ORGS_STR = ""
-
-        # Mock token verification
+        monkeypatch.setattr(config_service, "ENVIRONMENT", "local")
+        monkeypatch.setattr(
+            config_service, "GOOGLE_CLIENT_ID", "google-client-id"
+        )
+        monkeypatch.setattr(config_service, "ALLOWED_ORGS_STR", "")
         mock_verify.return_value = {
             "email": "test@example.com",
+            "email_verified": True,
             "name": "Test User",
             "picture": "http://example.com/pic.jpg",
             "hd": "example.com",
@@ -62,6 +63,7 @@ class TestGetCurrentUser:
 
         assert user.email == "test@example.com"
         assert user.name == "Test User"
+        assert mock_verify.call_args.kwargs["audience"] == "google-client-id"
         mock_user_service.create_user_if_not_exists.assert_called_once_with(
             email="test@example.com",
             name="Test User",
@@ -69,33 +71,85 @@ class TestGetCurrentUser:
         )
 
     @pytest.mark.anyio
-    @patch("src.auth.auth_guard.auth.verify_id_token")
-    async def test_get_current_user_no_email(
-        self, mock_verify, mock_user_service
+    @patch("src.auth.auth_guard.id_token.verify_oauth2_token")
+    async def test_get_current_user_production_uses_configured_audience(
+        self, mock_verify, mock_user_service, monkeypatch
     ):
-        config_service.ENVIRONMENT = "local"
-        mock_verify.return_value = {"name": "Test User"}  # Missing email
+        monkeypatch.setattr(config_service, "ENVIRONMENT", "production")
+        monkeypatch.setattr(
+            config_service, "GOOGLE_TOKEN_AUDIENCE", "backend-audience"
+        )
+        monkeypatch.setattr(config_service, "ALLOWED_ORGS_STR", "")
+        mock_verify.return_value = {
+            "email": "test@example.com",
+            "email_verified": True,
+            "name": "Test User",
+        }
+
+        user = await get_current_user(
+            token="google_token", user_service=mock_user_service
+        )
+
+        assert user.email == "test@example.com"
+        assert mock_verify.call_args.kwargs["audience"] == "backend-audience"
+
+    @pytest.mark.anyio
+    @patch("src.auth.auth_guard.id_token.verify_oauth2_token")
+    async def test_get_current_user_rejects_unconfirmed_identity(
+        self, mock_verify, mock_user_service, monkeypatch
+    ):
+        monkeypatch.setattr(config_service, "ENVIRONMENT", "local")
+        monkeypatch.setattr(
+            config_service, "GOOGLE_CLIENT_ID", "google-client-id"
+        )
+        monkeypatch.setattr(config_service, "ALLOWED_ORGS_STR", "")
+        mock_verify.return_value = {
+            "email": "test@example.com",
+            "email_verified": False,
+            "name": "Test User",
+        }
 
         with pytest.raises(HTTPException) as exc_info:
             await get_current_user(
                 token="valid_token", user_service=mock_user_service
             )
 
-        assert exc_info.value.status_code == 403
-        assert "User identity could not be confirmed" in exc_info.value.detail
+        assert exc_info.value.status_code == 401
+        assert "identity could not be confirmed" in exc_info.value.detail
+        mock_user_service.create_user_if_not_exists.assert_not_called()
 
     @pytest.mark.anyio
-    @patch("src.auth.auth_guard.auth.verify_id_token")
-    async def test_get_current_user_allowed_orgs_fail(
-        self,
-        mock_verify,
-        mock_user_service,
+    @patch("src.auth.auth_guard.id_token.verify_oauth2_token")
+    async def test_get_current_user_invalid_token_returns_401(
+        self, mock_verify, mock_user_service, monkeypatch
     ):
-        config_service.ENVIRONMENT = "local"
-        config_service.ALLOWED_ORGS_STR = "allowed.com"
+        monkeypatch.setattr(config_service, "ENVIRONMENT", "local")
+        monkeypatch.setattr(
+            config_service, "GOOGLE_CLIENT_ID", "google-client-id"
+        )
+        mock_verify.side_effect = ValueError("Wrong audience")
 
+        with pytest.raises(HTTPException) as exc_info:
+            await get_current_user(
+                token="invalid_token", user_service=mock_user_service
+            )
+
+        assert exc_info.value.status_code == 401
+        assert exc_info.value.detail == "Invalid authentication token."
+
+    @pytest.mark.anyio
+    @patch("src.auth.auth_guard.id_token.verify_oauth2_token")
+    async def test_get_current_user_allowed_orgs_fail(
+        self, mock_verify, mock_user_service, monkeypatch
+    ):
+        monkeypatch.setattr(config_service, "ENVIRONMENT", "local")
+        monkeypatch.setattr(
+            config_service, "GOOGLE_CLIENT_ID", "google-client-id"
+        )
+        monkeypatch.setattr(config_service, "ALLOWED_ORGS_STR", "allowed.com")
         mock_verify.return_value = {
             "email": "test@example.com",
+            "email_verified": True,
             "name": "Test User",
             "hd": "forbidden.com",
         }

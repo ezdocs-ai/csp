@@ -1,0 +1,225 @@
+/**
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+:root,
+[data-theme="light"] {
+  /* Typography */
+  --tri-font-display: var(--font-display), system-ui, sans-serif;
+  --tri-font-body: var(--font-sans), system-ui, sans-serif;
+  --tri-font-editorial: var(--font-editorial), var(--font-sans), system-ui, sans-serif;
+  --tri-font-code: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+  --tri-font-weight-regular: 400;
+  --tri-font-weight-medium: 500;
+  --tri-font-weight-semibold: 600;
+  --tri-font-weight-bold: 700;
+  --tri-text-hero-size: clamp(3.25rem, 8vw, 7.5rem);
+  --tri-text-hero-line-height: 0.92;
+  --tri-text-hero-tracking: -0.065em;
+  --tri-text-h1-size: clamp(2.5rem, 5vw + 0.5rem, 4.75rem);
+  --tri-text-h1-line-height: 0.98;
+  --tri-text-h1-tracking: -0.052em;
+  --tri-text-h2-size: clamp(2rem, 3.5vw + 0.4rem, 3.5rem);
+  --tri-text-h2-line-height: 1.05;
+  --tri-text-h2-tracking: -0.04em;
+  --tri-text-h3-size: clamp(1.5rem, 2vw + 0.5rem, 2.25rem);
+  --tri-text-h3-line-height: 1.12;
+  --tri-text-h3-tracking: -0.026em;
+  --tri-text-h4-size: 1.25rem;
+  --tri-text-h4-line-height: 1.25;
+  --tri-text-h4-tracking: -0.016em;
+  --tri-text-large-size: 1.125rem;
+  --tri-text-large-line-height: 1.72;
+  --tri-text-large-tracking: -0.006em;
+  --tri-text-base-size: 1rem;
+  --tri-text-base-line-height: 1.62;
+  --tri-text-base-tracking: -0.004em;
+  --tri-text-small-size: 0.875rem;
+  --tri-text-small-line-height: 1.52;
+  --tri-text-caption-size: 0.75rem;
+  --tri-text-caption-line-height: 1.45;
+  --tri-text-caption-tracking: 0.01em;
+  --tri-label-eyebrow-size: 0.75rem;
+  --tri-label-eyebrow-line-height: 1;
+  --tri-label-eyebrow-tracking: 0.14em;
+  --tri-label-button-size: 0.875rem;
+  --tri-label-button-line-height: 1;
+  --tri-label-button-tracking: -0.005em;
+  --tri-label-overline-size: 0.6875rem;
+  --tri-label-overline-line-height: 1;
+  --tri-label-overline-tracking: 0.12em;
+  --tri-measure-reading: 68ch;
+  --tri-measure-compact: 48ch;
+  --tri-measure-display: 15ch;
+
+  /* Spacing, shape, layout */
+  --tri-space-0: 0px; --tri-space-1: 4px; --tri-space-2: 8px; --tri-space-3: 12px;
+  --tri-space-4: 16px; --tri-space-5: 20px; --tri-space-6: 24px; --tri-space-8: 32px;
+  --tri-space-10: 40px; --tri-space-12: 48px; --tri-space-16: 64px; --tri-space-20: 80px;
+  --tri-space-24: 96px; --tri-space-30: 120px; --tri-space-section: clamp(72px, 10vw, 144px);
+  --tri-radius-xs: 4px; --tri-radius-sm: 8px; --tri-radius-md: 12px; --tri-radius-lg: 18px;
+  --tri-radius-xl: 28px; --tri-radius-2xl: 40px; --tri-radius-full: 9999px;
+  --tri-border-hairline: 1px; --tri-border-strong-width: 2px; --tri-border-focus-width: 3px;
+  --tri-control-height-sm: 36px; --tri-control-height-md: 44px; --tri-control-height-lg: 52px;
+  --tri-layout-content: 1200px; --tri-layout-wide: 1440px; --tri-layout-reading: 760px;
+  --tri-layout-gutter: clamp(20px, 4vw, 56px); --tri-grid-columns: 12; --tri-grid-gap: clamp(16px, 2vw, 28px);
+  --tri-breakpoint-sm: 640px; --tri-breakpoint-md: 768px; --tri-breakpoint-lg: 1024px;
+  --tri-breakpoint-xl: 1280px; --tri-breakpoint-2xl: 1536px;
+
+  /* Motion and effects */
+  --tri-duration-instant: 80ms; --tri-duration-fast: 140ms; --tri-duration-base: 190ms;
+  --tri-duration-slow: 320ms; --tri-duration-ambient: 700ms;
+  --tri-ease-standard: cubic-bezier(0.2, 0, 0, 1); --tri-ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --tri-ease-exit: cubic-bezier(0.4, 0, 1, 1); --tri-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --tri-motion-hover-lift: translateY(-2px); --tri-motion-press-scale: scale(0.985);
+  --tri-motion-page-transition: opacity 190ms, transform 240ms;
+  --tri-blur-sm: 8px; --tri-blur-md: 18px; --tri-blur-lg: 32px;
+  --tri-opacity-disabled: 0.46; --tri-opacity-muted: 0.72; --tri-opacity-overlay: 0.64;
+  --tri-gradient-brand-aura: linear-gradient(135deg, #26D07C 0%, #65E6A6 42%, #7D72F6 100%);
+  --tri-gradient-forest-depth: linear-gradient(145deg, #02231C 0%, #0A3027 52%, #123F32 100%);
+  --tri-gradient-soft-mint: linear-gradient(135deg, rgba(38,208,124,0.16), rgba(97,93,244,0.08));
+  --tri-gradient-ambient-glow: radial-gradient(circle at 80% 10%, rgba(38,208,124,0.22), transparent 34%), radial-gradient(circle at 20% 90%, rgba(97,93,244,0.14), transparent 36%);
+
+  /* Patterns and accessibility */
+  --tri-pattern-dashboard-shell: dark-sidebar-light-workspace;
+  --tri-pattern-dashboard-header: compact-sticky-translucent;
+  --tri-pattern-dashboard-cards: bento-12-column;
+  --tri-pattern-dashboard-charts: flat-fills-minimal-gridlines-direct-labels;
+  --tri-pattern-ai-workspace-shell: dark-focused-canvas;
+  --tri-pattern-ai-workspace-prompt: calm-surface-subtle-mint-edge-glow;
+  --tri-pattern-ai-workspace-status: luminous-green-active-violet-thinking;
+  --tri-pattern-settings-layout: narrow-reading-column-anchored-navigation;
+  --tri-pattern-auth-layout: split-form-branded-atmospheric-panel;
+  --tri-pattern-marketing-hero: oversized-display-single-gradient-orbital-motif;
+  --tri-pattern-empty-state-actions: 2;
+  --tri-a11y-contrast-normal-text: 4.5;
+  --tri-a11y-contrast-large-text: 3;
+  --tri-a11y-contrast-ui: 3;
+  --tri-a11y-focus-width: 3px;
+  --tri-a11y-focus-offset-size: 2px;
+  --tri-a11y-focus-style: solid;
+  --tri-a11y-touch-target: 44px;
+
+  /* Scheme colors */
+  --tri-brand-primary: #087349; --tri-brand-primary-strong: #065F46; --tri-brand-on-primary: #FFFFFF;
+  --tri-brand-luminous: #26D07C; --tri-brand-mint: #A8ECCB; --tri-brand-violet: #615DF4; --tri-brand-coral: #F45D51;
+  --tri-bg-page: #F4F8F6; --tri-bg-surface: #FFFFFF; --tri-bg-surface-raised: #FFFFFF; --tri-bg-surface-alt: #EAF1EE;
+  --tri-bg-surface-tint: #E9FAF2; --tri-bg-inverse: #02231C; --tri-bg-scrim: rgba(2,35,28,0.64);
+  --tri-text-primary: #08251E; --tri-text-secondary: #29473E; --tri-text-tertiary: #657D75;
+  --tri-text-disabled: #AAB9B4; --tri-text-inverse: #F8FFFC; --tri-text-accent: #087349;
+  --tri-border-subtle: #DFE8E4; --tri-border-default: #CBD8D3; --tri-border-strong: #8FA79E; --tri-border-inverse: rgba(255,255,255,0.16);
+  --tri-state-success: #087F54; --tri-state-warning: #B86A00; --tri-state-error: #C83D35; --tri-state-info: #4B48D8;
+  --tri-a11y-focus-ring: #159A62; --tri-a11y-focus-offset: #F4F8F6;
+  --tri-data-viz-1: #159A62; --tri-data-viz-2: #615DF4; --tri-data-viz-3: #F45D51; --tri-data-viz-4: #E2A400;
+  --tri-data-viz-5: #1283A8; --tri-data-viz-6: #7B4CC2; --tri-data-viz-7: #4D7A67; --tri-data-viz-8: #A4514B;
+  --tri-shadow-xs: 0 1px 2px rgba(2,35,28,0.05); --tri-shadow-sm: 0 4px 14px rgba(2,35,28,0.07);
+  --tri-shadow-md: 0 12px 32px rgba(2,35,28,0.10); --tri-shadow-lg: 0 24px 64px rgba(2,35,28,0.14);
+  --tri-shadow-float: 0 28px 80px rgba(2,35,28,0.18); --tri-shadow-colored: 0 18px 44px rgba(21,154,98,0.22);
+  --tri-shadow-focus: 0 0 0 3px rgba(21,154,98,0.24);
+
+  /* Components */
+  --tri-button-height: 44px; --tri-button-padding-inline: 18px; --tri-button-radius: 12px;
+  --tri-button-transition: background-color var(--tri-duration-fast) var(--tri-ease-standard), color var(--tri-duration-fast) var(--tri-ease-standard), border-color var(--tri-duration-fast) var(--tri-ease-standard), box-shadow var(--tri-duration-fast) var(--tri-ease-standard);
+  --tri-button-primary-bg: var(--tri-brand-primary); --tri-button-primary-fg: var(--tri-brand-on-primary); --tri-button-primary-hover: var(--tri-brand-primary-strong); --tri-button-primary-shadow: var(--tri-shadow-colored);
+  --tri-button-secondary-bg: var(--tri-bg-surface-alt); --tri-button-secondary-fg: var(--tri-text-primary); --tri-button-secondary-border: var(--tri-border-default); --tri-button-secondary-hover: var(--tri-bg-surface-tint);
+  --tri-button-ghost-bg: transparent; --tri-button-ghost-fg: var(--tri-text-secondary); --tri-button-ghost-hover: var(--tri-bg-surface-alt);
+  --tri-button-danger-bg: var(--tri-state-error); --tri-button-danger-fg: #FFFFFF; --tri-button-icon-size: 44px;
+  --tri-card-bg: var(--tri-bg-surface); --tri-card-border: var(--tri-border-subtle); --tri-card-radius: 18px; --tri-card-padding: 24px;
+  --tri-card-interactive-hover-transform: translateY(-2px); --tri-card-interactive-hover-border: var(--tri-brand-primary); --tri-card-interactive-hover-shadow: var(--tri-shadow-md);
+  --tri-card-featured-radius: 28px; --tri-card-featured-padding: clamp(24px, 4vw, 48px); --tri-card-featured-bg: var(--tri-gradient-forest-depth); --tri-card-featured-fg: var(--tri-text-inverse);
+  --tri-card-glass-bg: rgba(255,255,255,0.72); --tri-card-glass-blur: 18px; --tri-card-glass-border: rgba(255,255,255,0.48);
+  --tri-input-height: 44px; --tri-input-radius: 12px; --tri-input-padding-inline: 14px; --tri-input-bg: var(--tri-bg-surface); --tri-input-border: var(--tri-border-default); --tri-input-hover-border: var(--tri-border-strong); --tri-input-focus-border: var(--tri-brand-primary); --tri-input-focus-ring: var(--tri-a11y-focus-ring); --tri-input-focus-ring-width: 3px; --tri-input-invalid-border: var(--tri-state-error); --tri-input-invalid-message: var(--tri-state-error);
+  --tri-nav-sidebar-width: 264px; --tri-nav-sidebar-bg: var(--tri-bg-inverse); --tri-nav-sidebar-fg: var(--tri-text-inverse); --tri-nav-item-radius: 10px; --tri-nav-active-bg: rgba(38,208,124,0.14); --tri-nav-active-fg: var(--tri-brand-luminous); --tri-nav-topbar-height: 68px; --tri-nav-topbar-bg: rgba(244,248,246,0.82); --tri-nav-topbar-blur: 18px; --tri-nav-topbar-border: var(--tri-border-subtle);
+  --tri-badge-height: 24px; --tri-badge-padding-inline: 9px; --tri-badge-radius: var(--tri-radius-full); --tri-badge-neutral: var(--tri-bg-surface-alt); --tri-badge-success: var(--tri-brand-primary); --tri-badge-info: var(--tri-brand-violet); --tri-badge-danger: var(--tri-brand-coral); --tri-badge-warning: var(--tri-state-warning);
+  --tri-table-header-height: 44px; --tri-table-header-bg: var(--tri-bg-surface-alt); --tri-table-header-fg: var(--tri-text-tertiary); --tri-table-row-min-height: 52px; --tri-table-row-divider: var(--tri-border-subtle); --tri-table-row-hover: var(--tri-bg-surface-tint);
+  --tri-dialog-width-sm: 420px; --tri-dialog-width-md: 560px; --tri-dialog-width-lg: 760px; --tri-dialog-radius: 28px; --tri-dialog-padding: 28px; --tri-dialog-shadow: var(--tri-shadow-float); --tri-dialog-scrim: var(--tri-bg-scrim);
+  --tri-toast-width: min(420px, calc(100vw - 32px)); --tri-toast-radius: 14px; --tri-toast-padding: 14px 16px; --tri-toast-shadow: var(--tri-shadow-lg); --tri-toast-duration: 5s; --tri-toast-placement: top right;
+  --tri-tooltip-bg: var(--tri-bg-inverse); --tri-tooltip-fg: var(--tri-text-inverse); --tri-tooltip-radius: 8px; --tri-tooltip-padding: 6px 9px; --tri-tooltip-font-size: 12px; --tri-tooltip-delay: 450ms;
+}
+
+/* Recompute semantic component aliases at nested theme boundaries. Custom
+ * properties inherit their computed value, so aliases resolved on the light
+ * root must be redeclared before a dark subtree can consume dark base tokens. */
+[data-theme] {
+  color-scheme: light;
+  --color-muted-foreground: var(--tri-text-tertiary);
+  --color-primary: #3b82f6;
+  --chart-1: #3b82f6;
+  --chart-2: #f87171;
+  --chart-3: #8b5cf6;
+  --chart-4: #fbbf24;
+  --chart-5: #4ade80;
+  --tri-button-primary-bg: var(--tri-brand-primary);
+  --tri-button-primary-fg: var(--tri-brand-on-primary);
+  --tri-button-primary-hover: var(--tri-brand-primary-strong);
+  --tri-button-primary-shadow: var(--tri-shadow-colored);
+  --tri-button-secondary-bg: var(--tri-bg-surface-alt);
+  --tri-button-secondary-fg: var(--tri-text-primary);
+  --tri-button-secondary-border: var(--tri-border-default);
+  --tri-button-secondary-hover: var(--tri-bg-surface-tint);
+  --tri-button-ghost-fg: var(--tri-text-secondary);
+  --tri-button-ghost-hover: var(--tri-bg-surface-alt);
+  --tri-button-danger-bg: var(--tri-state-error);
+  --tri-card-bg: var(--tri-bg-surface);
+  --tri-card-border: var(--tri-border-subtle);
+  --tri-card-interactive-hover-border: var(--tri-brand-primary);
+  --tri-card-interactive-hover-shadow: var(--tri-shadow-md);
+  --tri-input-bg: var(--tri-bg-surface);
+  --tri-input-border: var(--tri-border-default);
+  --tri-input-hover-border: var(--tri-border-strong);
+  --tri-input-focus-border: var(--tri-brand-primary);
+  --tri-input-focus-ring: var(--tri-a11y-focus-ring);
+  --tri-input-invalid-border: var(--tri-state-error);
+  --tri-input-invalid-message: var(--tri-state-error);
+  --tri-nav-sidebar-bg: var(--tri-bg-inverse);
+  --tri-nav-sidebar-fg: var(--tri-text-inverse);
+  --tri-nav-active-fg: var(--tri-brand-luminous);
+  --tri-nav-topbar-bg: rgba(244,248,246,0.82);
+  --tri-nav-topbar-border: var(--tri-border-subtle);
+  --tri-badge-neutral: var(--tri-bg-surface-alt);
+  --tri-badge-success: var(--tri-brand-primary);
+  --tri-badge-info: var(--tri-brand-violet);
+  --tri-badge-danger: var(--tri-brand-coral);
+  --tri-badge-warning: var(--tri-state-warning);
+  --tri-table-header-bg: var(--tri-bg-surface-alt);
+  --tri-table-header-fg: var(--tri-text-tertiary);
+  --tri-table-row-divider: var(--tri-border-subtle);
+  --tri-table-row-hover: var(--tri-bg-surface-tint);
+  --tri-dialog-scrim: var(--tri-bg-scrim);
+  --tri-tooltip-bg: var(--tri-bg-inverse);
+  --tri-tooltip-fg: var(--tri-text-inverse);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --tri-brand-primary: #26D07C; --tri-brand-primary-strong: #7DE3B0; --tri-brand-on-primary: #02231C;
+  --tri-brand-luminous: #44E493; --tri-brand-mint: #A8ECCB; --tri-brand-violet: #8B86FF; --tri-brand-coral: #FF7B70;
+  --tri-bg-page: #011A15; --tri-bg-surface: #082A22; --tri-bg-surface-raised: #0D342A; --tri-bg-surface-alt: #123E32;
+  --tri-bg-surface-tint: rgba(38,208,124,0.09); --tri-bg-inverse: #F4F8F6; --tri-bg-scrim: rgba(0,8,6,0.76);
+  --tri-text-primary: #F4FBF8; --tri-text-secondary: #D2E1DC; --tri-text-tertiary: #91AAA1;
+  --tri-text-disabled: #516C63; --tri-text-inverse: #08251E; --tri-text-accent: #7DE3B0;
+  --tri-border-subtle: rgba(255,255,255,0.07); --tri-border-default: rgba(255,255,255,0.12); --tri-border-strong: rgba(255,255,255,0.24); --tri-border-inverse: #CBD8D3;
+  --tri-state-success: #44E493; --tri-state-warning: #F5C451; --tri-state-error: #FF7B70; --tri-state-info: #9A96FF;
+  --tri-a11y-focus-ring: #7DE3B0; --tri-a11y-focus-offset: #011A15;
+  --tri-data-viz-1: #44E493; --tri-data-viz-2: #9A96FF; --tri-data-viz-3: #FF7B70; --tri-data-viz-4: #F5C451;
+  --tri-data-viz-5: #4CC7E8; --tri-data-viz-6: #C084FC; --tri-data-viz-7: #82B69E; --tri-data-viz-8: #E98B83;
+  --tri-shadow-xs: 0 1px 2px rgba(0,0,0,0.30); --tri-shadow-sm: 0 6px 18px rgba(0,0,0,0.26);
+  --tri-shadow-md: 0 16px 42px rgba(0,0,0,0.34); --tri-shadow-lg: 0 28px 80px rgba(0,0,0,0.46);
+  --tri-shadow-float: 0 38px 100px rgba(0,0,0,0.56); --tri-shadow-colored: 0 0 48px rgba(38,208,124,0.17); --tri-shadow-focus: 0 0 0 3px rgba(125,227,176,0.28);
+  --tri-nav-topbar-bg: rgba(1, 26, 21, 0.82);
+  --tri-button-danger-fg: var(--tri-brand-on-primary);
+  --tri-card-glass-bg: rgba(8, 42, 34, 0.72);
+  --tri-card-glass-border: rgba(255, 255, 255, 0.08);
+}

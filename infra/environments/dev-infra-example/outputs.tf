@@ -27,7 +27,27 @@ output "backend_secrets" {
   value       = var.backend_secrets
 }
 
-output "cloud_sql_connection_name" {
-  description = "The connection name of the Cloud SQL instance to be used by the bootstrap script."
-  value       = module.creative_studio_platform.cloud_sql_connection_name
+output "next_service_url" {
+  description = "The URL of the deployed Next.js frontend Cloud Run service."
+  value       = module.creative_studio_platform.next_service_url
+}
+
+output "next_service_name" {
+  description = "Name of the Next.js Cloud Run service (for canary/traffic commands)."
+  value       = module.creative_studio_platform.next_service_name
+}
+
+output "next_service_location" {
+  description = "Location/region of the Next.js Cloud Run service."
+  value       = module.creative_studio_platform.next_service_location
+}
+
+output "next_latest_ready_revision" {
+  description = "Latest READY revision of the Next.js Cloud Run service (use for canary traffic splits)."
+  value       = module.creative_studio_platform.next_latest_ready_revision
+}
+
+output "next_secrets_to_populate" {
+  description = "Next.js runtime Secret Manager IDs whose shell Terraform created. Populate values manually; no version/value is created by Terraform."
+  value       = module.creative_studio_platform.next_secrets_to_populate
 }

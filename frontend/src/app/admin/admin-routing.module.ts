@@ -23,6 +23,8 @@ import {SourceAssetsManagementComponent} from './source-assets-management/source
 import {MediaGalleryManagementComponent} from './media-gallery-management/media-gallery-management.component';
 import {TagsManagementComponent} from './tags-management/tags-management.component';
 import {AdminHomeComponent} from './admin-home/admin-home.component';
+import {AiProvidersManagementComponent} from './ai-providers-management/ai-providers-management.component';
+import {AiModelsManagementComponent} from './ai-models-management/ai-models-management.component';
 
 const routes: Routes = [
   {
@@ -36,6 +38,8 @@ const routes: Routes = [
       {path: 'media-templates', component: MediaTemplatesManagementComponent},
       {path: 'media-gallery', component: MediaGalleryManagementComponent},
       {path: 'tags', component: TagsManagementComponent},
+      {path: 'ai-providers', component: AiProvidersManagementComponent},
+      {path: 'ai-models', component: AiModelsManagementComponent},
     ],
   },
 ];

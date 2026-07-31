@@ -162,6 +162,13 @@ class WorkflowService:
         return yaml_output
 
     def _create_gcp_workflow(self, source_contents: str, workflow_id: str):
+        if config_service.ENVIRONMENT == "local":
+            logger.info(
+                "Skipping GCP workflow creation in local environment for id '%s'.",
+                workflow_id,
+            )
+            return None
+
         client = workflows_v1.WorkflowsClient()
 
         # Initialize request argument(s)
@@ -186,6 +193,13 @@ class WorkflowService:
         return response
 
     def _update_gcp_workflow(self, source_contents: str, workflow_id: str):
+        if config_service.ENVIRONMENT == "local":
+            logger.info(
+                "Skipping GCP workflow update in local environment for id '%s'.",
+                workflow_id,
+            )
+            return None
+
         client = workflows_v1.WorkflowsClient()
 
         # Initialize request argument(s)
@@ -210,6 +224,13 @@ class WorkflowService:
         return response
 
     def _delete_gcp_workflow(self, workflow_id: str):
+        if config_service.ENVIRONMENT == "local":
+            logger.info(
+                "Skipping GCP workflow deletion in local environment for id '%s'.",
+                workflow_id,
+            )
+            return None
+
         client = workflows_v1.WorkflowsClient()
 
         # Construct the fully qualified location path.

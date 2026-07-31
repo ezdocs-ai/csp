@@ -14,7 +14,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "cstudio-infra-example-cstudio-dev-tfstate"
+    bucket = "trd-csp-tfstate"
     prefix = "infra/dev/state"
   }
 }

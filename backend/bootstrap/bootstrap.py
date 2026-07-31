@@ -27,11 +27,22 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from bootstrap.seed_data import (
     TEMPLATES,
 )  # pylint: disable=wrong-import-position
-from src.common.base_dto import AspectRatioEnum
+from src.ai_providers.constants import (
+    EnvironmentEnum,
+    MediaTypeEnum,
+    ProviderTypeEnum,
+)
+from src.ai_providers.repository.ai_model_repository import AiModelRepository
+from src.ai_providers.repository.ai_provider_repository import (
+    AiProviderRepository,
+)
+from src.ai_providers.schema.ai_model_model import AiModelModel
+from src.ai_providers.schema.ai_provider_model import AiProviderModel
+from src.common.base_dto import AspectRatioEnum, GenerationModelEnum
 from src.common.schema.media_item_model import AssetRoleEnum
 from src.common.storage_service import GcsService
 from src.config.config_service import config_service
-from src.database import async_session_local, cleanup_connector
+from src.database import async_session_local
 from src.media_templates.repository.media_template_repository import (
     MediaTemplateRepository,
 )
@@ -458,20 +469,269 @@ async def seed_vto_assets(db: AsyncSession, admin_user: UserModel | None):
             logger.info(f"  - Successfully saved VTO asset '{filename}'.")
 
 
+async def seed_ai_models(db: AsyncSession):
+    """Seeds enabled Google Veo provider and current video model registry rows."""
+    logger.info("--- Starting AI Model Seeding ---")
+    provider_repo = AiProviderRepository(db)
+    model_repo = AiModelRepository(db)
+    provider = await provider_repo.get_by_key("google_veo")
+    if not provider:
+        provider = await provider_repo.create(
+            AiProviderModel(
+                key="google_veo",
+                display_name="Google Veo",
+                provider_type=ProviderTypeEnum.GOOGLE_VEAN,
+            ),
+        )
+
+    video_models = [
+        GenerationModelEnum.GEMINI_OMNI,
+        GenerationModelEnum.GEMINI_OMNI_FLASH_PREVIEW,
+        GenerationModelEnum.VEO_3_1_FAST_GENERATE_001,
+        GenerationModelEnum.VEO_3_1_LITE_GENERATE_001,
+        GenerationModelEnum.VEO_3_1_GENERATE_001,
+        GenerationModelEnum.VEO_3_1_PREVIEW,
+        GenerationModelEnum.VEO_3_FAST,
+        GenerationModelEnum.VEO_3_QUALITY,
+        GenerationModelEnum.VEO_3_FAST_PREVIEW,
+        GenerationModelEnum.VEO_3_QUALITY_PREVIEW,
+    ]
+    capabilities = {
+        "text_to_video": True,
+        "image_to_video": True,
+        # Multi-reference "ingredients" input; distinct from first/last frame.
+        "reference_images": True,
+        "durations": [4, 6, 8],
+        "aspect_ratios": ["16:9", "9:16"],
+        "resolutions": ["720p", "1080p"],
+        "max_outputs": 1,
+    }
+    defaults = {
+        "duration_seconds": 8,
+        "aspect_ratio": "16:9",
+        "resolution": "720p",
+    }
+    for generation_model in video_models:
+        if await model_repo.get_by_key(generation_model.value):
+            continue
+        await model_repo.create(
+            AiModelModel(
+                key=generation_model.value,
+                provider_id=provider.id,
+                vendor_model_id=generation_model.value,
+                media_type=MediaTypeEnum.VIDEO,
+                display_name=generation_model.value,
+                capabilities=capabilities,
+                defaults=defaults,
+                environment=EnvironmentEnum.PRODUCTION,
+            ),
+        )
+
+    ark_provider = await provider_repo.get_by_key("ark")
+    if not ark_provider:
+        ark_provider = await provider_repo.create(
+            AiProviderModel(
+                key="ark",
+                display_name="BytePlus ModelArk (Seedance)",
+                provider_type=ProviderTypeEnum.ARK,
+            ),
+        )
+
+    ark_capabilities = {
+        "text_to_video": True,
+        # Ark supports first/last frame image-to-video only (wired in
+        # veo_service.py via gs:// -> public https URL); no ingredients mode.
+        "image_to_video": True,
+        "reference_images": False,
+        "durations": [5, 10],
+        "aspect_ratios": ["16:9", "4:3", "1:1", "3:4", "9:16", "21:9"],
+        "resolutions": ["1K", "2K", "4K"],
+        "max_outputs": 1,
+    }
+    ark_defaults = {
+        "duration_seconds": 5,
+        "aspect_ratio": "16:9",
+        "resolution": "1K",
+    }
+    if not await model_repo.get_by_key(
+        GenerationModelEnum.ARK_SEEDANCE_1_0_PRO.value
+    ):
+        await model_repo.create(
+            AiModelModel(
+                key=GenerationModelEnum.ARK_SEEDANCE_1_0_PRO.value,
+                provider_id=ark_provider.id,
+                vendor_model_id=GenerationModelEnum.ARK_SEEDANCE_1_0_PRO.value,
+                media_type=MediaTypeEnum.VIDEO,
+                display_name="Seedance 1.0 Pro",
+                capabilities=ark_capabilities,
+                defaults=ark_defaults,
+                environment=EnvironmentEnum.PRODUCTION,
+            ),
+        )
+
+    ark_1_0_pro_fast_capabilities = {
+        "text_to_video": True,
+        "image_to_video": True,
+        "reference_images": False,
+        "durations": [5, 10],
+        "aspect_ratios": ["16:9", "4:3", "1:1", "3:4", "9:16", "21:9"],
+        "resolutions": ["1K", "2K"],
+        "max_outputs": 1,
+    }
+    ark_1_0_pro_fast_defaults = {
+        "duration_seconds": 5,
+        "aspect_ratio": "16:9",
+        "resolution": "1K",
+    }
+    if not await model_repo.get_by_key(
+        GenerationModelEnum.ARK_SEEDANCE_1_0_PRO_FAST.value
+    ):
+        await model_repo.create(
+            AiModelModel(
+                key=GenerationModelEnum.ARK_SEEDANCE_1_0_PRO_FAST.value,
+                provider_id=ark_provider.id,
+                vendor_model_id=GenerationModelEnum.ARK_SEEDANCE_1_0_PRO_FAST.value,
+                media_type=MediaTypeEnum.VIDEO,
+                display_name="Seedance 1.0 Pro Fast",
+                capabilities=ark_1_0_pro_fast_capabilities,
+                defaults=ark_1_0_pro_fast_defaults,
+                environment=EnvironmentEnum.PRODUCTION,
+            ),
+        )
+
+    ark_1_5_pro_capabilities = {
+        "text_to_video": True,
+        "image_to_video": True,
+        "reference_images": False,
+        "durations": [5, 10],
+        "aspect_ratios": ["16:9", "4:3", "1:1", "3:4", "9:16", "21:9"],
+        "resolutions": ["1K", "2K"],
+        "max_outputs": 1,
+    }
+    ark_1_5_pro_defaults = {
+        "duration_seconds": 5,
+        "aspect_ratio": "16:9",
+        "resolution": "1K",
+    }
+    if not await model_repo.get_by_key(
+        GenerationModelEnum.ARK_SEEDANCE_1_5_PRO.value
+    ):
+        await model_repo.create(
+            AiModelModel(
+                key=GenerationModelEnum.ARK_SEEDANCE_1_5_PRO.value,
+                provider_id=ark_provider.id,
+                vendor_model_id=GenerationModelEnum.ARK_SEEDANCE_1_5_PRO.value,
+                media_type=MediaTypeEnum.VIDEO,
+                display_name="Seedance 1.5 Pro",
+                capabilities=ark_1_5_pro_capabilities,
+                defaults=ark_1_5_pro_defaults,
+                environment=EnvironmentEnum.PRODUCTION,
+            ),
+        )
+
+    ark_seedance_2_0_capabilities = {
+        "text_to_video": True,
+        "image_to_video": True,
+        "reference_images": False,
+        "durations": [5, 10],
+        "aspect_ratios": ["16:9", "4:3", "1:1", "3:4", "9:16", "21:9"],
+        "resolutions": ["1K", "2K", "4K"],
+        "max_outputs": 1,
+    }
+    ark_seedance_2_0_defaults = {
+        "duration_seconds": 5,
+        "aspect_ratio": "16:9",
+        "resolution": "1K",
+    }
+    if not await model_repo.get_by_key(
+        GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0.value
+    ):
+        await model_repo.create(
+            AiModelModel(
+                key=GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0.value,
+                provider_id=ark_provider.id,
+                vendor_model_id=GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0.value,
+                media_type=MediaTypeEnum.VIDEO,
+                display_name="Dreamina Seedance 2.0",
+                capabilities=ark_seedance_2_0_capabilities,
+                defaults=ark_seedance_2_0_defaults,
+                environment=EnvironmentEnum.PRODUCTION,
+            ),
+        )
+
+    ark_seedance_2_0_fast_capabilities = {
+        "text_to_video": True,
+        "image_to_video": True,
+        "reference_images": False,
+        "durations": [5, 10],
+        "aspect_ratios": ["16:9", "4:3", "1:1", "3:4", "9:16", "21:9"],
+        "resolutions": ["1K"],
+        "max_outputs": 1,
+    }
+    ark_seedance_2_0_fast_defaults = {
+        "duration_seconds": 5,
+        "aspect_ratio": "16:9",
+        "resolution": "1K",
+    }
+    if not await model_repo.get_by_key(
+        GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0_FAST.value
+    ):
+        await model_repo.create(
+            AiModelModel(
+                key=GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0_FAST.value,
+                provider_id=ark_provider.id,
+                vendor_model_id=GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0_FAST.value,
+                media_type=MediaTypeEnum.VIDEO,
+                display_name="Dreamina Seedance 2.0 Fast",
+                capabilities=ark_seedance_2_0_fast_capabilities,
+                defaults=ark_seedance_2_0_fast_defaults,
+                environment=EnvironmentEnum.PRODUCTION,
+            ),
+        )
+
+    ark_seedance_2_0_mini_capabilities = {
+        "text_to_video": True,
+        "image_to_video": True,
+        "reference_images": False,
+        "durations": [5, 10],
+        "aspect_ratios": ["16:9", "4:3", "1:1", "3:4", "9:16", "21:9"],
+        "resolutions": ["1K"],
+        "max_outputs": 1,
+    }
+    ark_seedance_2_0_mini_defaults = {
+        "duration_seconds": 5,
+        "aspect_ratio": "16:9",
+        "resolution": "1K",
+    }
+    if not await model_repo.get_by_key(
+        GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0_MINI.value
+    ):
+        await model_repo.create(
+            AiModelModel(
+                key=GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0_MINI.value,
+                provider_id=ark_provider.id,
+                vendor_model_id=GenerationModelEnum.ARK_DREAMINA_SEEDANCE_2_0_MINI.value,
+                media_type=MediaTypeEnum.VIDEO,
+                display_name="Dreamina Seedance 2.0 Mini",
+                capabilities=ark_seedance_2_0_mini_capabilities,
+                defaults=ark_seedance_2_0_mini_defaults,
+                environment=EnvironmentEnum.PRODUCTION,
+            ),
+        )
+
+
 async def main():
-    try:
-        # Run Database Migrations before seeding
-        from src.database_migrations import run_pending_migrations
+    # Run Database Migrations before seeding
+    from src.database_migrations import run_pending_migrations
 
-        await run_pending_migrations()
+    await run_pending_migrations()
 
-        async with async_session_local() as db:
-            admin_user = await ensure_admin_user_exists(db)
-            await ensure_default_workspace_exists(db, admin_user)
-            await seed_vto_assets(db, admin_user)
-            await seed_media_templates(db, admin_user)
-    finally:
-        await cleanup_connector()
+    async with async_session_local() as db:
+        admin_user = await ensure_admin_user_exists(db)
+        await ensure_default_workspace_exists(db, admin_user)
+        await seed_vto_assets(db, admin_user)
+        await seed_media_templates(db, admin_user)
+        await seed_ai_models(db)
 
 
 if __name__ == "__main__":

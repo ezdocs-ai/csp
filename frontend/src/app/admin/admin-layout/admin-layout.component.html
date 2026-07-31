@@ -24,7 +24,12 @@
     class="admin-sidenav"
   >
     <mat-nav-list>
-      <a mat-list-item routerLink="dashboard" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
+      <a
+        mat-list-item
+        routerLink="dashboard"
+        routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{exact: true}"
+      >
         <mat-icon matListItemIcon>dashboard</mat-icon>
         <span matListItemTitle>Dashboard</span>
       </a>
@@ -56,15 +61,28 @@
         <mat-icon matListItemIcon>photo_library</mat-icon>
         <span matListItemTitle>Media Gallery</span>
       </a>
-      <a
-        mat-list-item
-        routerLink="tags"
-        routerLinkActive="active-link"
-      >
+      <a mat-list-item routerLink="tags" routerLinkActive="active-link">
         <mat-icon matListItemIcon>label</mat-icon>
         <span matListItemTitle>Tags</span>
       </a>
-      <!-- Add more links for other entities -->
+      <a
+        *ngIf="featureFlags.isEnabled('aiProviderRegistryAdmin')()"
+        mat-list-item
+        routerLink="ai-providers"
+        routerLinkActive="active-link"
+      >
+        <mat-icon matListItemIcon>hub</mat-icon>
+        <span matListItemTitle>AI Providers</span>
+      </a>
+      <a
+        *ngIf="featureFlags.isEnabled('aiProviderRegistryAdmin')()"
+        mat-list-item
+        routerLink="ai-models"
+        routerLinkActive="active-link"
+      >
+        <mat-icon matListItemIcon>smart_toy</mat-icon>
+        <span matListItemTitle>AI Models</span>
+      </a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content class="!m-0 !p-10">

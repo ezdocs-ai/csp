@@ -28,7 +28,7 @@ The standard development environment uses **Docker Compose**.
 
 - **Backend (`backend/.env`)**:
   - Set `ENVIRONMENT="local"`
-  - Set `USE_CLOUD_SQL_AUTH_PROXY=false` (uses local Postgres container).
+  - Leave `DATABASE_URL` and `DIRECT_DATABASE_URL` empty to use the local Postgres container.
   - Set `isLocal = True` (critical for local auth).
 - **Frontend (`frontend/src/environments/environment.development.ts`)**:
   - Set `isLocal: true`
