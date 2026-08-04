@@ -47,7 +47,7 @@ export function ReferenceMediaStrip({
   return (
     <div className="flex flex-wrap items-center gap-3">
       {max ? (
-        <span className="rounded-md bg-neutral-800 px-2 py-0.5 text-xs text-neutral-300">
+        <span className="rounded-md bg-[var(--tri-bg-surface-alt)] px-2 py-0.5 text-xs text-[var(--tri-text-tertiary)]">
           {filled}/{max}
         </span>
       ) : null}
@@ -75,7 +75,7 @@ function Slot({
   const label = slot.label ?? slot.kind;
   return (
     <div
-      className="group relative flex size-20 cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-neutral-700 bg-neutral-800 transition-colors hover:border-neutral-500 hover:bg-neutral-700"
+      className="group relative flex size-20 cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-[var(--tri-border-default)] bg-[var(--tri-bg-surface-alt)] transition-colors hover:border-[var(--tri-border-strong)] hover:bg-[var(--tri-bg-surface-raised)]"
       onClick={() => onOpen?.(slot)}
       onDragOver={(event) => event.preventDefault()}
       onDrop={(event) => {
@@ -100,9 +100,9 @@ function Slot({
             className="absolute inset-0 size-full rounded-lg object-cover"
             src={slot.previewUrl}
           />
-          <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+          <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-[var(--tri-bg-scrim)] opacity-0 transition-opacity group-hover:opacity-100">
             <button
-              className="rounded-full bg-white/20 px-2 py-1 text-xs font-semibold text-white hover:bg-white/30"
+              className="rounded-full bg-[var(--tri-bg-surface)]/20 px-2 py-1 text-xs font-semibold text-white hover:bg-[var(--tri-bg-surface)]/30"
               onClick={(event) => {
                 event.stopPropagation();
                 onEdit?.(slot);
@@ -114,7 +114,7 @@ function Slot({
           </div>
           <button
             aria-label={`Clear ${label}`}
-            className="absolute -right-2 -top-2 rounded-full bg-neutral-900 p-0.5 text-neutral-400 hover:text-white"
+            className="absolute -right-2 -top-2 rounded-full bg-[var(--tri-bg-surface)] p-0.5 text-[var(--tri-text-tertiary)] hover:text-[var(--tri-text-inverse)]"
             onClick={(event) => {
               event.stopPropagation();
               onClear?.(slot);
@@ -134,21 +134,21 @@ function Slot({
 function KindIcon({ kind }: { kind: ReferenceSlotKind }) {
   if (kind === "video")
     return (
-      <svg className="size-6 text-neutral-500" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <svg className="size-6 text-[var(--tri-text-tertiary)]" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
         <path d="m22 8-6 4 6 4V8Z" strokeLinecap="round" strokeLinejoin="round" />
         <rect height={12} width={14} x={2} y={6} rx={2} strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     );
   if (kind === "audio")
     return (
-      <svg className="size-6 text-neutral-500" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+      <svg className="size-6 text-[var(--tri-text-tertiary)]" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
         <path d="M9 18V5l12-2v13" strokeLinecap="round" strokeLinejoin="round" />
         <circle cx={6} cy={18} r={3} />
         <circle cx={18} cy={16} r={3} />
       </svg>
     );
   return (
-    <svg className="size-6 text-neutral-500" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <svg className="size-6 text-[var(--tri-text-tertiary)]" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
       <path d="M12 5v14M5 12h14" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -164,7 +164,7 @@ function CloseIcon() {
 
 function CompareArrowsIcon(): ReactNode {
   return (
-    <svg className="size-5 text-neutral-500" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+    <svg className="size-5 text-[var(--tri-text-tertiary)]" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
       <path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );

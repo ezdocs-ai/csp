@@ -2,7 +2,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
-import { Badge, Button, Card, ConfirmDialog, EmptyState, Field, Input, useToast } from "@/src/components/ui";
+import { Badge, Button, Card, ConfirmDialog, EmptyState, Field, Input, LoadingState, useToast } from "@/src/components/ui";
 import { useWorkspace } from "@/src/lib/workspace";
 import { guidelineBadge } from "../guideline-status";
 import { useBrandGuideline, type BrandGuideline } from "../hooks/use-brand-guideline";
@@ -170,7 +170,7 @@ export function BrandGuidelineUpload({ userId, isAdmin }: BrandGuidelineUploadPr
   return (
     <section className="space-y-6">
       {fetchError ? (
-        <p role="alert" className="text-sm text-[var(--tri-error)]">{fetchError}</p>
+        <p role="alert" className="text-sm text-[var(--tri-state-error)]">{fetchError}</p>
       ) : null}
 
       {!activeWorkspace ? (
@@ -182,7 +182,7 @@ export function BrandGuidelineUpload({ userId, isAdmin }: BrandGuidelineUploadPr
 
       {activeWorkspace && fetching ? (
         <Card>
-          <p className="p-6 text-sm text-[var(--tri-text-secondary)]">Loading brand guideline…</p>
+          <LoadingState label="Loading brand guideline" />
         </Card>
       ) : null}
 
@@ -221,12 +221,12 @@ export function BrandGuidelineUpload({ userId, isAdmin }: BrandGuidelineUploadPr
         <Card>
           <div className="space-y-4 p-6">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold text-[var(--tri-text)]">{displayed.name ?? "Brand guideline"}</h2>
+              <h2 className="text-lg font-semibold text-[var(--tri-text-primary)]">{displayed.name ?? "Brand guideline"}</h2>
               <Badge tone={badge.tone}>{badge.label}</Badge>
             </div>
 
             {displayed.errorMessage ? (
-              <p className="text-sm text-[var(--tri-error)]">{displayed.errorMessage}</p>
+              <p className="text-sm text-[var(--tri-state-error)]">{displayed.errorMessage}</p>
             ) : null}
 
             {displayed.colorPalette?.length ? (
@@ -270,7 +270,7 @@ export function BrandGuidelineUpload({ userId, isAdmin }: BrandGuidelineUploadPr
                   {displayed.presignedSourcePdfUrls.map((url, index) => (
                     <li key={url}>
                       <a
-                        className="text-sm text-[var(--tri-text-link,#4f9cff)] hover:underline"
+                        className="text-sm text-[var(--tri-text-accent)] hover:underline"
                         href={url}
                         rel="noopener noreferrer"
                         target="_blank"
@@ -323,7 +323,7 @@ function GuidelineSummary({ expanded, label, onToggle, text }: GuidelineSummaryP
     <div className="space-y-1">
       <p className="text-sm font-semibold text-[var(--tri-text-secondary)]">{label}</p>
       <p className={`whitespace-pre-wrap text-sm text-[var(--tri-text-secondary)] ${expanded ? "" : "line-clamp-3"}`}>{text}</p>
-      <button className="text-sm text-[var(--tri-text-link,#4f9cff)] hover:underline" onClick={onToggle} type="button">
+      <button className="text-sm text-[var(--tri-text-accent)] hover:underline" onClick={onToggle} type="button">
         {expanded ? "Show less" : "Show more"}
       </button>
     </div>

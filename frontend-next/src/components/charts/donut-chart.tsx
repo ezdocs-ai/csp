@@ -19,11 +19,11 @@ export function DonutChart({
   }));
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-[var(--tri-space-4)]">
       <svg aria-label="Role distribution" height={size} role="img" viewBox="0 0 100 100" width={size}>
         {data.map(({ label, value, color }, index) => <circle cx="50" cy="50" fill="none" key={label} r={radius} stroke={color ?? `var(--chart-${(index % 5) + 1}, var(--color-primary, currentColor))`} strokeDasharray={`${segments[index].length} ${circumference - segments[index].length}`} strokeDashoffset={-segments[index].offset} strokeWidth="16" transform="rotate(-90 50 50)"><title>{`${label}: ${value}`}</title></circle>)}
       </svg>
-      <ul className="space-y-1 text-sm">{data.map(({ label, value }) => <li key={label}>{label}: {value}</li>)}</ul>
+      <ul className="space-y-[var(--tri-space-1)] text-[length:var(--tri-text-small-size)]">{data.map(({ label, value }) => <li key={label}>{label}: {value}</li>)}</ul>
     </div>
   );
 }

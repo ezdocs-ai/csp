@@ -40,7 +40,7 @@ export default async function Page({ params }: PageProps) {
       </Link>
       <Card className="overflow-hidden bg-[var(--tri-bg-surface)]">
         <div className="grid lg:grid-cols-2">
-          <div className="grid place-items-center bg-[var(--tri-bg-subtle)] p-[var(--tri-space-6)] text-[var(--tri-text-secondary)]">
+          <div className="grid place-items-center bg-[var(--tri-bg-surface-alt)] p-[var(--tri-space-6)] text-[var(--tri-text-secondary)]">
             <span aria-hidden>No preview available</span>
           </div>
           <div className="space-y-[var(--tri-space-4)] p-[var(--tri-space-6)]">

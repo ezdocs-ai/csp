@@ -2,7 +2,7 @@
 import type { ReactNode } from "react";
 
 export function Spinner({ label = "Loading", size = "md" }: { label?: string; size?: "sm" | "md" | "lg" }) {
-  const dimensions = size === "sm" ? "size-5" : size === "lg" ? "size-12" : "size-8";
+  const dimensions = size === "sm" ? "size-[var(--tri-space-5)]" : size === "lg" ? "size-[var(--tri-space-12)]" : "size-[var(--tri-space-8)]";
   return (
     <span aria-live="polite" className="inline-flex items-center justify-center" role="status">
       <svg aria-hidden="true" className={`${dimensions} animate-spin`} viewBox="0 0 24 24">
@@ -24,7 +24,7 @@ export function LoadingState({
   children?: ReactNode;
 }) {
   return (
-    <section aria-busy="true" aria-label={label} className={`grid w-full grid-cols-1 place-items-center gap-3 py-12 text-[color:var(--tri-text-secondary)] ${className}`}>
+    <section aria-busy="true" aria-label={label} className={`grid w-full grid-cols-1 place-items-center gap-[var(--tri-space-3)] py-[var(--tri-space-12)] text-[color:var(--tri-text-secondary)] ${className}`}>
       <Spinner label={label} size="lg" />
       <p>{label}…</p>
       {children}

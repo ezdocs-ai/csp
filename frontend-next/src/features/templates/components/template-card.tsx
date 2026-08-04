@@ -17,7 +17,7 @@ export function TemplateCard({ template }: TemplateCardProps) {
   const model = template.generationParameters?.model;
 
   return (
-    <Card className="flex h-full flex-col overflow-hidden bg-[var(--tri-bg-surface)] text-[var(--tri-text-primary)] transition-colors hover:bg-[var(--tri-bg-surface-hover)]">
+    <Card className="flex h-full flex-col overflow-hidden bg-[var(--tri-bg-surface)] text-[var(--tri-text-primary)] transition-colors hover:bg-[var(--tri-bg-surface-tint)]">
       <a
         className="block min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tri-border-focus)]"
         href={`/fun-templates/${template.id}`}
@@ -35,7 +35,7 @@ export function TemplateCard({ template }: TemplateCardProps) {
               src={template.presignedUrls?.[0] ?? preview}
             />
           ) : isAudio ? (
-            <div aria-hidden className="grid aspect-video w-full place-items-center bg-[var(--tri-bg-subtle)] text-4xl">
+            <div aria-hidden className="grid aspect-video w-full place-items-center bg-[var(--tri-bg-surface-alt)] text-4xl">
               ♪
             </div>
           ) : (
@@ -47,7 +47,7 @@ export function TemplateCard({ template }: TemplateCardProps) {
             />
           )
         ) : (
-          <div className="aspect-video bg-[var(--tri-bg-subtle)]" />
+          <div className="aspect-video bg-[var(--tri-bg-surface-alt)]" />
         )}
       </a>
 

@@ -2,6 +2,7 @@
 "use client";
 import { useMemo, useState } from "react";
 
+import { EmptyState } from "@/src/components/ui/empty-state";
 import { filterTemplates, uniqueIndustries } from "../mappers";
 import { TemplateFilters } from "./template-filters";
 import { TemplateGrid } from "./template-grid";
@@ -20,7 +21,10 @@ export function TemplateCatalog({ templates }: TemplateCatalogProps) {
       {filtered.length ? (
         <TemplateGrid templates={filtered} />
       ) : (
-        <p className="text-[var(--tri-text-secondary)]">No templates match your filters.</p>
+        <EmptyState
+          description="Try adjusting or clearing filters to see more templates."
+          title="No templates match your filters"
+        />
       )}
     </div>
   );

@@ -450,7 +450,7 @@ export function ImageStudio({ initialState }: ImageStudioProps) {
         : null;
 
   return (
-    <section aria-label="Image studio" className="flex w-full max-w-4xl mx-auto flex-col items-center gap-6">
+    <section aria-label="Image studio" className="flex w-full max-w-5xl mx-auto flex-col items-center gap-[var(--tri-space-6)]">
       <div className="w-full">
         {hasResult ? (
           <MediaLightbox

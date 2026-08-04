@@ -64,7 +64,7 @@ export default async function AssetDetailPage({ params }: Props) {
         </Link>
       </div>
 
-      <section className="mt-[var(--tri-space-6)] grid gap-[var(--tri-layout-grid-gap)] lg:grid-cols-3">
+      <section className="mt-[var(--tri-space-6)] grid gap-[var(--tri-grid-gap)] lg:grid-cols-3">
         <div className="lg:col-span-2">
           {src ? (
             asset.mimeType.startsWith("image/") ? (
@@ -108,13 +108,13 @@ export default async function AssetDetailPage({ params }: Props) {
             {asset.scope ? (
               <div className="contents">
                 <dt className="font-[var(--tri-font-weight-semibold)] text-[length:var(--tri-text-small-size)] text-[var(--tri-text-secondary)]">Scope</dt>
-                <dd className="break-words font-[var(--tri-font-code)] text-[length:var(--tri-text-small-size)] text-[var(--tri-text-primary)]">{asset.scope}</dd>
+                <dd className="break-words text-[length:var(--tri-text-small-size)] text-[var(--tri-text-primary)]">{asset.scope}</dd>
               </div>
             ) : null}
             {asset.assetType ? (
               <div className="contents">
                 <dt className="font-[var(--tri-font-weight-semibold)] text-[length:var(--tri-text-small-size)] text-[var(--tri-text-secondary)]">Asset type</dt>
-                <dd className="break-words font-[var(--tri-font-code)] text-[length:var(--tri-text-small-size)] text-[var(--tri-text-primary)]">{asset.assetType}</dd>
+                <dd className="break-words text-[length:var(--tri-text-small-size)] text-[var(--tri-text-primary)]">{asset.assetType}</dd>
               </div>
             ) : null}
           </dl>

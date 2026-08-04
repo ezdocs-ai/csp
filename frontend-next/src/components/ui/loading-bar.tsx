@@ -31,7 +31,7 @@ export function LoadingBar() {
         className="fixed inset-x-0 top-0 z-[9999] h-[3px] overflow-hidden bg-[var(--tri-brand-primary)]/20"
         role="progressbar"
       >
-        <div className="h-full w-1/3 bg-gradient-to-r from-blue-500 via-violet-500 to-red-400" style={{ animation: "tri-loading 1.1s ease-in-out infinite" }} />
+        <div className="h-full w-1/3 bg-[image:var(--tri-gradient-brand-text)]" style={{ animation: "tri-loading 1.1s ease-in-out infinite"}} />
       </div>
     </>
   );

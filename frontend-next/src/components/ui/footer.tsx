@@ -9,7 +9,7 @@ export function Footer() {
     <footer className="flex flex-wrap items-center justify-center gap-x-[var(--tri-space-6)] gap-y-2 px-[var(--tri-layout-gutter)] py-[var(--tri-space-4)] text-center text-[length:var(--tri-text-small-size)] text-[var(--tri-text-secondary)]">
       <span>
         Powered by{" "}
-        <span className="bg-gradient-to-r from-blue-500 via-violet-500 to-red-400 bg-clip-text text-transparent">
+        <span className="bg-[image:var(--tri-gradient-brand-text)] bg-clip-text text-transparent">
           Vertex AI
         </span>
       </span>

@@ -52,8 +52,8 @@ function GalleryHero() {
         style={{ filter: "blur(40px)" }}
       >
         <div className="absolute left-[8%] top-[10%] size-[45%] rounded-full bg-[var(--tri-brand-primary)] opacity-70" />
-        <div className="absolute right-[10%] top-[5%] size-[35%] rounded-full bg-[var(--tri-accent-secondary,#7c4dff)] opacity-60" />
-        <div className="absolute bottom-[5%] left-[35%] size-[40%] rounded-full bg-[var(--tri-accent-success,#00c853)] opacity-50" />
+        <div className="absolute right-[10%] top-[5%] size-[35%] rounded-full bg-[var(--tri-brand-violet)] opacity-60" />
+        <div className="absolute bottom-[5%] left-[35%] size-[40%] rounded-full bg-[var(--tri-brand-luminous)] opacity-50" />
       </div>
       <div className="relative z-[5] px-[var(--tri-space-6)] text-center text-white">
         <h1 className="!m-0 font-[var(--tri-font-display)] text-[var(--tri-text-h1-size)] font-[var(--tri-font-weight-bold)]">
@@ -175,7 +175,7 @@ export function GalleryView({ media, currentPage, totalPages, userEmail, userId,
               <h2 className="mb-[var(--tri-space-4)] px-[var(--tri-space-2)] font-[var(--tri-font-display)] text-[var(--tri-text-h4-size)] text-[var(--tri-text-primary)]">
                 {group.title}
               </h2>
-              <div className="grid grid-flow-dense grid-cols-2 gap-[var(--tri-layout-grid-gap)] md:grid-cols-4">
+              <div className="grid grid-flow-dense grid-cols-2 gap-[var(--tri-grid-gap)] md:grid-cols-4">
                 {group.items.map((item) => {
                   const ratio = parseAspectRatio(
                     typeof item.metadata?.aspectRatio === "string" ? item.metadata.aspectRatio : null,

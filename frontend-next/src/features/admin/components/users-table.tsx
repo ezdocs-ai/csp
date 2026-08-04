@@ -65,7 +65,7 @@ export function UsersTable({ initial }: { initial: AdminUsersResponse }) {
         </label>
       </div>
 
-      <div className="overflow-hidden rounded-xl border">
+      <div className="overflow-hidden rounded-[var(--tri-card-radius)] border border-[var(--tri-border-subtle)] bg-[var(--tri-bg-surface)]">
         <Table aria-label="Users">
           <TableHeader>
             <TableRow>

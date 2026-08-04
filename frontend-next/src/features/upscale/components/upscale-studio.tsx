@@ -121,7 +121,7 @@ export function UpscaleStudio() {
         {/* Step-progress header: 1 Upload → 2 Result */}
         <div className="flex items-center gap-[var(--tri-space-3)]">
           <StepBadge active>1</StepBadge>
-          <h2 className="m-0 text-sm font-semibold text-[var(--tri-text-primary)]">
+          <h2 className="m-0 text-[length:var(--tri-text-small-size)] font-[var(--tri-font-weight-semibold)] text-[var(--tri-text-primary)]">
             Upload Image to Upscale
           </h2>
           <div
@@ -134,7 +134,7 @@ export function UpscaleStudio() {
           <StepBadge active={isProcessing} completed={hasResult}>
             2
           </StepBadge>
-          <h2 className="m-0 text-sm font-semibold text-[var(--tri-text-primary)]">
+          <h2 className="m-0 text-[length:var(--tri-text-small-size)] font-[var(--tri-font-weight-semibold)] text-[var(--tri-text-primary)]">
             Upscaled Result
           </h2>
         </div>
@@ -166,9 +166,9 @@ export function UpscaleStudio() {
                     className="max-h-[350px] max-w-full object-contain"
                     src={previewUrl}
                   />
-                  <div className="absolute inset-0 flex items-center justify-center gap-[var(--tri-space-3)] bg-black/50 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
+                  <div className="absolute inset-0 flex items-center justify-center gap-[var(--tri-space-3)] bg-[var(--tri-bg-scrim)] opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
                     <button
-                      className="min-h-11 rounded-full bg-white px-[var(--tri-space-4)] text-sm font-bold text-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--tri-a11y-focus-ring)]"
+                      className="min-h-11 rounded-full bg-white px-[var(--tri-space-4)] text-sm font-bold text-[var(--tri-text-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--tri-a11y-focus-ring)]"
                       onClick={() => setPickerOpen(true)}
                       type="button"
                     >
@@ -176,7 +176,7 @@ export function UpscaleStudio() {
                     </button>
                     <button
                       aria-label="Delete selected image"
-                      className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-red-600 px-[var(--tri-space-3)] text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--tri-a11y-focus-ring)]"
+                      className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-[var(--tri-button-danger-bg)] px-[var(--tri-space-3)] text-[var(--tri-text-inverse)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--tri-a11y-focus-ring)]"
                       onClick={clearImage}
                       type="button"
                     >
@@ -199,7 +199,7 @@ export function UpscaleStudio() {
             {/* Settings box */}
             <div className="space-y-[var(--tri-space-5)] rounded-[var(--tri-card-radius)] border border-[var(--tri-border-default)] p-[var(--tri-space-4)]">
               <div>
-                <h3 className="mb-[var(--tri-space-2)] text-sm font-semibold text-[var(--tri-text-primary)]">
+                <h3 className="mb-[var(--tri-space-2)] text-[length:var(--tri-text-small-size)] font-[var(--tri-font-weight-semibold)] text-[var(--tri-text-primary)]">
                   Upscale Factor
                 </h3>
                 <div aria-label="Upscale factor" className="flex gap-[var(--tri-space-2)]" role="radiogroup">
@@ -223,7 +223,7 @@ export function UpscaleStudio() {
               </div>
 
               <div>
-                <h3 className="mb-[var(--tri-space-2)] text-sm font-semibold text-[var(--tri-text-primary)]">
+                <h3 className="mb-[var(--tri-space-2)] text-[length:var(--tri-text-small-size)] font-[var(--tri-font-weight-semibold)] text-[var(--tri-text-primary)]">
                   Enhance Input Image
                 </h3>
                 <label className="flex min-h-11 items-center gap-[var(--tri-space-2)] text-sm text-[var(--tri-text-primary)]">
@@ -238,7 +238,7 @@ export function UpscaleStudio() {
               </div>
 
               <div>
-                <h3 className="mb-[var(--tri-space-2)] text-sm font-semibold text-[var(--tri-text-primary)]">
+                <h3 className="mb-[var(--tri-space-2)] text-[length:var(--tri-text-small-size)] font-[var(--tri-font-weight-semibold)] text-[var(--tri-text-primary)]">
                   Image Preservation Factor
                 </h3>
                 <div className="flex items-center gap-[var(--tri-space-3)]">
@@ -269,7 +269,7 @@ export function UpscaleStudio() {
               </div>
 
               <button
-                className="flex min-h-12 w-full items-center justify-center gap-[var(--tri-space-2)] rounded-full bg-gradient-to-r from-blue-500 via-violet-500 to-red-400 px-[var(--tri-space-4)] font-bold text-white disabled:opacity-50"
+                className="flex min-h-12 w-full items-center justify-center gap-[var(--tri-space-2)] rounded-full bg-[image:var(--tri-gradient-brand-text)] px-[var(--tri-space-4)] font-bold text-[var(--tri-text-inverse)] disabled:opacity-50"
                 disabled={!canSubmit || isProcessing}
                 onClick={onSubmit}
                 type="button"
@@ -279,7 +279,7 @@ export function UpscaleStudio() {
               </button>
 
               {error || jobError ? (
-                <p aria-live="polite" className="text-sm text-red-600">
+                <p aria-live="polite" className="text-sm text-[var(--tri-state-error)]">
                   {error ?? jobError}
                 </p>
               ) : null}
@@ -288,12 +288,7 @@ export function UpscaleStudio() {
 
           {/* Result panel */}
           <div className="col-span-3">
-            {isProcessing && !hasResult ? (
-              <div className="flex h-full min-h-[200px] flex-col items-center justify-center rounded-[var(--tri-card-radius)] border border-[var(--tri-border-default)] text-[var(--tri-text-secondary)]">
-                <span className="text-3xl">…</span>
-                <p className="mt-[var(--tri-space-3)]">Upscaling initiated…</p>
-              </div>
-            ) : hasResult && beforeUrl && afterUrl ? (
+            {hasResult && beforeUrl && afterUrl ? (
               <MediaLightbox
                 actions={{ download: onDownload, seeMoreInfo: onSeeMoreInfo }}
                 afterUrl={afterUrl}

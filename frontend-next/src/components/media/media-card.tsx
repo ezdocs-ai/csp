@@ -113,8 +113,8 @@ export function MediaCard({ anySelected = false, href, media, onSelect, selected
   const stage = (
     <>
       {isAudio ? (
-        <div className="absolute inset-0 grid place-items-center bg-[#2a2a2e] transition-colors group-hover:bg-[#38383e]">
-          <span aria-hidden className="size-20 text-white/40 group-hover:animate-pulse group-hover:text-[#a0c4ff]">
+        <div className="absolute inset-0 grid place-items-center bg-[var(--tri-bg-surface)] transition-colors group-hover:bg-[var(--tri-bg-surface-raised)]">
+          <span aria-hidden className="size-20 text-[var(--tri-text-tertiary)] group-hover:animate-pulse group-hover:text-[var(--tri-brand-violet)]">
             <EqualizerIcon />
           </span>
         </div>
@@ -146,7 +146,7 @@ export function MediaCard({ anySelected = false, href, media, onSelect, selected
       {isVideo && !(hovered && videoUrl) ? (
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 grid place-items-center bg-black/20 opacity-50 transition-opacity duration-300 group-hover:opacity-0"
+          className="pointer-events-none absolute inset-0 grid place-items-center bg-[var(--tri-bg-scrim)]/20 opacity-50 transition-opacity duration-300 group-hover:opacity-0"
         >
           <span className="size-16 text-white">
             <PlayIcon />
@@ -160,7 +160,7 @@ export function MediaCard({ anySelected = false, href, media, onSelect, selected
       {/* Bottom gradient scrim + item-type icon (Angular gallery-item-overlay). */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 flex h-20 items-end justify-between bg-black/50 p-3 backdrop-blur-md"
+        className="pointer-events-none absolute inset-x-0 bottom-0 flex h-20 items-end justify-between bg-[var(--tri-bg-scrim)] p-3 backdrop-blur-md"
         style={{ maskImage: SCRIM_MASK, WebkitMaskImage: SCRIM_MASK }}
       >
         <span className="size-4 text-white/90">
@@ -173,14 +173,14 @@ export function MediaCard({ anySelected = false, href, media, onSelect, selected
         <div className="pointer-events-none absolute bottom-7 left-1/2 z-20 flex max-w-[90%] -translate-x-1/2 items-center gap-1">
           {shown.map((tag) => (
             <span
-              className="rounded-full bg-white/5 px-1 py-0.5 text-[10px] font-medium text-white shadow-sm backdrop-blur-md"
+              className="rounded-full bg-[var(--tri-bg-surface-alt)] px-1 py-0.5 text-[10px] font-medium text-[var(--tri-text-secondary)] shadow-sm backdrop-blur-md"
               key={tag.id ?? tag.name}
             >
               {tag.name}
             </span>
           ))}
           {hidden > 0 ? (
-            <span className="rounded-full bg-neutral-800 px-1 py-0.5 text-[10px] font-medium text-white">
+            <span className="rounded-full bg-[var(--tri-bg-surface-alt)] px-1 py-0.5 text-[10px] font-medium text-[var(--tri-text-secondary)]">
               +{hidden} more
             </span>
           ) : null}
@@ -193,8 +193,8 @@ export function MediaCard({ anySelected = false, href, media, onSelect, selected
     "relative block min-h-[44px] w-full transition-transform duration-300 focus-visible:outline-none";
   const rootClass = `group relative overflow-hidden rounded-[var(--tri-card-radius)] transition-all duration-300 ${
     selected
-      ? "bg-[var(--tri-bg-surface-alt)] shadow-[0_0_15px_rgba(66,133,244,0.3)]"
-      : "shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1)]"
+      ? "bg-[var(--tri-bg-surface-alt)] shadow-[var(--tri-shadow-colored)]"
+      : "shadow-[var(--tri-shadow-sm)] hover:shadow-[var(--tri-shadow-md)]"
   }`;
 
   const indicatorVisibility = selected
@@ -233,12 +233,12 @@ export function MediaCard({ anySelected = false, href, media, onSelect, selected
           <span
             className={`grid size-7 place-items-center rounded-full border backdrop-blur transition ${indicatorVisibility} ${
               selected
-                ? "border-white/40 text-white shadow-[0_0_10px_rgba(66,133,244,0.5)]"
-                : "border-white/20 bg-white/10 text-white group-hover:bg-white/20"
+                ? "border-[var(--tri-border-inverse)] text-[var(--tri-text-inverse)] shadow-[var(--tri-shadow-colored)]"
+                : "border-[var(--tri-border-inverse)] bg-[var(--tri-bg-surface)]/10 text-[var(--tri-text-inverse)] group-hover:bg-[var(--tri-bg-surface)]/20"
             }`}
             style={
               selected
-                ? { background: "linear-gradient(135deg, var(--tri-brand-primary), var(--tri-accent-success, #34a853))" }
+                ? { background: "var(--tri-gradient-brand-aura)" }
                 : undefined
             }
           >
@@ -251,7 +251,7 @@ export function MediaCard({ anySelected = false, href, media, onSelect, selected
         <>
           <button
             aria-label="Previous image"
-            className="absolute left-2 top-1/2 z-30 grid min-h-[44px] min-w-[44px] -translate-y-1/2 place-items-center rounded-full bg-black/50 text-white opacity-0 transition hover:bg-black/70 focus-visible:opacity-100 group-hover:opacity-100"
+            className="absolute left-2 top-1/2 z-30 grid min-h-[44px] min-w-[44px] -translate-y-1/2 place-items-center rounded-full bg-[var(--tri-bg-scrim)] text-white opacity-0 transition hover:bg-[var(--tri-bg-scrim)]/80 focus-visible:opacity-100 group-hover:opacity-100"
             onClick={(event) => cycle(event, -1)}
             type="button"
           >
@@ -259,7 +259,7 @@ export function MediaCard({ anySelected = false, href, media, onSelect, selected
           </button>
           <button
             aria-label="Next image"
-            className="absolute right-2 top-1/2 z-30 grid min-h-[44px] min-w-[44px] -translate-y-1/2 place-items-center rounded-full bg-black/50 text-white opacity-0 transition hover:bg-black/70 focus-visible:opacity-100 group-hover:opacity-100"
+            className="absolute right-2 top-1/2 z-30 grid min-h-[44px] min-w-[44px] -translate-y-1/2 place-items-center rounded-full bg-[var(--tri-bg-scrim)] text-white opacity-0 transition hover:bg-[var(--tri-bg-scrim)]/80 focus-visible:opacity-100 group-hover:opacity-100"
             onClick={(event) => cycle(event, 1)}
             type="button"
           >
@@ -272,7 +272,7 @@ export function MediaCard({ anySelected = false, href, media, onSelect, selected
             {urls.map((url, i) => (
               <span
                 className={`block size-2 rounded-full transition-colors ${
-                  i === index ? "bg-white" : "bg-gray-400"
+                  i === index ? "bg-[var(--tri-text-inverse)]" : "bg-[var(--tri-text-disabled)]"
                 }`}
                 key={url}
               />

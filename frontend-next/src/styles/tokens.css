@@ -91,6 +91,7 @@
   --tri-gradient-forest-depth: linear-gradient(145deg, #02231C 0%, #0A3027 52%, #123F32 100%);
   --tri-gradient-soft-mint: linear-gradient(135deg, rgba(38,208,124,0.16), rgba(97,93,244,0.08));
   --tri-gradient-ambient-glow: radial-gradient(circle at 80% 10%, rgba(38,208,124,0.22), transparent 34%), radial-gradient(circle at 20% 90%, rgba(97,93,244,0.14), transparent 36%);
+  --tri-gradient-brand-text: linear-gradient(90deg, var(--tri-brand-luminous), var(--tri-brand-violet), var(--tri-brand-coral));
 
   /* Patterns and accessibility */
   --tri-pattern-dashboard-shell: dark-sidebar-light-workspace;
@@ -155,12 +156,12 @@
 [data-theme] {
   color-scheme: light;
   --color-muted-foreground: var(--tri-text-tertiary);
-  --color-primary: #3b82f6;
-  --chart-1: #3b82f6;
-  --chart-2: #f87171;
-  --chart-3: #8b5cf6;
-  --chart-4: #fbbf24;
-  --chart-5: #4ade80;
+  --color-primary: var(--tri-brand-primary);
+  --chart-1: var(--tri-data-viz-1);
+  --chart-2: var(--tri-data-viz-2);
+  --chart-3: var(--tri-data-viz-3);
+  --chart-4: var(--tri-data-viz-4);
+  --chart-5: var(--tri-data-viz-5);
   --tri-button-primary-bg: var(--tri-brand-primary);
   --tri-button-primary-fg: var(--tri-brand-on-primary);
   --tri-button-primary-hover: var(--tri-brand-primary-strong);

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: '🔎 Gemini Review'
+name: '🔎 GLM Review'
 
 on:
   pull_request:
@@ -44,42 +44,22 @@ jobs:
       ISSUE_BODY: '${{ github.event.pull_request.body || github.event.issue.body }}'
       PULL_REQUEST_NUMBER: '${{ github.event.pull_request.number || github.event.issue.number }}'
       REPOSITORY: '${{ github.repository }}'
-      GEMINI_CLI_TRUST_WORKSPACE: 'true'
-      GEMINI_DEBUG: 'true'
+      ANTHROPIC_BASE_URL: 'https://api.z.ai/api/anthropic'
     steps:
       - name: 'Checkout repository'
         uses: 'actions/checkout@v4'
 
-      - name: 'Run Gemini pull request review'
-        uses: 'google-github-actions/run-gemini-cli@v0'
-        id: 'gemini_pr_review'
+      - name: 'Run GLM pull request review'
+        uses: 'anthropics/claude-code-action@v1'
+        id: 'glm_pr_review'
         continue-on-error: true
         with:
-          gemini_api_key: '${{ secrets.GEMINI_API_KEY }}'
-          gemini_debug: true
-          settings: |-
-            {
-              "model": {
-                "name": "gemini-3.5-flash",
-                "maxSessionTurns": 100
-              },
-              "mcpServers": {
-                "github": {
-                  "command": "docker",
-                  "args": [
-                    "run",
-                    "-i",
-                    "--rm",
-                    "-e",
-                    "GITHUB_PERSONAL_ACCESS_TOKEN",
-                    "ghcr.io/github/github-mcp-server"
-                  ],
-                  "env": {
-                    "GITHUB_PERSONAL_ACCESS_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
-                  }
-                }
-              }
-            }
+          anthropic_api_key: '${{ secrets.ZAI_API_KEY }}'
+          claude_args: |
+            --model glm-5.2
+            --max-turns 100
+            --allowedTools mcp__github
+            --mcp-config '{"mcpServers":{"github":{"command":"docker","args":["run","-i","--rm","-e","GITHUB_PERSONAL_ACCESS_TOKEN","ghcr.io/github/github-mcp-server"],"env":{"GITHUB_PERSONAL_ACCESS_TOKEN":"${{ secrets.GITHUB_TOKEN }}"}}}}'
           prompt: |-
             ## Role
 
@@ -105,7 +85,7 @@ jobs:
 
             5. **No Environment Inspection:** The environment variables `REPOSITORY` and `PULL_REQUEST_NUMBER` are guaranteed to be present and populated in your environment. You **MUST NOT** run any shell commands (such as `env`, `printenv`, `set`, `echo`) or execute any scripts to inspect the environment or check these variables. Use their values directly in your tool calls.
 
-            6. **MCP Function Calls:** The tools `pull_request_read`, `pull_request_review_write`, and `add_comment_to_pending_review` are registered as native MCP function calls (model tools) in your tool definitions. They are **NOT** shell CLI commands, environment binaries, or scripts. You **MUST** call them as native functions (using your model tool-calling interface) and you **MUST NOT** attempt to execute them as shell commands via `run_shell_command` (e.g., do **NOT** run `pull_request_read --help` or `pull_request_review_write`).
+            6. **MCP Function Calls:** The tools `pull_request_read`, `pull_request_review_write`, and `add_comment_to_pending_review` are registered as native MCP function calls (model tools) in your tool definitions, exposed with the `mcp__github__` prefix (e.g. `mcp__github__pull_request_read`). They are **NOT** shell CLI commands, environment binaries, or scripts. You **MUST** call them as native functions (using your model tool-calling interface) and you **MUST NOT** attempt to execute them as shell commands via `run_shell_command` (e.g., do **NOT** run `pull_request_read --help` or `pull_request_review_write`).
 
             7. **Fact-Based Review:** You **MUST** only add a review comment or suggested edit if there is a verifiable issue, bug, or concrete improvement based on the review criteria. **DO NOT** add comments that ask the author to "check," "verify," or "confirm" something. **DO NOT** add comments that simply explain or validate what the code does.
 

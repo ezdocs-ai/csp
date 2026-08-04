@@ -126,7 +126,7 @@ export function GalleryDetail({ media }: { media: MediaDetail }) {
         </Link>
       </div>
 
-      <section className="grid gap-[var(--tri-layout-grid-gap)] lg:grid-cols-3">
+      <section className="grid gap-[var(--tri-grid-gap)] lg:grid-cols-3">
         <div className="lg:col-span-2">
           {src ? (
             <MediaLightbox actions={actions} media={stageMedia} variant={variant} />
@@ -325,7 +325,7 @@ function DetailsPanel({ media, promptExpanded, promptText, showPromptToggle, tog
               {chunks.map((chunk) =>
                 chunk.web?.uri ? (
                   <li key={chunk.web.uri}>
-                    <a className="break-all text-[var(--tri-text-link,#4f9cff)] hover:underline" href={chunk.web.uri} rel="noopener noreferrer" target="_blank">
+                    <a className="break-all text-[var(--tri-text-accent)] hover:underline" href={chunk.web.uri} rel="noopener noreferrer" target="_blank">
                       {chunk.web.title || chunk.web.uri}
                     </a>
                   </li>
@@ -343,7 +343,7 @@ function DetailsPanel({ media, promptExpanded, promptText, showPromptToggle, tog
             {promptText}
           </p>
           {showPromptToggle ? (
-            <button className="self-start text-[var(--tri-text-small-size)] text-[var(--tri-text-link,#4f9cff)] hover:underline" onClick={togglePrompt} type="button">
+            <button className="self-start text-[var(--tri-text-small-size)] text-[var(--tri-text-accent)] hover:underline" onClick={togglePrompt} type="button">
               {promptExpanded ? "Show less" : "Show more"}
             </button>
           ) : null}

@@ -389,7 +389,7 @@ export function VideoStudio({ initialState = {} }: { initialState?: Partial<Vide
   ];
 
   return (
-    <div className="mx-auto mb-8 flex w-full max-w-5xl flex-col items-center gap-6">
+    <section aria-label="Video studio" className="mx-auto flex w-full max-w-5xl flex-col items-center gap-[var(--tri-space-6)]">
       <GenerationOverlay
         status={isProcessing ? "processing" : isFailed ? "failed" : null}
         title={isFailed ? "Video Generation Failed" : "Your video is being generated..."}
@@ -406,7 +406,7 @@ export function VideoStudio({ initialState = {} }: { initialState?: Partial<Vide
       ) : null}
 
       {isCompleted ? (
-        <div className="flex w-full max-w-3xl flex-col gap-4">
+        <div className="flex w-full flex-col gap-4">
           <MediaLightbox
             variant="video"
             media={{ url: resultUrl ?? undefined, prompt: state.prompt }}
@@ -473,7 +473,7 @@ export function VideoStudio({ initialState = {} }: { initialState?: Partial<Vide
           onClose={() => setPickerSlot(null)}
         />
       ) : null}
-    </div>
+    </section>
   );
 }
 

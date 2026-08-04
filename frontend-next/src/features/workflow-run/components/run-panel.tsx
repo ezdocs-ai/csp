@@ -32,8 +32,8 @@ export function RunPanel({ workflowId, definition }: { workflowId: string; defin
   const submitBatch = async (rows: WorkflowBatchRow[]) => { try { await batch.submit(rows); show("Batch started.", "success"); } catch {} };
   const latest = run.executions.find((execution) => execution.result !== undefined);
   return (
-    <section aria-label="Run workflow" className="mx-auto max-w-[var(--tri-layout-wide)] space-y-6 px-[var(--tri-layout-gutter)] py-[var(--tri-space-8)]">
-      <h1 className="text-2xl font-bold">Run workflow</h1>
+    <section aria-label="Run workflow" className="mx-auto max-w-[var(--tri-layout-wide)] space-y-6">
+      <h1 className="text-[length:var(--tri-text-h2-size)] leading-[var(--tri-text-h2-line-height)] tracking-[var(--tri-text-h2-tracking)] font-[var(--tri-font-weight-semibold)]">Run workflow</h1>
       <div className="flex gap-2" role="tablist">
         <Button aria-selected={tab === "single"} onClick={() => setTab("single")} role="tab" variant={tab === "single" ? "primary" : "secondary"}>Single run</Button>
         <Button aria-selected={tab === "batch"} onClick={() => setTab("batch")} role="tab" variant={tab === "batch" ? "primary" : "secondary"}>Batch CSV</Button>
@@ -44,10 +44,10 @@ export function RunPanel({ workflowId, definition }: { workflowId: string; defin
           <WorkflowImageInputs imageFields={imageFields} onChange={setImageSelections} value={imageSelections} />
         </>
       ) : <BatchCsvUpload fields={fields.map((field) => field.name)} imageFields={imageFieldNames} loading={batch.loading} onSubmit={submitBatch} />}
-      {run.error || batch.error ? <p className="text-sm text-[var(--tri-error)]">{run.error ?? batch.error}</p> : null}
+      {run.error || batch.error ? <p className="text-sm text-[var(--tri-state-error)]">{run.error ?? batch.error}</p> : null}
       {batch.progress.total ? <p className="text-sm">Batch: {batch.progress.completed} complete, {batch.progress.failed} failed, {batch.progress.running} running of {batch.progress.total}.</p> : null}
       <section>
-        <h2 className="mb-2 text-lg font-bold">Execution history</h2>
+        <h2 className="mb-[var(--tri-space-2)] text-[length:var(--tri-text-h4-size)] leading-[var(--tri-text-h4-line-height)] tracking-[var(--tri-text-h4-tracking)] font-[var(--tri-font-weight-semibold)]">Execution history</h2>
         <ExecutionHistory executions={run.executions} />
       </section>
       {latest ? <MediaOutputResolver result={latest.result} /> : null}

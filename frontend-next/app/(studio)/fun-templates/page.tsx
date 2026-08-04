@@ -20,7 +20,7 @@ export default async function Page() {
   return (
     <section className="space-y-[var(--tri-space-6)] text-[var(--tri-text-primary)]">
       <header className="space-y-[var(--tri-space-2)]">
-        <h1 className="text-3xl font-semibold">Fun templates</h1>
+        <h1 className="text-[length:var(--tri-text-h2-size)] leading-[var(--tri-text-h2-line-height)] tracking-[var(--tri-text-h2-tracking)] font-[var(--tri-font-weight-semibold)]">Fun templates</h1>
         <p className="text-[var(--tri-text-secondary)]">Start from a ready-made creative template.</p>
       </header>
       <TemplateCatalog templates={templates} />

@@ -274,7 +274,7 @@ export function BaseWorkflowNode({ id, data, selected }: NodeProps<WorkflowNode>
       className="motion-safe:transition-[box-shadow,border-color] motion-reduce:transition-none [.react-flow__node:focus-visible_&]:outline-[3px_solid_var(--tri-a11y-focus-ring)] [.react-flow__node:focus-visible_&]:outline-offset-2"
     >
       <header
-        className="flex items-center gap-2 border-b border-[var(--tri-border-subtle)] px-3 py-2"
+        className="flex items-center gap-[var(--tri-space-2)] border-b border-[var(--tri-border-subtle)] px-[var(--tri-space-3)] py-[var(--tri-space-2)]"
         style={{ borderColor: "var(--tri-border-subtle)" }}
       >
         <span aria-hidden="true" className="size-2.5 shrink-0 rounded-full" style={{ background: accent }} />
@@ -293,7 +293,7 @@ export function BaseWorkflowNode({ id, data, selected }: NodeProps<WorkflowNode>
         ) : null}
       </header>
 
-      <div className="flex flex-col gap-1.5 px-3 py-2 text-[length:var(--tri-label-overline-size)]">
+      <div className="flex flex-col gap-1.5 px-[var(--tri-space-3)] py-[var(--tri-space-2)] text-[length:var(--tri-label-overline-size)]">
         <span className="font-[var(--tri-font-code)] uppercase tracking-[0.12em] text-[var(--tri-text-tertiary)]">
           {typeLabel}
         </span>
@@ -303,7 +303,7 @@ export function BaseWorkflowNode({ id, data, selected }: NodeProps<WorkflowNode>
         ) : null}
 
         {targets.map((t) => (
-          <div key={`t-${t.id}`} className="nodrag flex items-center gap-2">
+          <div key={`t-${t.id}`} className="nodrag flex items-center gap-[var(--tri-space-2)]">
             <Handle
               id={t.id}
               type="target"
@@ -320,7 +320,7 @@ export function BaseWorkflowNode({ id, data, selected }: NodeProps<WorkflowNode>
         ))}
 
         {sources.map((s) => (
-          <div key={`s-${s.id}`} className="nodrag flex items-center justify-end gap-2">
+          <div key={`s-${s.id}`} className="nodrag flex items-center justify-end gap-[var(--tri-space-2)]">
             <span className="text-[var(--tri-text-secondary)]">{s.label}</span>
             <Handle
               id={s.id}
@@ -339,7 +339,7 @@ export function BaseWorkflowNode({ id, data, selected }: NodeProps<WorkflowNode>
         <ul
           role="status"
           aria-live="polite"
-          className="mx-3 mb-2 list-disc pl-4 text-[length:var(--tri-label-overline-size)] text-[var(--tri-state-error)]"
+          className="mx-[var(--tri-space-3)] mb-[var(--tri-space-2)] list-disc pl-[var(--tri-space-4)] text-[length:var(--tri-label-overline-size)] text-[var(--tri-state-error)]"
         >
           {data.validation.map((msg, i) => (
             <li key={i}>{msg}</li>

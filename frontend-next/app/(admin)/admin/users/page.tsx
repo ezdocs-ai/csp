@@ -16,5 +16,5 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   } catch (error) {
     console.error("Admin users request failed", error);
   }
-  return <section><header className="mb-6"><h1 className="text-3xl font-semibold">Users</h1><p className="text-[var(--color-muted-foreground)]">Manage access and account status.</p></header><UsersTable initial={users} /></section>;
+  return <section><header className="mb-6"><h1 className="font-[var(--tri-font-display)] text-[length:var(--tri-text-h2-size)] leading-[var(--tri-text-h2-line-height)]">Users</h1><p className="text-[var(--tri-text-secondary)]">Manage access and account status.</p></header><UsersTable initial={users} /></section>;
 }

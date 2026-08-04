@@ -52,7 +52,7 @@ export function GenerationOverlay({ message, onDismiss, status, title }: Generat
   return (
     <div
       aria-live="assertive"
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-4 bg-black/70 p-6 text-center"
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-4 bg-[var(--tri-bg-scrim)] p-6 text-center"
       role="alertdialog"
     >
       {isFailed ? null : <Spinner />}
@@ -63,7 +63,7 @@ export function GenerationOverlay({ message, onDismiss, status, title }: Generat
       <p className="text-xs text-white/60">This may take a few moments. You can safely navigate away.</p>
       {isFailed && onDismiss ? (
         <button
-          className="mt-2 cursor-pointer rounded-full bg-white px-5 py-2 text-sm font-bold text-neutral-900 transition-colors hover:bg-neutral-200"
+          className="mt-2 cursor-pointer rounded-full bg-[var(--tri-bg-surface)] px-5 py-2 text-sm font-bold text-[var(--tri-text-primary)] transition-colors hover:bg-[var(--tri-bg-surface-alt)]"
           onClick={onDismiss}
           ref={closeRef}
           type="button"

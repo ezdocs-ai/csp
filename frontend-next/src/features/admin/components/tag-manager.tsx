@@ -15,7 +15,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Button, Field, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui";
+import { Button, EmptyState, Field, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui";
 import { ColorPicker, Paginator, pageOffset } from "./admin-controls";
 import { useWorkspace } from "@/src/lib/workspace";
 import { tagBulkAssignPayload, tagCreatePayload, tagSearchPayload } from "../tags-payload";
@@ -151,7 +151,7 @@ export function TagManager() {
         </form>
       </details>
 
-      <div className="overflow-hidden rounded-xl border">
+      <div className="overflow-hidden rounded-[var(--tri-card-radius)] border border-[var(--tri-border-subtle)] bg-[var(--tri-bg-surface)]">
         <Table>
           <TableHeader>
             <TableRow>
@@ -167,7 +167,7 @@ export function TagManager() {
             {tags.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4}>
-                  <p className="py-[var(--tri-space-8)] text-center text-[var(--tri-text-secondary)]">No tags found for this workspace.</p>
+                  <EmptyState description="No tags found for this workspace." title="No tags" />
                 </TableCell>
               </TableRow>
             ) : (

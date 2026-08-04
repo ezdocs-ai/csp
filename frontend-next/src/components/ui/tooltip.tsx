@@ -25,7 +25,7 @@ const positions: Record<TooltipPosition, string> = {
   left: "right-[calc(100%+var(--tri-space-2))] top-1/2 -translate-y-1/2",
 };
 
-export function Tooltip({ children, content, delay = 0, multiline = false, position = "top" }: TooltipProps) {
+export function Tooltip({ children, content, delay = 450, multiline = false, position = "top" }: TooltipProps) {
   const [open, setOpen] = useState(false);
   const id = useId();
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);

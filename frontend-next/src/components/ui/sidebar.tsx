@@ -180,12 +180,12 @@ function getIconForHref(href: string) {
 }
 
 const itemBase =
-  "relative flex size-14 items-center justify-center rounded-full transition-all duration-200";
+  "relative flex size-14 items-center justify-center rounded-full transition-all duration-[var(--tri-duration-base)]";
 
 function navClass(isActive: boolean) {
   return isActive
-    ? "bg-gradient-to-r from-blue-500 via-violet-500 to-red-400 text-white shadow-md shadow-violet-500/20"
-    : "bg-white/30 hover:bg-white/50 text-neutral-200 hover:text-white border border-white/10";
+    ? "bg-[var(--tri-nav-active-bg)] text-[var(--tri-nav-active-fg)] shadow-[var(--tri-shadow-sm)]"
+    : "bg-transparent hover:bg-[var(--tri-nav-active-bg)] text-[var(--tri-nav-sidebar-fg)] hover:text-[var(--tri-nav-active-fg)] border border-[var(--tri-border-inverse)]";
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -239,8 +239,7 @@ export function Sidebar({ brand, className = "", footer, items, userPicture, use
     <>
       {/* Desktop floating vertical pill (Angular `header.component`) */}
       <aside
-        style={{ background: "linear-gradient(180deg, rgba(82, 90, 92, 0.5) 0%, rgba(38, 38, 38, 0.2) 100%)" }}
-        className={`fixed left-[5vw] xl:left-[3vw] top-[10vh] xl:top-[11vh] z-[1000] hidden md:flex flex-col items-center gap-3 p-[7px_0_8px_0] rounded-[48px] border border-white/20 backdrop-blur-[10px] shadow-xl transition-all duration-[400ms] ease-in-out ${
+        className={`fixed left-[5vw] xl:left-[3vw] top-[10vh] xl:top-[11vh] z-[1000] hidden md:flex flex-col items-center gap-3 p-[7px_0_8px_0] rounded-[48px] border-[var(--tri-border-inverse)] bg-[var(--tri-nav-sidebar-bg)] backdrop-blur-[10px] shadow-xl transition-all duration-[var(--tri-duration-slow)] ease-in-out ${
           menuFixed
             ? "max-h-[850px] overflow-visible"
             : "max-h-[72px] overflow-hidden hover:max-h-[850px] hover:overflow-visible"
@@ -250,7 +249,7 @@ export function Sidebar({ brand, className = "", footer, items, userPicture, use
         <Tooltip content={avatarTooltip} multiline position="right">
           <button
             aria-label={menuFixed ? "Unpin menu" : "Pin menu"}
-            className="size-14 rounded-full border border-white/25 bg-white/20 overflow-hidden flex-shrink-0 flex items-center justify-center cursor-pointer shadow-md select-none"
+            className="size-14 rounded-full border-[var(--tri-border-inverse)] bg-[var(--tri-nav-active-bg)] overflow-hidden flex-shrink-0 flex items-center justify-center cursor-pointer shadow-md select-none"
             onClick={toggleMenu}
             title={userEmail}
             type="button"
@@ -259,7 +258,7 @@ export function Sidebar({ brand, className = "", footer, items, userPicture, use
               // eslint-disable-next-line @next/next/no-img-element
               <img alt="User profile" className="size-full object-cover" src={userPicture} />
             ) : (
-              <svg className="size-6 text-neutral-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg className="size-6 text-[var(--tri-nav-sidebar-fg)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             )}
@@ -275,7 +274,7 @@ export function Sidebar({ brand, className = "", footer, items, userPicture, use
                   hover
                   key="tools-group"
                   label="Tools"
-                  panelClassName="bg-gradient-to-b from-zinc-500/50 to-neutral-700/20"
+                  panelClassName="bg-[var(--tri-nav-sidebar-bg)]"
                   side="right"
                   trigger={
                     <span className={`${itemBase} ${navClass(isToolsActive)}`}>
@@ -311,7 +310,7 @@ export function Sidebar({ brand, className = "", footer, items, userPicture, use
 
           <Tooltip content="Logout" position="right">
             <button
-              className={`${itemBase} mt-auto bg-white/30 hover:bg-red-500/20 text-neutral-200 hover:text-red-400 border border-white/10 cursor-pointer`}
+              className={`${itemBase} mt-auto bg-transparent hover:bg-[var(--tri-state-error)]/20 text-[var(--tri-nav-sidebar-fg)] hover:text-[var(--tri-state-error)] border-[var(--tri-border-inverse)] cursor-pointer`}
               onClick={handleLogout}
               type="button"
             >
@@ -326,7 +325,7 @@ export function Sidebar({ brand, className = "", footer, items, userPicture, use
       {/* Mobile horizontal scrollable bar (Angular mobile `<768px`) */}
       <nav
         aria-label="Primary"
-        className="tri-nav-scroll fixed bottom-[2.5vh] left-[2.5vw] z-[1000] flex w-[95vw] items-center gap-2 overflow-x-auto rounded-[48px] border border-white/20 bg-gradient-to-b from-zinc-500/50 to-neutral-700/20 p-3 backdrop-blur-[10px] shadow-xl md:hidden"
+        className="tri-nav-scroll fixed bottom-[2.5vh] left-[2.5vw] z-[1000] flex w-[95vw] items-center gap-2 overflow-x-auto rounded-[48px] border-[var(--tri-border-inverse)] bg-[var(--tri-nav-sidebar-bg)] p-3 backdrop-blur-[10px] shadow-xl md:hidden"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         <style>{`.tri-nav-scroll::-webkit-scrollbar{display:none}`}</style>
@@ -346,7 +345,7 @@ export function Sidebar({ brand, className = "", footer, items, userPicture, use
         })}
         <button
           aria-label="Logout"
-          className={`${itemBase} flex-shrink-0 bg-white/30 hover:bg-red-500/20 text-neutral-200 border border-white/10`}
+          className={`${itemBase} flex-shrink-0 bg-transparent hover:bg-[var(--tri-state-error)]/20 text-[var(--tri-nav-sidebar-fg)] hover:text-[var(--tri-state-error)] border-[var(--tri-border-inverse)]`}
           onClick={handleLogout}
           title="Logout"
           type="button"

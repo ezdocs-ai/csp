@@ -22,8 +22,8 @@ export interface MonthlyUsersPoint {
  * The eight platform-overview KPIs, in stable display order. `sourceKey`
  * matches FastAPI's camelCase wire aliases; `key` remains the stable UI/icon
  * identifier. Labels/tooltips mirror the Angular
- * admin-home cards; `accent` is a Tailwind text-color class matching the
- * Angular mat-icon tint per metric. Pure data — unit-tested.
+ * admin-home cards; `accent` is a tokenized arbitrary-value text-color class
+ * cycling the --tri-data-viz-* palette. Pure data — unit-tested.
  */
 export interface OverviewKpiDescriptor {
   key: string;
@@ -34,14 +34,14 @@ export interface OverviewKpiDescriptor {
 }
 
 export const OVERVIEW_KPIS: OverviewKpiDescriptor[] = [
-  { key: "total_users", sourceKey: "totalUsers", label: "Total Users", tooltip: "Count of all registered users on the platform.", accent: "text-blue-400" },
-  { key: "total_workspaces", sourceKey: "totalWorkspaces", label: "Workspaces", tooltip: "Count of all workspaces created.", accent: "text-purple-400" },
-  { key: "images_generated", sourceKey: "imagesGenerated", label: "Images Gen.", tooltip: "Total number of AI-generated images.", accent: "text-red-400" },
-  { key: "videos_generated", sourceKey: "videosGenerated", label: "Videos Gen.", tooltip: "Total number of AI-generated videos.", accent: "text-green-400" },
-  { key: "audios_generated", sourceKey: "audiosGenerated", label: "Audios Gen.", tooltip: "Total number of AI-generated audios.", accent: "text-yellow-400" },
-  { key: "total_media", sourceKey: "totalMedia", label: "AI Media Total", tooltip: "Combined total of all AI-generated assets (Images + Videos + Audios).", accent: "text-teal-400" },
-  { key: "user_uploaded_media", sourceKey: "userUploadedMedia", label: "Uploaded", tooltip: "Count of all user uploaded source assets.", accent: "text-indigo-400" },
-  { key: "overall_total_media", sourceKey: "overallTotalMedia", label: "Overall Total", tooltip: "Overall total of all media assets combined (AI Generated + Uploaded).", accent: "text-orange-400" },
+  { key: "total_users", sourceKey: "totalUsers", label: "Total Users", tooltip: "Count of all registered users on the platform.", accent: "text-[var(--tri-data-viz-1)]" },
+  { key: "total_workspaces", sourceKey: "totalWorkspaces", label: "Workspaces", tooltip: "Count of all workspaces created.", accent: "text-[var(--tri-data-viz-2)]" },
+  { key: "images_generated", sourceKey: "imagesGenerated", label: "Images Gen.", tooltip: "Total number of AI-generated images.", accent: "text-[var(--tri-data-viz-3)]" },
+  { key: "videos_generated", sourceKey: "videosGenerated", label: "Videos Gen.", tooltip: "Total number of AI-generated videos.", accent: "text-[var(--tri-data-viz-4)]" },
+  { key: "audios_generated", sourceKey: "audiosGenerated", label: "Audios Gen.", tooltip: "Total number of AI-generated audios.", accent: "text-[var(--tri-data-viz-5)]" },
+  { key: "total_media", sourceKey: "totalMedia", label: "AI Media Total", tooltip: "Combined total of all AI-generated assets (Images + Videos + Audios).", accent: "text-[var(--tri-data-viz-6)]" },
+  { key: "user_uploaded_media", sourceKey: "userUploadedMedia", label: "Uploaded", tooltip: "Count of all user uploaded source assets.", accent: "text-[var(--tri-data-viz-7)]" },
+  { key: "overall_total_media", sourceKey: "overallTotalMedia", label: "Overall Total", tooltip: "Overall total of all media assets combined (AI Generated + Uploaded).", accent: "text-[var(--tri-data-viz-8)]" },
 ];
 
 /** Resolve overview values into the stable ordered KPI rows. Pure — unit-tested. */

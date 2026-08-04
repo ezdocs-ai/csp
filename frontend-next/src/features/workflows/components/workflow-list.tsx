@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Button, ConfirmDialog, EmptyState, Input } from "@/src/components/ui";
+import { Button, ConfirmDialog, EmptyState, Input, LoadingState } from "@/src/components/ui";
 import { useToast } from "@/src/components/ui/toast-provider";
 import { useWorkflows } from "../hooks/use-workflows";
 import type { Workflow } from "../types";
@@ -33,9 +33,9 @@ export function WorkflowList({ canEdit = false }: { canEdit?: boolean }) {
   };
 
   return (
-    <section aria-label="Workflow list" className="mx-auto max-w-[var(--tri-layout-wide)] space-y-6 px-[var(--tri-layout-gutter)] py-[var(--tri-space-8)]">
+    <section aria-label="Workflow list" className="mx-auto max-w-[var(--tri-layout-wide)] space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">My Workflows</h1>
+        <h1 className="text-[length:var(--tri-text-h2-size)] leading-[var(--tri-text-h2-line-height)] tracking-[var(--tri-text-h2-tracking)] font-[var(--tri-font-weight-semibold)]">My Workflows</h1>
         {canEdit ? <Button onClick={() => router.push("/workflows/new")} type="button">+ New</Button> : null}
       </div>
 
@@ -44,7 +44,7 @@ export function WorkflowList({ canEdit = false }: { canEdit?: boolean }) {
 
       {error || actionError ? <p className="text-[length:var(--tri-text-small-size)] text-[var(--tri-state-error)]" role="alert">{error ?? actionError}</p> : null}
 
-      {loading && workflows.length === 0 ? <p className="text-[var(--tri-text-secondary)]">Loading workflows…</p> : null}
+      {loading && workflows.length === 0 ? <LoadingState label="Loading workflows" /> : null}
 
       {!loading && workflows.length === 0 && !error ? (
         <EmptyState description={canEdit ? "Create your first workflow to get started." : "No workflows have been shared with you yet."} title="No workflows found" actions={canEdit ? <Button onClick={() => router.push("/workflows/new")} type="button">+ New workflow</Button> : undefined} />
@@ -52,7 +52,7 @@ export function WorkflowList({ canEdit = false }: { canEdit?: boolean }) {
         <ul className="grid gap-3">
           {workflows.map((workflow) => (
             <li key={workflow.id}>
-              <Link className="block rounded-[var(--tri-card-radius)] border border-[var(--tri-card-border)] bg-[var(--tri-card-bg)] p-[var(--tri-space-4)] transition-[var(--tri-button-transition)] hover:border-[var(--tri-card-border-active)]" href={`/workflows/${encodeURIComponent(workflow.id)}`}>
+              <Link className="block rounded-[var(--tri-card-radius)] border border-[var(--tri-card-border)] bg-[var(--tri-card-bg)] p-[var(--tri-space-4)] transition-[var(--tri-button-transition)] hover:border-[var(--tri-card-interactive-hover-border)]" href={`/workflows/${encodeURIComponent(workflow.id)}`}>
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <h2 className="truncate font-[var(--tri-font-weight-semibold)] text-[var(--tri-text-primary)]">{workflow.name}</h2>

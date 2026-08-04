@@ -127,7 +127,7 @@ export function Menu({
       </button>
       {open ? (
         <div
-          className={`absolute z-[1001] min-w-[14rem] rounded-[var(--tri-dialog-radius,24px)] border border-white/10 bg-[var(--tri-bg-surface-raised)] p-[var(--tri-space-2)] shadow-[var(--tri-shadow-lg)] backdrop-blur-[10px] ${sides[side]} ${align === "end" ? alignEnd[side] : ""} ${panelClassName}`}
+          className={`absolute z-[1001] min-w-[14rem] rounded-[var(--tri-dialog-radius)] border-[var(--tri-border-subtle)] bg-[var(--tri-bg-surface-raised)] p-[var(--tri-space-2)] shadow-[var(--tri-shadow-lg)] backdrop-blur-[10px] ${sides[side]} ${align === "end" ? alignEnd[side] : ""} ${panelClassName}`}
           ref={panel}
           role="menu"
         >
@@ -154,7 +154,7 @@ export interface MenuItemProps {
 export function MenuItem({ children, disabled, href, icon, onClick, selected, title, trailing }: MenuItemProps) {
   const shared = {
     "aria-current": selected ? ("true" as const) : undefined,
-    className: `flex w-full items-center gap-[var(--tri-space-3)] rounded-[12px] px-[var(--tri-space-3)] py-[var(--tri-space-2)] text-left text-[length:var(--tri-text-small-size)] min-h-11 ${disabled ? "cursor-not-allowed opacity-50" : "hover:bg-white/10"} ${selected ? "bg-white/10 font-[var(--tri-font-weight-bold)]" : ""}`,
+    className: `flex w-full items-center gap-[var(--tri-space-3)] rounded-[var(--tri-nav-item-radius)] px-[var(--tri-space-3)] py-[var(--tri-space-2)] text-left text-[length:var(--tri-text-small-size)] min-h-[var(--tri-a11y-touch-target)] ${disabled ? "cursor-not-allowed opacity-[var(--tri-opacity-disabled)]" : "hover:bg-[var(--tri-nav-active-bg)]"} ${selected ? "bg-[var(--tri-nav-active-bg)] font-[var(--tri-font-weight-bold)]" : ""}`,
     role: "menuitem",
     title,
   };

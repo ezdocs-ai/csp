@@ -143,7 +143,7 @@ export function FlowPromptBox({
     <div className="relative z-[55] w-full max-w-2xl">
       {settingsOpen ? (
         <div
-          className="absolute bottom-full right-0 z-[60] mb-3 w-[500px] max-w-[calc(100vw-2rem)] rounded-2xl border border-white/10 bg-[var(--tri-bg-surface-raised)]/95 p-5 text-neutral-200 shadow-2xl backdrop-blur-md"
+          className="absolute bottom-full right-0 z-[60] mb-3 w-[500px] max-w-[calc(100vw-2rem)] rounded-2xl border-[var(--tri-border-default)] bg-[var(--tri-bg-surface-raised)]/95 p-5 text-[var(--tri-text-secondary)] shadow-2xl backdrop-blur-md"
           ref={panelRef}
           role="dialog"
           aria-label="Generation settings"
@@ -227,7 +227,7 @@ export function FlowPromptBox({
         </div>
       ) : null}
 
-      <div className="relative z-10 w-full rounded-3xl border border-white/10 bg-neutral-900 p-5 text-neutral-300 shadow-2xl">
+      <div className="relative z-10 w-full rounded-3xl border-[var(--tri-border-default)] bg-[var(--tri-bg-surface)] p-5 text-[var(--tri-text-tertiary)] shadow-2xl">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Menu
             align="start"
@@ -236,7 +236,7 @@ export function FlowPromptBox({
             panelClassName="w-64"
             side="top"
             trigger={
-              <span className="flex items-center gap-2 rounded-lg bg-neutral-800 px-4 py-2 text-sm font-medium transition-colors hover:bg-neutral-700">
+              <span className="flex items-center gap-2 rounded-lg bg-[var(--tri-bg-surface-alt)] px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--tri-bg-surface-raised)]">
                 {mode}
                 <ChevronDownIcon />
               </span>
@@ -280,7 +280,7 @@ export function FlowPromptBox({
         <div className="mt-4">
           <textarea
             aria-label="Generation prompt"
-            className="w-full resize-none bg-transparent text-xl text-neutral-200 placeholder:text-neutral-600 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full resize-none bg-transparent text-xl text-[var(--tri-text-secondary)] placeholder:text-[var(--tri-text-disabled)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             disabled={promptDisabled}
             id="flow-prompt"
             maxLength={10000}
@@ -292,12 +292,12 @@ export function FlowPromptBox({
           />
         </div>
 
-        <div className="mt-3 flex flex-wrap items-end justify-between gap-y-4 border-t border-white/5 pt-4">
+        <div className="mt-3 flex flex-wrap items-end justify-between gap-y-4 border-t-[var(--tri-border-subtle)] pt-4">
           <div className="flex flex-wrap items-center gap-3">{referenceSlots}</div>
           <div className="flex items-center gap-2.5">
             {onRewrite ? (
               <button
-                className="flex cursor-pointer items-center gap-1.5 rounded-full border border-white/10 bg-neutral-800 px-4 py-2 text-sm font-semibold text-neutral-300 transition-colors hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex cursor-pointer items-center gap-1.5 rounded-full border-[var(--tri-border-default)] bg-[var(--tri-bg-surface-alt)] px-4 py-2 text-sm font-semibold text-[var(--tri-text-tertiary)] transition-colors hover:bg-[var(--tri-bg-surface-raised)] disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={isLoading}
                 onClick={onRewrite}
                 type="button"
@@ -307,13 +307,13 @@ export function FlowPromptBox({
               </button>
             ) : null}
             <button
-              className="flex cursor-pointer items-center gap-1.5 rounded-full bg-white px-5 py-2 text-sm font-bold text-neutral-900 transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex cursor-pointer items-center gap-1.5 rounded-full bg-[var(--tri-bg-surface)] px-5 py-2 text-sm font-bold text-[var(--tri-text-primary)] transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
               disabled={isLoading || generateDisabled}
               onClick={onGenerate}
               type="button"
             >
               <SparkIcon />
-              <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-red-500 bg-clip-text text-transparent">
+              <span className="bg-[image:var(--tri-gradient-brand-text)] bg-clip-text text-transparent">
                 {isLoading ? "Generating..." : "Generate"}
               </span>
             </button>
@@ -336,7 +336,7 @@ function Chip({
   return (
     <button
       aria-expanded={ariaExpanded}
-      className="flex cursor-pointer items-center gap-1.5 rounded-md bg-neutral-800 px-2.5 py-1 text-neutral-200 transition-colors hover:bg-neutral-700"
+      className="flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--tri-bg-surface-alt)] px-2.5 py-1 text-[var(--tri-text-secondary)] transition-colors hover:bg-[var(--tri-bg-surface-raised)]"
       onClick={onClick}
       type="button"
     >
@@ -362,10 +362,10 @@ function SettingsDropdown({
 }) {
   return (
     <div className="relative">
-      <label className="mb-1.5 block text-xs font-medium text-neutral-400">{label}</label>
+      <label className="mb-1.5 block text-xs font-medium text-[var(--tri-text-tertiary)]">{label}</label>
       <button
         aria-expanded={open}
-        className="flex w-full items-center justify-between rounded-lg border border-white/5 bg-neutral-800 px-3 py-2 text-left text-sm transition-colors hover:bg-neutral-700"
+        className="flex w-full items-center justify-between rounded-lg border-[var(--tri-border-subtle)] bg-[var(--tri-bg-surface-alt)] px-3 py-2 text-left text-sm transition-colors hover:bg-[var(--tri-bg-surface-raised)]"
         onClick={(event) => {
           event.stopPropagation();
           onToggle();
@@ -376,10 +376,10 @@ function SettingsDropdown({
         <ChevronDownIcon className={open ? "rotate-180" : ""} />
       </button>
       {open ? (
-        <div className="absolute left-0 top-full z-30 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-white/10 bg-neutral-800 p-1 shadow-lg">
+        <div className="absolute left-0 top-full z-30 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border-[var(--tri-border-default)] bg-[var(--tri-bg-surface-alt)] p-1 shadow-lg">
           {options.map((option) => (
             <button
-              className="flex w-full cursor-pointer items-center gap-1.5 rounded px-3 py-1.5 text-left text-sm text-neutral-300 hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex w-full cursor-pointer items-center gap-1.5 rounded px-3 py-1.5 text-left text-sm text-[var(--tri-text-tertiary)] hover:bg-[var(--tri-bg-surface-raised)] disabled:cursor-not-allowed disabled:opacity-50"
               disabled={option.disabled}
               key={option.value}
               onClick={(event) => {
@@ -424,7 +424,7 @@ function aspectOptionsIcon(ratio: string): ReactNode {
 function ChevronDownIcon({ className = "" }: { className?: string }) {
   return (
     <svg
-      className={`size-4 flex-shrink-0 text-neutral-400 transition-transform ${className}`}
+      className={`size-4 flex-shrink-0 text-[var(--tri-text-tertiary)] transition-transform ${className}`}
       fill="none"
       stroke="currentColor"
       strokeWidth={2}
@@ -449,7 +449,7 @@ function RewriteIcon() {
 
 function SparkIcon() {
   return (
-    <svg className="size-4 fill-violet-500 text-violet-500" viewBox="0 0 24 24">
+    <svg className="size-4 fill-[var(--tri-brand-violet)] text-[var(--tri-brand-violet)]" viewBox="0 0 24 24">
       <path d="M12 2a1 1 0 011 1v3.17c2.11.45 3.82 2.16 4.27 4.27H20.5a1 1 0 110 2h-3.23c-.45 2.11-2.16 3.82-4.27 4.27V21a1 1 0 11-2 0v-3.17c-2.11-.45-3.82-2.16-4.27-4.27H3.5a1 1 0 110-2h3.23c.45-2.11 2.16-3.82 4.27-4.27V3a1 1 0 011-1z" />
     </svg>
   );

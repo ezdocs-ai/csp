@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { EmptyState } from "@/src/components/ui/empty-state";
+import { LoadingState } from "@/src/components/ui/loading";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
 import { useWorkspace } from "@/src/lib/workspace";
 import { WorkspaceCreateDialog } from "./workspace-create-dialog";
@@ -19,9 +20,9 @@ export function WorkspaceList() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Button onClick={() => setCreating(true)}>Create workspace</Button>
       </div>
-      {error ? <p className="text-sm text-[var(--tri-error)]">{error.message}</p> : null}
+      {error ? <p className="text-sm text-[var(--tri-state-error)]">{error.message}</p> : null}
       {loading ? (
-        <p className="text-sm text-[var(--tri-text-secondary)]">Loading workspaces…</p>
+        <LoadingState label="Loading workspaces" />
       ) : workspaces.length === 0 ? (
         <EmptyState description="Create workspace to start collaborating." title="No workspaces" />
       ) : (

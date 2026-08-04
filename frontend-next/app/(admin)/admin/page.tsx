@@ -62,8 +62,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
     <section className="space-y-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold">Admin dashboard</h1>
-          <p className="text-[var(--color-muted-foreground)]">Platform activity and health.</p>
+          <h1 className="font-[var(--tri-font-display)] text-[length:var(--tri-text-h2-size)] leading-[var(--tri-text-h2-line-height)]">Admin dashboard</h1>
+          <p className="text-[var(--tri-text-secondary)]">Platform activity and health.</p>
         </div>
         <DashboardFilters initialEnd={end} initialStart={start} key={`${start}:${end}`} today={today} />
       </header>
@@ -71,17 +71,17 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
         {kpis.map((kpi) => (
           <Card as="article" className="flex min-w-0 flex-col items-center gap-2 text-center" key={kpi.key}>
             <KpiIconBadge accent={kpi.accent} iconKey={kpi.key} tooltip={kpi.tooltip} />
-            <p className="text-3xl font-semibold tabular-nums">{kpi.value}</p>
-            <p className="text-sm text-[var(--color-muted-foreground)]">{kpi.label}</p>
+            <p className="text-[length:var(--tri-text-h3-size)] font-[var(--tri-font-weight-semibold)] tabular-nums">{kpi.value}</p>
+            <p className="text-[length:var(--tri-text-small-size)] text-[var(--tri-text-secondary)]">{kpi.label}</p>
           </Card>
         ))}
       </div>
       <div className="grid gap-6 xl:grid-cols-2">
-        <article className="rounded-xl border p-5"><h2 className="mb-4 text-lg font-semibold">Media over time</h2><BarChart data={media} /></article>
-        <article className="rounded-xl border p-5"><h2 className="mb-4 text-lg font-semibold">Role distribution</h2><DonutChart data={data.activeRoles.map(({ role, count }) => ({ label: role, value: count }))} /></article>
-        <article className="rounded-xl border p-5 xl:col-span-2"><h2 className="mb-4 text-lg font-semibold">Generation health</h2><LineChart data={health} /></article>
-        <article className="rounded-xl border p-5"><h2 className="mb-4 text-lg font-semibold">Media per workspace</h2><WorkspaceBarChart data={workspaces} /></article>
-        <article className="rounded-xl border p-5"><h2 className="mb-4 text-lg font-semibold">Monthly active users</h2><MonthlyUsersChart data={monthly} /></article>
+        <article className="rounded-[var(--tri-card-radius)] border border-[var(--tri-card-border)] p-[var(--tri-card-padding)]"><h2 className="mb-[var(--tri-space-4)] text-[length:var(--tri-text-h4-size)] font-[var(--tri-font-weight-semibold)]">Media over time</h2><BarChart data={media} /></article>
+        <article className="rounded-[var(--tri-card-radius)] border border-[var(--tri-card-border)] p-[var(--tri-card-padding)]"><h2 className="mb-[var(--tri-space-4)] text-[length:var(--tri-text-h4-size)] font-[var(--tri-font-weight-semibold)]">Role distribution</h2><DonutChart data={data.activeRoles.map(({ role, count }) => ({ label: role, value: count }))} /></article>
+        <article className="rounded-[var(--tri-card-radius)] border border-[var(--tri-card-border)] p-[var(--tri-card-padding)] xl:col-span-2"><h2 className="mb-[var(--tri-space-4)] text-[length:var(--tri-text-h4-size)] font-[var(--tri-font-weight-semibold)]">Generation health</h2><LineChart data={health} /></article>
+        <article className="rounded-[var(--tri-card-radius)] border border-[var(--tri-card-border)] p-[var(--tri-card-padding)]"><h2 className="mb-[var(--tri-space-4)] text-[length:var(--tri-text-h4-size)] font-[var(--tri-font-weight-semibold)]">Media per workspace</h2><WorkspaceBarChart data={workspaces} /></article>
+        <article className="rounded-[var(--tri-card-radius)] border border-[var(--tri-card-border)] p-[var(--tri-card-padding)]"><h2 className="mb-[var(--tri-space-4)] text-[length:var(--tri-text-h4-size)] font-[var(--tri-font-weight-semibold)]">Monthly active users</h2><MonthlyUsersChart data={monthly} /></article>
       </div>
       <CleanupStuckJobsButton />
     </section>

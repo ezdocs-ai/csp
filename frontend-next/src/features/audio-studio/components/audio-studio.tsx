@@ -79,11 +79,24 @@ export function AudioStudio({ initialState = {} }: { initialState?: { prompt?: s
     }
   }
 
+  // Mirrors image-studio: client-side anchor (no endpoint). Cross-origin
+  // presigned URLs ignore the `download` attribute, so a new-tab open is used.
+  const handleDownload = () => {
+    if (!resultUrl) return;
+    const anchor = document.createElement("a");
+    anchor.href = resultUrl;
+    anchor.target = "_blank";
+    anchor.rel = "noreferrer";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+  };
+
   const promptLabel = fields.text ? "Text to Speech" : "Prompt";
   const promptPlaceholder = fields.text ? "Enter text to speak…" : "Describe the music…";
 
   return (
-    <div className="flex flex-col gap-[var(--tri-space-8)]">
+    <section aria-label="Audio studio" className="mx-auto flex w-full max-w-5xl flex-col gap-[var(--tri-space-8)]">
       <StudioHero icon={<SparkIcon />} title="Describe Your Sound" />
 
       <GenerationOverlay
@@ -95,12 +108,13 @@ export function AudioStudio({ initialState = {} }: { initialState?: { prompt?: s
 
       {resultUrl && pollStatus.status === "completed" ? (
         <MediaLightbox
+          actions={{ download: handleDownload }}
           media={{ prompt, url: resultUrl }}
           variant="audio"
         />
       ) : null}
 
-      <div className="rounded-[var(--tri-radius-lg)] border border-[var(--tri-border-default)] bg-neutral-900/60 p-[var(--tri-space-5)] backdrop-blur-md">
+      <div className="rounded-[var(--tri-radius-lg)] border border-[var(--tri-border-default)] bg-[var(--tri-bg-surface-raised)] p-[var(--tri-space-5)] backdrop-blur-md">
         <fieldset
           aria-label="Select Model"
           className="grid grid-cols-3 gap-1 rounded-full border border-[var(--tri-border-default)] bg-[var(--tri-bg-surface)] p-1"
@@ -249,7 +263,7 @@ export function AudioStudio({ initialState = {} }: { initialState?: { prompt?: s
           </button>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 

@@ -54,12 +54,12 @@ export function Workbench() {
   }
 
   return (
-    <div className="grid gap-[var(--tri-space-4)] rounded-[var(--tri-card-radius)] bg-[var(--tri-surface-base)] p-[var(--tri-space-4)]">
+    <div className="grid gap-[var(--tri-space-4)] rounded-[var(--tri-card-radius)] bg-[var(--tri-bg-surface)] p-[var(--tri-space-4)]">
       <Tooltip
         content="This is currently under development; it does not save content. Use at your own risk and download your work before leaving this page."
         multiline
       >
-        <span className="inline-flex w-fit items-center rounded-full border border-[var(--tri-status-info-border)] bg-[var(--tri-status-info-bg)] px-[var(--tri-space-3)] py-[var(--tri-space-1)] text-[length:var(--tri-text-small-size)] font-[var(--tri-font-weight-semibold)] text-[var(--tri-brand-primary)]">
+        <span className="inline-flex w-fit items-center rounded-full border border-[var(--tri-brand-violet)] bg-[var(--tri-bg-surface-alt)] px-[var(--tri-space-3)] py-[var(--tri-space-1)] text-[length:var(--tri-text-small-size)] font-[var(--tri-font-weight-semibold)] text-[var(--tri-brand-violet)]">
           BETA
         </span>
       </Tooltip>
@@ -148,7 +148,7 @@ export function Workbench() {
         />
         {errors.length > 0 && (
           <div
-            className="rounded-[var(--tri-card-radius)] border border-[var(--tri-status-danger-border)] p-[var(--tri-space-3)] text-sm text-[var(--tri-status-danger-fg)]"
+            className="rounded-[var(--tri-card-radius)] border border-[var(--tri-state-error)] p-[var(--tri-space-3)] text-sm text-[var(--tri-state-error)]"
             role="alert"
           >
             Timeline invalid: {errors.join(" ")}

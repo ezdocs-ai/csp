@@ -127,7 +127,7 @@ export function TemplateEditor() {
   return (
     <section className="space-y-[var(--tri-space-4)]">
       <header className="flex flex-wrap items-center justify-between gap-[var(--tri-space-3)]">
-        <h1 className="text-2xl font-semibold">Templates</h1>
+        <h1 className="font-[var(--tri-font-display)] text-[length:var(--tri-text-h2-size)] leading-[var(--tri-text-h2-line-height)]">Templates</h1>
         <Button onClick={openCreate}>Create Template</Button>
       </header>
       <Field htmlFor="template-filter" label="Filter templates">
@@ -139,7 +139,7 @@ export function TemplateEditor() {
       ) : filtered.length === 0 ? (
         <EmptyState actions={<Button onClick={openCreate}>Create Template</Button>} description="No templates match the filter, or none exist yet." title="No templates" />
       ) : (
-        <>
+        <div className="overflow-hidden rounded-[var(--tri-card-radius)] border border-[var(--tri-border-subtle)] bg-[var(--tri-bg-surface)]">
           <Table>
             <TableHeader>
               <TableRow>
@@ -163,8 +163,8 @@ export function TemplateEditor() {
                   <TableCell>{template.brand || "N/A"}</TableCell>
                   <TableCell actions>
                     <div className="flex justify-end gap-[var(--tri-space-1)]">
-                      <Button aria-label={`Edit ${template.name}`} onClick={() => openEdit(template)} variant="iconOnly">✎</Button>
-                      <Button aria-label={`Delete ${template.name}`} onClick={() => setDeleting(template)} variant="iconOnly">🗑</Button>
+                      <Button onClick={() => openEdit(template)} variant="ghost">Edit</Button>
+                      <Button onClick={() => setDeleting(template)} variant="danger">Delete</Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -172,7 +172,7 @@ export function TemplateEditor() {
             </TableBody>
           </Table>
           <Paginator ariaLabel="Templates" onPage={(next, size) => { setPageIndex(next); setPageSize(size); }} pageIndex={pageIndex} pageSize={pageSize} pageSizeOptions={[10, 25, 100]} total={filtered.length} />
-        </>
+        </div>
       )}
 
       <Dialog description="Template details. Fields map to the backend media-template record." maxWidth="60rem" onClose={() => setFormOpen(false)} open={formOpen} size="lg" title={editing ? "Edit Media Template" : "Create Media Template"}>

@@ -31,7 +31,7 @@ export function StudioHero({ backgroundVideoSrc, icon, subtitle, title, videoSrc
   return (
     <section
       className={`relative flex w-full flex-col items-center justify-center overflow-hidden rounded-3xl px-6 py-12 text-center ${
-        hasBackgroundVideo ? "" : "bg-gradient-to-br from-violet-600/20 via-neutral-900 to-neutral-900"
+        hasBackgroundVideo ? "" : "bg-gradient-to-br from-[var(--tri-brand-violet)]/20 via-[var(--tri-bg-surface)] to-[var(--tri-bg-surface)]"
       }`}
     >
       {hasBackgroundVideo ? (
@@ -46,7 +46,7 @@ export function StudioHero({ backgroundVideoSrc, icon, subtitle, title, videoSrc
           >
             <source src={backgroundVideoSrc} />
           </video>
-          <div aria-hidden className="absolute inset-0 bg-black/50" />
+          <div aria-hidden className="absolute inset-0 bg-[var(--tri-bg-scrim)]" />
         </>
       ) : null}
       <div className="relative flex flex-col items-center gap-3">
@@ -58,7 +58,7 @@ export function StudioHero({ backgroundVideoSrc, icon, subtitle, title, videoSrc
           icon
         )}
         <h1 className="font-[var(--tri-font-display)] text-3xl font-bold md:text-4xl">
-          <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-red-500 bg-clip-text text-transparent">
+          <span className="bg-[image:var(--tri-gradient-brand-text)] bg-clip-text text-transparent">
             {title}
           </span>
         </h1>

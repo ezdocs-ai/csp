@@ -121,7 +121,7 @@ function VtoDropzone({
           {onClear ? (
             <button
               aria-label={`Clear ${label}`}
-              className="absolute right-2 top-2 flex size-9 items-center justify-center rounded-full bg-black/60 text-lg text-white hover:bg-black/80"
+              className="absolute right-2 top-2 flex size-9 items-center justify-center rounded-full bg-[var(--tri-bg-scrim)] text-lg text-white"
               onClick={(e) => {
                 e.stopPropagation();
                 onClear();
@@ -336,7 +336,7 @@ export function VtoStudio() {
         : null;
 
   return (
-    <section aria-label="Virtual try-on studio" className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+    <section aria-label="Virtual try-on studio" className="mx-auto flex w-full max-w-6xl flex-col gap-[var(--tri-space-6)]">
       <StudioHero subtitle="A showcase of Virtual Try-On for your clothes and more ✨" title="Creative Studio Virtual Try-On" />
 
       <GenerationOverlay
@@ -387,7 +387,7 @@ export function VtoStudio() {
 
           <div className="grid gap-8 md:grid-cols-2">
             <div className="grid gap-3">
-              <h2 className="text-lg font-semibold">Select a model</h2>
+              <h2 className="text-[length:var(--tri-text-h4-size)] font-[var(--tri-font-weight-semibold)]">Select a model</h2>
               {loadingPresets ? (
                 <span aria-label="Loading models" className="size-8 animate-spin rounded-full border-2 border-[var(--tri-border-default)] border-t-[var(--tri-brand-primary)]" />
               ) : null}
@@ -401,7 +401,7 @@ export function VtoStudio() {
               </div>
               <div className="mt-2">
                 <button
-                  className="min-h-11 rounded-full bg-gradient-to-r from-blue-500 via-violet-500 to-red-400 px-6 font-semibold text-white disabled:opacity-50"
+                  className="min-h-11 rounded-full bg-[image:var(--tri-gradient-brand-text)] px-6 font-semibold text-[var(--tri-text-inverse)] disabled:opacity-50"
                   disabled={!stepOneValid}
                   onClick={() => setActiveStep(1)}
                   type="button"
@@ -412,7 +412,7 @@ export function VtoStudio() {
             </div>
 
             <div className="grid gap-3">
-              <h2 className="text-lg font-semibold">Or upload your own</h2>
+              <h2 className="text-[length:var(--tri-text-h4-size)] font-[var(--tri-font-weight-semibold)]">Or upload your own</h2>
               <p className="text-sm text-[var(--tri-text-secondary)]">For best results, upload a well lit, full body length picture of yourself.</p>
               <VtoDropzone
                 label="Drop your photo or click to select"
@@ -423,7 +423,7 @@ export function VtoStudio() {
               />
               {UPLOAD_EXAMPLES.length > 0 ? (
                 <>
-                  <h3 className="mt-2 text-base font-semibold">Examples</h3>
+                  <h3 className="mt-2 text-[length:var(--tri-text-h4-size)] font-[var(--tri-font-weight-semibold)]">Examples</h3>
                   <div className="flex flex-wrap gap-3">
                     {UPLOAD_EXAMPLES.map((ex) => (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -437,14 +437,6 @@ export function VtoStudio() {
         </fieldset>
       ) : (
         <div className="grid gap-6">
-          {jobId && status === "processing" ? (
-            <div className="flex flex-col items-center gap-2 py-8 text-center">
-              <span aria-label="Generating" className="size-12 animate-spin rounded-full border-2 border-[var(--tri-border-default)] border-t-[var(--tri-brand-primary)]" />
-              <p className="text-lg">Generating your virtual try-on…</p>
-              <p className="text-sm text-[var(--tri-text-secondary)]">This may take a few moments.</p>
-            </div>
-          ) : null}
-
           {hasResult && lightboxMedia ? (
             <MediaLightbox
               actions={{
@@ -471,7 +463,7 @@ export function VtoStudio() {
 
           <div className="grid gap-6 md:grid-cols-4">
             <div className="grid gap-3 md:col-span-1">
-              <h2 className="text-base font-semibold">Selected Model</h2>
+              <h2 className="text-[length:var(--tri-text-h4-size)] font-[var(--tri-font-weight-semibold)]">Selected Model</h2>
               {personPreviewUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img alt="Selected Model" className="w-full rounded-xl border border-[var(--tri-border-default)] object-contain" src={personPreviewUrl} />
@@ -482,7 +474,7 @@ export function VtoStudio() {
                 Back to Model Selection
               </button>
               <button
-                className="min-h-11 rounded-full bg-gradient-to-r from-blue-500 via-violet-500 to-red-400 px-6 font-bold text-white disabled:opacity-50"
+                className="min-h-11 rounded-full bg-[image:var(--tri-gradient-brand-text)] px-6 font-bold text-[var(--tri-text-inverse)] disabled:opacity-50"
                 disabled={!stepOneValid || loading}
                 onClick={() => void submit()}
                 type="button"
