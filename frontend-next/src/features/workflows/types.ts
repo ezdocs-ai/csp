@@ -1,5 +1,8 @@
 /** Copyright 2026 Google LLC — Apache-2.0 */
-export type Workflow = { id: string; name: string; description?: string; definition?: unknown; status?: string; createdAt?: string; updatedAt?: string };
+/** UI-side definition envelope produced by `workflowModelToUi` ({ steps: [...] }).
+ * Typed (not `unknown`) so components can read `definition?.steps?.length`. */
+export type WorkflowDefinition = { steps?: unknown[] };
+export type Workflow = { id: string; name: string; description?: string; definition?: WorkflowDefinition; status?: string; createdAt?: string; updatedAt?: string };
 export type WorkflowExecution = { id: string; workflowId: string; status: "running" | "completed" | "failed" | "stopped"; startTime?: string; endTime?: string; result?: unknown };
 
 /*
