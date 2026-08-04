@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Button, ConfirmDialog, EmptyState, Input, LoadingState } from "@/src/components/ui";
+import { Badge, Button, ConfirmDialog, EmptyState, Input, LoadingState } from "@/src/components/ui";
 import { useToast } from "@/src/components/ui/toast-provider";
 import { useWorkflows } from "../hooks/use-workflows";
 import type { Workflow } from "../types";
@@ -49,29 +49,62 @@ export function WorkflowList({ canEdit = false }: { canEdit?: boolean }) {
       {!loading && workflows.length === 0 && !error ? (
         <EmptyState description={canEdit ? "Create your first workflow to get started." : "No workflows have been shared with you yet."} title="No workflows found" actions={canEdit ? <Button onClick={() => router.push("/workflows/new")} type="button">+ New workflow</Button> : undefined} />
       ) : (
-        <ul className="grid gap-3">
-          {workflows.map((workflow) => (
-            <li key={workflow.id}>
-              <Link className="block rounded-[var(--tri-card-radius)] border border-[var(--tri-card-border)] bg-[var(--tri-card-bg)] p-[var(--tri-space-4)] transition-[var(--tri-button-transition)] hover:border-[var(--tri-card-interactive-hover-border)]" href={`/workflows/${encodeURIComponent(workflow.id)}`}>
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <h2 className="truncate font-[var(--tri-font-weight-semibold)] text-[var(--tri-text-primary)]">{workflow.name}</h2>
-                    <p className="truncate text-[length:var(--tri-text-small-size)] text-[var(--tri-text-secondary)]">{workflow.description || "No description provided"}</p>
-                    <div className="mt-[var(--tri-space-1)] flex flex-wrap gap-[var(--tri-space-3)] text-[length:var(--tri-text-small-size)] text-[var(--tri-text-tertiary)]">
-                      {workflow.createdAt ? <span>Created: {new Date(workflow.createdAt).toLocaleDateString()}</span> : null}
-                      <span>{formatTimeAgo(workflow.updatedAt)}</span>
+        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {workflows.map((workflow) => {
+            const stepCount = workflow.definition?.steps?.length ?? 0;
+            return (
+              <li key={workflow.id}>
+                <div className="flex h-full flex-col justify-between rounded-[var(--tri-card-radius)] border border-[var(--tri-card-border)] bg-[var(--tri-card-bg)] p-[var(--tri-space-4)] shadow-[var(--tri-shadow-sm)] transition-[var(--tri-button-transition)] hover:border-[var(--tri-card-interactive-hover-border)] hover:shadow-[var(--tri-shadow-md)]">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <h2 className="truncate font-[var(--tri-font-weight-semibold)] text-[var(--tri-text-primary)]">
+                        <Link className="hover:underline" href={`/workflows/${encodeURIComponent(workflow.id)}`}>
+                          {workflow.name}
+                        </Link>
+                      </h2>
+                      <Badge tone={stepCount > 0 ? "success" : "neutral"}>
+                        {stepCount > 0 ? `${stepCount} steps` : "Draft"}
+                      </Badge>
                     </div>
+                    <p className="line-clamp-2 text-[length:var(--tri-text-small-size)] text-[var(--tri-text-secondary)]">
+                      {workflow.description || "No description provided"}
+                    </p>
                   </div>
-                  {canEdit ? (
-                    <span className="flex shrink-0 gap-1" onClick={(event) => event.preventDefault()}>
-                      <Link className="inline-flex min-h-[var(--tri-control-height-md)] items-center rounded-[var(--tri-button-radius)] border border-[var(--tri-button-secondary-border)] px-[var(--tri-space-3)] text-[length:var(--tri-text-small-size)] hover:bg-[var(--tri-button-secondary-hover)]" href={`/workflows/${encodeURIComponent(workflow.id)}/edit`}>Edit</Link>
-                      <Button onClick={() => setDeleting(workflow)} type="button" variant="danger">Delete</Button>
-                    </span>
-                  ) : null}
+
+                  <div className="mt-4 space-y-3 pt-3 border-t border-[var(--tri-border-subtle)]">
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-[length:var(--tri-text-small-size)] text-[var(--tri-text-tertiary)]">
+                      <span suppressHydrationWarning>{formatTimeAgo(workflow.updatedAt)}</span>
+                      {workflow.createdAt ? (
+                        <span suppressHydrationWarning className="font-[var(--tri-font-code)]">
+                          {new Date(workflow.createdAt).toLocaleDateString()}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    {canEdit ? (
+                      <div className="flex items-center justify-end gap-2 pt-1">
+                        <Link
+                          className="inline-flex min-h-[var(--tri-control-height-md)] items-center rounded-[var(--tri-button-radius)] border border-[var(--tri-button-secondary-border)] px-[var(--tri-space-3)] text-[length:var(--tri-text-small-size)] hover:bg-[var(--tri-button-secondary-hover)]"
+                          href={`/workflows/${encodeURIComponent(workflow.id)}/edit`}
+                        >
+                          Edit
+                        </Link>
+                        <Link
+                          className="inline-flex min-h-[var(--tri-control-height-md)] items-center rounded-[var(--tri-button-radius)] bg-[var(--tri-bg-surface-elevated)] px-[var(--tri-space-3)] text-[length:var(--tri-text-small-size)] text-[var(--tri-text-primary)] hover:bg-[var(--tri-button-secondary-hover)]"
+                          href={`/workflows/${encodeURIComponent(workflow.id)}/run`}
+                        >
+                          ▶ Run
+                        </Link>
+                        <Button onClick={() => setDeleting(workflow)} type="button" variant="danger" className="px-3">
+                          Delete
+                        </Button>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
-              </Link>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       )}
 

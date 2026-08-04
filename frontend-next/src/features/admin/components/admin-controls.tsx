@@ -95,12 +95,30 @@ export function ColorPicker({ value, onChange, label }: { value: string; onChang
   );
 }
 
-/** Inline slide-toggle for table rows. */
-export function SlideToggle({ checked, onChange, label }: { checked: boolean; onChange: (next: boolean) => void; label: string; }) {
+/** Inline slide-toggle for table rows with accessible label text. */
+export function SlideToggle({ checked, onChange, label, showBadge = true }: { checked: boolean; onChange: (next: boolean) => void; label: string; showBadge?: boolean; }) {
   return (
-    <button aria-checked={checked} aria-label={label} className={`inline-flex h-[var(--tri-control-height-md)] w-[2.5rem] items-center rounded-full border border-[var(--tri-input-border)] px-[var(--tri-space-1)] transition-[var(--tri-button-transition)] ${checked ? "justify-end bg-[var(--tri-state-success)]" : "justify-start bg-[var(--tri-input-bg)]"}`} onClick={() => onChange(!checked)} role="switch" type="button">
-      <span aria-hidden="true" className={`size-[var(--tri-control-height-sm)] rounded-full bg-[var(--tri-bg-surface)] shadow-[var(--tri-toast-shadow)] ${checked ? "translate-x-0" : "-translate-x-0"}`} />
-    </button>
+    <div className="inline-flex items-center gap-[var(--tri-space-2)]">
+      <button
+        aria-checked={checked}
+        aria-label={label}
+        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[var(--tri-a11y-focus-ring)] ${checked ? "bg-[var(--tri-state-success)]" : "bg-[var(--tri-border-strong)]"}`}
+        onClick={() => onChange(!checked)}
+        role="switch"
+        title={label}
+        type="button"
+      >
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none inline-block size-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${checked ? "translate-x-5" : "translate-x-0"}`}
+        />
+      </button>
+      {showBadge ? (
+        <span className={`text-[length:var(--tri-text-small-size)] font-[var(--tri-font-weight-medium)] ${checked ? "text-[var(--tri-state-success)]" : "text-[var(--tri-text-tertiary)]"}`}>
+          {checked ? "Enabled" : "Disabled"}
+        </span>
+      ) : null}
+    </div>
   );
 }
 

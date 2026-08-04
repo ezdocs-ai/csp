@@ -147,6 +147,7 @@ module "frontend_service" {
   github_branch_name   = var.github_branch_name
   cloudbuild_yaml_path = "frontend/cloudbuild-deploy.yaml"
   included_files_glob  = ["frontend/**"]
+  trigger_disabled     = var.fe_trigger_disabled
   firebase_site_id     = var.firebase_site_id != "" ? var.firebase_site_id : var.gcp_project_id
 
   build_substitutions = merge(

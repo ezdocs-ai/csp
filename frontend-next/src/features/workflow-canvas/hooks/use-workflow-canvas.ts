@@ -417,6 +417,7 @@ export type UseWorkflowCanvasReturn = {
   /** Controlled React Flow state. */
   nodes: WorkflowCanvasNode[];
   edges: WorkflowCanvasEdge[];
+  setNodes: ReturnType<typeof useNodesState<WorkflowCanvasNode>>[1];
   onNodesChange: ReturnType<typeof useNodesState<WorkflowCanvasNode>>[2];
   onEdgesChange: ReturnType<typeof useEdgesState<WorkflowCanvasEdge>>[2];
   /** Screen (clientX/clientY) -> flow position; for palette drag-and-drop. */
@@ -878,6 +879,7 @@ export function useWorkflowCanvas(initial?: Partial<WorkflowDraft> & { steps?: u
     dirty,
     nodes: nodes as WorkflowCanvasNode[],
     edges,
+    setNodes: setNodes as unknown as ReturnType<typeof useNodesState<WorkflowCanvasNode>>[1],
     onNodesChange,
     onEdgesChange,
     screenToFlowPosition,

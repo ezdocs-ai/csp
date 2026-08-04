@@ -118,7 +118,7 @@ export function WorkspaceSwitcher({ userId, isAdmin }: WorkspaceSwitcherProps) {
   const tooltip = `You are on a ${scope} workspace. Click to switch workspaces!`;
 
   return (
-    <div className="fixed left-[5vw] top-[3vh] z-[101] xl:left-[3vw] max-md:bottom-[10vh] max-md:left-[20vw] max-md:top-auto max-md:w-[80vw]">
+    <div className="fixed left-[84px] top-[16px] z-[1002] max-md:bottom-[10vh] max-md:left-[20vw] max-md:top-auto max-md:w-[80vw]">
       <Menu
         align="start"
         label="Switch workspace"

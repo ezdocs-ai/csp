@@ -42,10 +42,12 @@ steps:
         set -e
         if [ "${_PROMOTE}" = "true" ]; then echo "promote-only run: skip verify"; exit 0; fi
         # Required build-time vars; abort loudly rather than shipping an empty bundle.
-        GCID="${_NEXT_PUBLIC_GOOGLE_CLIENT_ID}"
-        APP_URL="${_NEXT_PUBLIC_APP_URL}"
-        API_BASE="${_NEXT_PUBLIC_API_BASE_URL}"
-        if [ -z "$GCID" ] || [ -z "$APP_URL" ] || [ -z "$API_BASE" ]; then
+        # NOTE: $$ escapes the shell variable so Cloud Build does not try to
+        # resolve it as a substitution at config-parse time.
+        export NEXT_PUBLIC_GOOGLE_CLIENT_ID="${_NEXT_PUBLIC_GOOGLE_CLIENT_ID}"
+        export NEXT_PUBLIC_APP_URL="${_NEXT_PUBLIC_APP_URL}"
+        export NEXT_PUBLIC_API_BASE_URL="${_NEXT_PUBLIC_API_BASE_URL}"
+        if [ -z "$$NEXT_PUBLIC_GOOGLE_CLIENT_ID" ] || [ -z "$$NEXT_PUBLIC_APP_URL" ] || [ -z "$$NEXT_PUBLIC_API_BASE_URL" ]; then
           echo "ERROR: _NEXT_PUBLIC_GOOGLE_CLIENT_ID / _NEXT_PUBLIC_APP_URL / _NEXT_PUBLIC_API_BASE_URL are required"; exit 1
         fi
         bun install --frozen-lockfile
@@ -53,9 +55,6 @@ steps:
         bun scripts/gen-api.ts
         bun run lint
         bun run test
-        export NEXT_PUBLIC_GOOGLE_CLIENT_ID="$GCID"
-        export NEXT_PUBLIC_APP_URL="$APP_URL"
-        export NEXT_PUBLIC_API_BASE_URL="$API_BASE"
         bun run build
 
   # 2. Build the immutable SHA image (+ optional :latest alias) with the

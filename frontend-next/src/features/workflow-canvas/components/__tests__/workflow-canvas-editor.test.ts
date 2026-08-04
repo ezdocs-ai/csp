@@ -204,8 +204,8 @@ describe("TOOLBAR_WRAPPER_CLASS (WorkspaceSwitcher overlap guard)", () => {
   // untouched (the pill docks bottom-left there). The floating palette reuses
   // the same clearance for its own left anchor (see the editor shell).
   test("adds md/xl left clearance so the toolbar clears the 17rem pill", () => {
-    expect(TOOLBAR_WRAPPER_CLASS).toContain("md:pl-[calc(5vw+17rem)]");
-    expect(TOOLBAR_WRAPPER_CLASS).toContain("xl:pl-[calc(3vw+17rem)]");
+    expect(TOOLBAR_WRAPPER_CLASS).toContain("md:pl-[320px]");
+    expect(TOOLBAR_WRAPPER_CLASS).toContain("xl:pl-[320px]");
   });
 
   test("does not inset mobile (no base / max-md left padding)", () => {
@@ -267,7 +267,7 @@ describe("findDisconnectEdge (onDisconnectRef -> dynamic edge wiring)", () => {
 describe("SKIP_TO_CANVAS_LINK_CLASS (studio chrome occlusion guard)", () => {
   // The skip link used to dock at top-left (`left: space-3`), directly under the
   // floating WorkspaceSwitcher pill (rooted at left 5vw md / 3vw xl, ~17rem wide,
-  // z-101). On focus it must appear past the pill's right edge = (5vw|3vw)+17rem,
+  // z-101). On focus it must appear past the pill's right edge = 320px,
   // matching the toolbar's own clearance (TOOLBAR_WRAPPER_CLASS). Mobile keeps
   // the default because the pill docks bottom-left <md.
   test("mobile (<md) keeps the default top-left position (no max-md override)", () => {
@@ -275,8 +275,8 @@ describe("SKIP_TO_CANVAS_LINK_CLASS (studio chrome occlusion guard)", () => {
     expect(SKIP_TO_CANVAS_LINK_CLASS).not.toContain("max-md:");
   });
 
-  test("md/xl move into the toolbar-cleared area past the 17rem pill", () => {
-    expect(SKIP_TO_CANVAS_LINK_CLASS).toContain("md:focus:left-[calc(5vw+17rem)]");
-    expect(SKIP_TO_CANVAS_LINK_CLASS).toContain("xl:focus:left-[calc(3vw+17rem)]");
+  test("md/xl move into the toolbar-cleared area past the 320px clearance", () => {
+    expect(SKIP_TO_CANVAS_LINK_CLASS).toContain("md:focus:left-[320px]");
+    expect(SKIP_TO_CANVAS_LINK_CLASS).toContain("xl:focus:left-[320px]");
   });
 });

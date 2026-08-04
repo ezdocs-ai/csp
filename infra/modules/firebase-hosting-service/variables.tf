@@ -27,3 +27,8 @@ variable "firebase_site_id" {
   description = "The unique identifier for the Firebase Hosting site."
   type        = string
 }
+variable "trigger_disabled" {
+  description = "Disable the build trigger without destroying it (legacy rollback path)."
+  type        = bool
+  default     = false
+}

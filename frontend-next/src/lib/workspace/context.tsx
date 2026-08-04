@@ -95,12 +95,19 @@ export function WorkspaceProvider({
       .finally(() => setLoading(false));
   }, [api, initialWorkspaces.length]);
 
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const resolved = useMemo(() => {
     let localStorageValue: string | null = null;
-    try {
-      localStorageValue = localStorage.getItem(WORKSPACE_STORAGE_KEY);
-    } catch {
-      // Storage unavailable or blocked.
+    if (isClient) {
+      try {
+        localStorageValue = localStorage.getItem(WORKSPACE_STORAGE_KEY);
+      } catch {
+        // Storage unavailable or blocked.
+      }
     }
     const result = resolveActiveWorkspace({
       urlParam: activeWorkspaceId ?? initialUrlWorkspaceId,
@@ -113,7 +120,7 @@ export function WorkspaceProvider({
       active: workspaces.find((workspace) => workspace.id === result.id) ?? null,
       source: result.source,
     };
-  }, [activeWorkspaceId, initialUrlWorkspaceId, workspaces]);
+  }, [activeWorkspaceId, initialUrlWorkspaceId, workspaces, isClient]);
 
   const setActiveWorkspace = useCallback((workspace: Workspace | null) => {
     setActiveWorkspaceId(workspace?.id ?? null);

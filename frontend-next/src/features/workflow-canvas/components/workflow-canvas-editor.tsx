@@ -44,6 +44,7 @@ import { MobileCanvasDrawers } from "./mobile-canvas-drawers";
 import { fieldForConnection, normalizeConnection, useWorkflowCanvas } from "../hooks/use-workflow-canvas";
 import { refsForField, scalarRefValueOf } from "../adapters/graph-adapter";
 import { validateConnection } from "../adapters/graph-validation";
+import { applyAutoLayout } from "../adapters/auto-layout";
 import type { CanvasAddKind, ModelCapabilityMap, WorkflowCanvasEdge, WorkflowCanvasNodeData } from "../graph-types";
 
 /* useLayoutEffect on the client (sync measurement before paint) so the floating
@@ -66,17 +67,17 @@ export type WorkflowCanvasEditorProps = { initial?: Partial<WorkflowDraft> & { s
  * workflow-canvas-editor.test.ts). */
 export const TOOLBAR_WRAPPER_CLASS =
   "border-b border-[var(--tri-border-subtle)] bg-[var(--tri-bg-surface)] " +
-  "md:pl-[calc(5vw+17rem)] xl:pl-[calc(3vw+17rem)] " +
+  "md:pl-[320px] xl:pl-[320px] " +
   "[&>header]:border-b-0";
 
 /** Skip-to-canvas link focus style. On focus it appears in the toolbar-cleared
- * area (past the studio WorkspaceSwitcher pill at (5vw|3vw)+17rem) so the pill
- * (z-101) never occludes it. Mobile keeps the top-left default because the pill
+ * area (past the studio WorkspaceSwitcher pill at 320px) so the pill
+ * (z-1002) never occludes it. Mobile keeps the top-left default because the pill
  * docks bottom-left <md. Exported so the DOM-less Bun runner can guard the
  * clearance invariant (see workflow-canvas-editor.test.ts). */
 export const SKIP_TO_CANVAS_LINK_CLASS =
   "sr-only focus:not-sr-only focus:absolute focus:top-[var(--tri-space-3)] focus:z-[70] " +
-  "focus:left-[var(--tri-space-3)] md:focus:left-[calc(5vw+17rem)] xl:focus:left-[calc(3vw+17rem)] " +
+  "focus:left-[var(--tri-space-3)] md:focus:left-[320px] xl:focus:left-[320px] " +
   "focus:rounded-[var(--tri-radius-md)] focus:bg-[var(--tri-bg-surface)] focus:px-[var(--tri-space-3)] " +
   "focus:py-[var(--tri-space-2)] focus:text-[var(--tri-text-primary)]";
 
@@ -521,6 +522,13 @@ function CanvasInner({ initial }: WorkflowCanvasEditorProps) {
     />
   );
 
+  const handleAutoLayout = useCallback(() => {
+    const layouted = applyAutoLayout(canvas.nodes, canvas.edges);
+    canvas.setNodes(layouted);
+    canvas.persistLayout();
+    show("Nodes auto-aligned.", "info");
+  }, [canvas, show]);
+
   return (
     <div
       className="fixed inset-0 z-40 overflow-hidden bg-[var(--tri-bg-page)] text-[var(--tri-text-primary)]"
@@ -575,6 +583,7 @@ function CanvasInner({ initial }: WorkflowCanvasEditorProps) {
             onSave={() => void handleSave()}
             canRun={canRun}
             onRun={() => setRunOpen(true)}
+            onAutoLayout={handleAutoLayout}
             onBack={goBack}
           />
         </div>

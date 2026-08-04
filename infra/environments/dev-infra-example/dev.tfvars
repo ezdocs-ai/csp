@@ -65,6 +65,12 @@ fe_build_substitutions = {
   _ANGULAR_BUILD_COMMAND = "build-dev"
 }
 
+# The Angular deployment is legacy rollback-only. Its build needs FIREBASE_*
+# secret VALUES, which Terraform never creates (shells only). Keep the trigger
+# disabled until those versions are populated via update_secrets.sh, otherwise
+# every push touching frontend/** fails on `versions/latest` not found.
+fe_trigger_disabled = true
+
 frontend_secrets = [
   "FIREBASE_API_KEY",             # Your Firebase Web API Key
   "FIREBASE_AUTH_DOMAIN",         # Your Firebase Auth Domain (e.g., project-id.firebaseapp.com)

@@ -32,6 +32,7 @@ resource "google_cloudbuild_trigger" "this" {
   service_account = google_service_account.trigger_sa.id
   filename        = var.cloudbuild_yaml_path
   substitutions   = var.build_substitutions
+  disabled        = var.trigger_disabled
 
   repository_event_config {
     repository = var.source_repository_id # Uses the ID passed from the platform

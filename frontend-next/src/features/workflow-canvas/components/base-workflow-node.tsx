@@ -69,6 +69,13 @@ const OUTPUT_LABEL: Record<string, string> = {
   generated_audio: "Audio",
 };
 
+export const REF_TYPE_COLOR: Record<RefType, string> = {
+  text: "var(--tri-data-viz-2)",
+  image: "var(--tri-data-viz-1)",
+  video: "var(--tri-data-viz-3)",
+  audio: "var(--tri-data-viz-4)",
+};
+
 /** Product label for a node, resolving the canvas-only variant first so the
  *  virtual input nodes and the Ingredients-to-Image render read as distinct nodes
  *  while their backend stepType stays unchanged. Paired with the accent dot so
@@ -311,7 +318,7 @@ export function BaseWorkflowNode({ id, data, selected }: NodeProps<WorkflowNode>
               style={HANDLE_HIT_BOX_STYLE}
               aria-label={`Input ${t.label} (${t.refType})${t.multi ? ", accepts multiple" : ""}${t.required ? ", required" : ""}`}
             >
-              <span aria-hidden="true" style={HANDLE_DOT_STYLE} />
+              <span aria-hidden="true" style={{ ...HANDLE_DOT_STYLE, background: REF_TYPE_COLOR[t.refType] ?? "var(--tri-border-strong)" }} />
             </Handle>
             <span className="text-[var(--tri-text-secondary)]">{t.label}</span>
             {t.multi ? <span className="text-[var(--tri-text-tertiary)]">· multi</span> : null}
@@ -329,7 +336,7 @@ export function BaseWorkflowNode({ id, data, selected }: NodeProps<WorkflowNode>
               style={HANDLE_HIT_BOX_STYLE}
               aria-label={`Output ${s.label} (${s.refType})`}
             >
-              <span aria-hidden="true" style={HANDLE_DOT_STYLE} />
+              <span aria-hidden="true" style={{ ...HANDLE_DOT_STYLE, background: REF_TYPE_COLOR[s.refType] ?? "var(--tri-border-strong)" }} />
             </Handle>
           </div>
         ))}

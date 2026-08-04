@@ -47,6 +47,7 @@ export interface CanvasToolbarProps {
   /** Overrides the default disabled tooltip when present. */
   runTooltip?: string;
   onRun: () => void;
+  onAutoLayout?: () => void;
   onBack: () => void;
 }
 
@@ -67,6 +68,7 @@ export function CanvasToolbar({
   canRun,
   runTooltip,
   onRun,
+  onAutoLayout,
   onBack,
 }: CanvasToolbarProps) {
   const nameId = useId();
@@ -119,6 +121,18 @@ export function CanvasToolbar({
       >
         Details
       </Button>
+
+      {onAutoLayout ? (
+        <Button
+          aria-label="Auto-layout nodes"
+          title="Auto-align canvas nodes"
+          variant="secondary"
+          className="min-h-11 px-3"
+          onClick={onAutoLayout}
+        >
+          ⚡ Auto-layout
+        </Button>
+      ) : null}
 
       <div role="status" aria-live="polite" className="contents">
         <Button

@@ -200,6 +200,12 @@ variable "frontend_secrets" {
   default     = []
 }
 
+variable "fe_trigger_disabled" {
+  type        = bool
+  description = "Disable the legacy Angular/Firebase Hosting build trigger without destroying the rollback infrastructure."
+  default     = false
+}
+
 variable "backend_secrets" {
   type        = list(string)
   description = "A list of secret names required by the backend build."

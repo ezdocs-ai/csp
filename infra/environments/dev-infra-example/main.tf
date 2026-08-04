@@ -78,6 +78,7 @@ module "creative_studio_platform" {
   frontend_secrets       = var.frontend_secrets
   backend_secrets        = var.backend_secrets
   fe_build_substitutions = var.fe_build_substitutions
+  fe_trigger_disabled    = var.fe_trigger_disabled
 
   depends_on = [google_project_service.apis]
 }
