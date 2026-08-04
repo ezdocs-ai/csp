@@ -23,6 +23,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import type { ApiClient } from "../api/client";
@@ -53,6 +54,28 @@ type WorkspaceContextValue = {
 };
 
 const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
+
+// Reading localStorage during render would break hydration (the server has no
+// storage). useSyncExternalStore is the built-in escape hatch: React uses
+// getServerSnapshot for SSR *and* the hydration pass, then re-reads the real
+// snapshot on the client, so markup matches without an effect + setState.
+function subscribeToWorkspaceStorage(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  return () => window.removeEventListener("storage", onStoreChange);
+}
+
+function readStoredWorkspaceId(): string | null {
+  try {
+    return localStorage.getItem(WORKSPACE_STORAGE_KEY);
+  } catch {
+    // Storage unavailable or blocked.
+    return null;
+  }
+}
+
+function serverWorkspaceId(): null {
+  return null;
+}
 
 export type WorkspaceProviderProps = {
   children: ReactNode;
@@ -95,20 +118,13 @@ export function WorkspaceProvider({
       .finally(() => setLoading(false));
   }, [api, initialWorkspaces.length]);
 
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const localStorageValue = useSyncExternalStore(
+    subscribeToWorkspaceStorage,
+    readStoredWorkspaceId,
+    serverWorkspaceId,
+  );
 
   const resolved = useMemo(() => {
-    let localStorageValue: string | null = null;
-    if (isClient) {
-      try {
-        localStorageValue = localStorage.getItem(WORKSPACE_STORAGE_KEY);
-      } catch {
-        // Storage unavailable or blocked.
-      }
-    }
     const result = resolveActiveWorkspace({
       urlParam: activeWorkspaceId ?? initialUrlWorkspaceId,
       localStorageValue,
@@ -120,7 +136,7 @@ export function WorkspaceProvider({
       active: workspaces.find((workspace) => workspace.id === result.id) ?? null,
       source: result.source,
     };
-  }, [activeWorkspaceId, initialUrlWorkspaceId, workspaces, isClient]);
+  }, [activeWorkspaceId, initialUrlWorkspaceId, workspaces, localStorageValue]);
 
   const setActiveWorkspace = useCallback((workspace: Workspace | null) => {
     setActiveWorkspaceId(workspace?.id ?? null);
