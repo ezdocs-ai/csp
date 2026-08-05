@@ -19,10 +19,10 @@ import { test } from "bun:test";
 
 import { SignJWT } from "jose";
 
-import { signSession, verifySession } from "../session";
+import { signSession, verifySession, type SessionInput } from "../session";
 
 const secret = "test-secret-with-at-least-thirty-two-characters";
-const input = { sub: "google-subject", email: "user@example.com", name: "User", picture: "", roles: ["user"] as const, idToken: "test-google-id-token" };
+const input: SessionInput = { sub: "google-subject", email: "user@example.com", name: "User", picture: "", roles: ["user"], idToken: "test-google-id-token" };
 
 test("session round-trips", async () => {
   const token = await signSession(input, secret);

@@ -310,15 +310,9 @@ export class VideoComponent implements OnInit, AfterViewInit {
           capabilities: {
             supportedModes: [
               ...(model.capabilities.textToVideo ? ['Text to Video'] : []),
-              ...(model.capabilities.imageToVideo
-                ? ['Frames to Video']
-                : []),
+              ...(model.capabilities.imageToVideo ? ['Frames to Video'] : []),
               ...(model.capabilities.referenceImages
-                ? [
-                    'Ingredients to Video',
-                    'Extend Video',
-                    'Concatenate Video',
-                  ]
+                ? ['Ingredients to Video', 'Extend Video', 'Concatenate Video']
                 : []),
             ] as GenerationModelConfig['capabilities']['supportedModes'],
             maxReferenceImages: model.capabilities.referenceImages ? 3 : 0,

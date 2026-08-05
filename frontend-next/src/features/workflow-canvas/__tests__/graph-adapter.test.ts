@@ -15,7 +15,7 @@ import {
   stepsToNodes,
 } from "../adapters/graph-adapter";
 import { isModelGatedRefList } from "../../workflow-editor/hooks/step-configs";
-import type { BackendInputRef } from "../../workflow-editor/hooks/step-configs";
+import type { BackendInputRef, StepFieldSpec } from "../../workflow-editor/hooks/step-configs";
 import type { SavedLayout } from "../graph-types";
 import { virtualInputId } from "../adapters/virtual-inputs";
 import type { InputParam } from "../../workflow-editor/types";
@@ -179,7 +179,7 @@ test("connectionToConfigPatch writes a scalar ref replacement", () => {
 });
 
 test("connectionToConfigPatch appends to a ref-list, deduping identical pairs", () => {
-  const field = { name: "input_images", label: "x", bucket: "inputs", kind: "ref-list", default: [], refType: "image" } as const;
+  const field: StepFieldSpec = { name: "input_images", label: "x", bucket: "inputs", kind: "ref-list", default: [], refType: "image" };
   const conn = { source: "b", target: "c", sourceHandle: "generated_image", targetHandle: "input_images" };
   const existing = [{ step: "a", output: "generated_image" }];
   const first = connectionToConfigPatch(conn, field, { input_images: existing });
@@ -204,7 +204,7 @@ test("removeEdgeToConfigPatch clears a scalar ref and removes only the matching 
     ),
   ).toEqual({ stepId: "b", field: "input_images", value: "" });
 
-  const listField = { name: "input_images", label: "x", bucket: "inputs", kind: "ref-list", default: [], refType: "image" } as const;
+  const listField: StepFieldSpec = { name: "input_images", label: "x", bucket: "inputs", kind: "ref-list", default: [], refType: "image" };
   const next = removeEdgeToConfigPatch(
     { id: "x", source: "a", target: "c", sourceHandle: "generated_image", targetHandle: "input_images", refType: "image", cardinality: "list" },
     listField,
@@ -253,16 +253,16 @@ test("literalOrRefValueOf ignores ordinary prose so connected refs never collide
 // --- generic media ref-lists (image/video): no capability gate, append many ---
 
 test("isModelGatedRefList gates only image-ingredients ref-lists, not generic media", () => {
-  const ingredients = { name: "input_images", label: "x", bucket: "inputs", kind: "ref-list", default: [], refType: "image", refListCapability: "image-ingredients" } as const;
-  const genericImage = { name: "input_images", label: "x", bucket: "inputs", kind: "ref-list", default: [], refType: "image" } as const;
-  const videoFrames = { name: "input_frames", label: "x", bucket: "inputs", kind: "ref-list", default: [], refType: "video" } as const;
+  const ingredients: StepFieldSpec = { name: "input_images", label: "x", bucket: "inputs", kind: "ref-list", default: [], refType: "image", refListCapability: "image-ingredients" };
+  const genericImage: StepFieldSpec = { name: "input_images", label: "x", bucket: "inputs", kind: "ref-list", default: [], refType: "image" };
+  const videoFrames: StepFieldSpec = { name: "input_frames", label: "x", bucket: "inputs", kind: "ref-list", default: [], refType: "video" };
   expect(isModelGatedRefList(ingredients)).toBe(true);
   expect(isModelGatedRefList(genericImage)).toBe(false);
   expect(isModelGatedRefList(videoFrames)).toBe(false);
 });
 
 test("generic media ref-list (video frames) appends multiple ordered refs with no dedup loss", () => {
-  const videoFrames = { name: "input_frames", label: "Input frames", bucket: "inputs", kind: "ref-list", default: [], refType: "video" } as const;
+  const videoFrames: StepFieldSpec = { name: "input_frames", label: "Input frames", bucket: "inputs", kind: "ref-list", default: [], refType: "video" };
   const first = connectionToConfigPatch({ source: "v1", target: "sink", sourceHandle: "generated_video", targetHandle: "input_frames" }, videoFrames, { input_frames: [] });
   const second = connectionToConfigPatch({ source: "v2", target: "sink", sourceHandle: "generated_video", targetHandle: "input_frames" }, videoFrames, first!.value as BackendInputRef[]);
   expect((second!.value as BackendInputRef[]).map((r) => r.step)).toEqual(["v1", "v2"]);

@@ -218,11 +218,13 @@ test("clearSingletonOutputRef filters matching ref objects AND legacy strings, p
     ref("u2", "photo"),
     "u1::name",
   ];
+  // Mixed structured-ref + legacy-string arrays are not expressible in
+  // BackendInputValue, but the helper preserves them; cast as on the input above.
   expect(clearSingletonOutputRef(list as BackendInputValue, "u1", "photo")).toEqual([
     ref("u1", "name"),
     ref("u2", "photo"),
     "u1::name",
-  ]);
+  ] as BackendInputValue);
 });
 
 test("clearSingletonOutputRef on a list leaves sibling outputs intact", () => {

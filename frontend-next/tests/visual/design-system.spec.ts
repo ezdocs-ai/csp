@@ -16,11 +16,13 @@
 
 import { expect, test } from "@playwright/test";
 
-for (const [theme, viewport] of [["light", "desktop", { width: 1440, height: 1600 }], ["dark", "desktop", { width: 1440, height: 1600 }], ["light", "mobile", { width: 375, height: 1200 }], ["dark", "mobile", { width: 375, height: 1200 }]] as const) {
-  test(`design system ${theme} ${viewport}`, async ({ page }) => {
+// [theme, size label, viewport]. The label names the test/snapshot; the third
+// element is the actual viewport passed to setViewportSize.
+for (const [theme, size, viewport] of [["light", "desktop", { width: 1440, height: 1600 }], ["dark", "desktop", { width: 1440, height: 1600 }], ["light", "mobile", { width: 375, height: 1200 }], ["dark", "mobile", { width: 375, height: 1200 }]] as const) {
+  test(`design system ${theme} ${size}`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.goto(`/_visual?theme=${theme}`);
     await expect(page.locator("[data-theme]").first()).toHaveAttribute("data-theme", theme);
-    await expect(page).toHaveScreenshot(`design-system-${theme}-${viewport}.png`, { fullPage: true });
+    await expect(page).toHaveScreenshot(`design-system-${theme}-${size}.png`, { fullPage: true });
   });
 }

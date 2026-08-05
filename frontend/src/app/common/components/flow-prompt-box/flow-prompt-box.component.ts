@@ -30,10 +30,7 @@ import {
 } from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ReferenceImage} from '../../models/search.model';
-import {
-  GenerationModelConfig,
-  GenerationMode,
-} from '../../config/model-config';
+import {GenerationModelConfig, GenerationMode} from '../../config/model-config';
 import {MatIconModule} from '@angular/material/icon';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -237,14 +234,12 @@ export class FlowPromptBoxComponent implements OnInit, OnDestroy {
   // not regressed.
   availableModes = computed(() => {
     const all = this.modesSignal();
-    const supported = this.getSelectedModelObject()?.capabilities
-      ?.supportedModes;
+    const supported =
+      this.getSelectedModelObject()?.capabilities?.supportedModes;
     if (!supported || supported.length === 0) {
       return all;
     }
-    return all.filter(m =>
-      supported.includes(m.value as GenerationMode),
-    );
+    return all.filter(m => supported.includes(m.value as GenerationMode));
   });
 
   // --- Lifecycle Hooks ---

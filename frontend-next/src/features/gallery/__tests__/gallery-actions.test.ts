@@ -120,7 +120,8 @@ test("buildEditWithOmni: audio path seeds referenceAudio (name falls back)", () 
     type: "media_item",
     index: 0,
   });
-  expect(String(intent.remixState.referenceAudio?.name)).toContain("Audio Input");
+  // remixState is an untyped sessionStorage payload (Record<string, unknown>).
+  expect(String((intent.remixState.referenceAudio as { name?: unknown }).name)).toContain("Audio Input");
   expect(intent.remixState.referenceVideo).toBeUndefined();
 });
 

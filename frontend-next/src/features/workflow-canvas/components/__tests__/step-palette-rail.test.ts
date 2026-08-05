@@ -16,6 +16,7 @@ import {
   resolvePaletteItems,
   StepPaletteRail,
 } from "../step-palette-rail";
+import type { CanvasAddKind } from "../../graph-types";
 
 test("PALETTE_GROUPS: Inputs holds both independent inputs and no user-input singleton", () => {
   const inputs = PALETTE_GROUPS.find((g) => g.id === "inputs");
@@ -36,7 +37,9 @@ test("resolvePaletteItems: both inputs allowed (never disabled), no user-input",
     .filter((i) => i.kind === "text-input" || i.kind === "image-input")
     .map((i) => i.label);
   expect(inputLabels).toEqual(["Text input", "Image input"]);
-  expect(items.find((i) => i.kind === "user-input")).toBeUndefined();
+  // CanvasAddKind excludes "user-input" by construction, so widen to compare:
+  // this guards against the singleton reappearing at runtime.
+  expect(items.find((i) => (i.kind as string) === "user-input")).toBeUndefined();
 });
 
 test("parseDragKind accepts every palette kind and rejects user-input/garbage", () => {
@@ -61,7 +64,7 @@ test("STEP_DRAG_TYPE is a stable mime key", () => {
 });
 
 test("every palette kind has a human label and a valid drag payload kind", () => {
-  const kinds = Object.keys(STEP_DISPLAY);
+  const kinds = Object.keys(STEP_DISPLAY) as CanvasAddKind[];
   for (const kind of kinds) {
     expect(parseDragKind(kind)).toBe(kind);
     expect(STEP_DISPLAY[kind as keyof typeof STEP_DISPLAY].label.length).toBeGreaterThan(0);
