@@ -16,6 +16,7 @@ import {
   type GalleryItem,
 } from "../gallery-utils";
 import { BulkActions } from "./bulk-actions";
+import { UploadMediaDialog } from "./upload-media-dialog";
 
 const HINT_SEEN_KEY = "gallery_features_hint_seen";
 const HINT_MESSAGE = "Click to select. Shift+click selects a range. Esc clears selection.";
@@ -77,6 +78,7 @@ export function GalleryView({ media, currentPage, totalPages, userEmail, userId,
   const toast = useToast();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [lastIndex, setLastIndex] = useState<number | null>(null);
+  const [uploadOpen, setUploadOpen] = useState(false);
 
   // One-time features hint snackbar (Angular: localStorage "gallery_features_hint_seen").
   useEffect(() => {
@@ -156,16 +158,20 @@ export function GalleryView({ media, currentPage, totalPages, userEmail, userId,
 
       <div className="flex flex-wrap items-center justify-between gap-[var(--tri-space-4)]">
         <Filters isAdmin={isAdmin} tags={tags} userEmail={userEmail} userId={userId} />
-        {media.length > 0 ? (
-          <Button
-            aria-pressed={selected.size === media.length && media.length > 0}
-            className="shrink-0"
-            onClick={toggleSelectAll}
-            variant="secondary"
-          >
-            {selected.size === media.length ? "Deselect all" : "Select all"}
+        <div className="flex flex-wrap items-center gap-[var(--tri-space-2)] shrink-0">
+          <Button onClick={() => setUploadOpen(true)} variant="primary">
+            Upload Media
           </Button>
-        ) : null}
+          {media.length > 0 ? (
+            <Button
+              aria-pressed={selected.size === media.length && media.length > 0}
+              onClick={toggleSelectAll}
+              variant="secondary"
+            >
+              {selected.size === media.length ? "Deselect all" : "Select all"}
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       {groups.length > 0 ? (
@@ -209,6 +215,12 @@ export function GalleryView({ media, currentPage, totalPages, userEmail, userId,
       {selectionArray.length > 0 ? (
         <BulkActions clear={clearSelection} onSuccess={reload} selection={selectionArray} />
       ) : null}
+
+      <UploadMediaDialog
+        onClose={() => setUploadOpen(false)}
+        onSuccess={reload}
+        open={uploadOpen}
+      />
     </section>
   );
 }
